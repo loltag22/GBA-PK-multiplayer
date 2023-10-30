@@ -3,8 +3,6 @@ local MaxPlayers = 4
 local Nickname = ""
 
 
-package.path = package.path .. ";../?.lua"
-package.path = package.path .. ";../spriteLoader/?.lua"
 local SpriteGenerator = require "male_FRLG"
 local GameID = ""
 local GameCode = "None"

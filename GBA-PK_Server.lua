@@ -389,7 +389,6 @@ local maleSprites = {
 -- for SURF-IDLE actualAddress + 512
 -- for SUF-SIT actualAddress - 20
 
-
 --To fit everything in 1 file, I must unfortunately clog this file with a lot of sprite data. Luckily, this does not lag the game. It is just hard to read.
 --Also, if you are looking at this, then I am sorry. Truly      -TheHunterManX
 --IsBiking is temporary and is used for drawing the extra symbol
@@ -405,28 +404,27 @@ function createChars(StartAddressNo, SpriteID, SpriteNo, ScreenData, IsBiking)
 	--Start address. 100745216 = 06014000 = 184th tile. can safely use 32.
 	--CHANGE 100746752 = 190th tile = 2608
 	--Because the actual data doesn't start until 06013850, we will skip 50 hexbytes, or 80 decibytes
-	local ActualAddress = (100746752 - (StartAddressNo * 1280)) + 80
-	local u32 SpriteTempVar1 = ActualAddress
+	local u32 ActualAddress = (100746752 - (StartAddressNo * 1280)) + 80
     local u32 SpriteTempVar0 = 0
 	if ScreenData ~= 0 then
 	    --Firered Male Sprite
 	    if SpriteNo == 0 then
             --moving the address back
 			if(maleSprites[SpriteID]["offset"] ~= nil) then
-				SpriteTempVar1 = SpriteTempVar1 - maleSprites[SpriteID]["offset"]
+				ActualAddress = ActualAddress - maleSprites[SpriteID]["offset"]
 			end
             for k,v in pairs(maleSprites[SpriteID]["sprite"]) do
- 		        SpriteTempVar0 = v
-		        emu:write32(SpriteTempVar0, SpriteTempVar1)
-                SpriteTempVar1 = SpriteTempVar1 + 4
+				SpriteTempVar0 = v
+		        emu:write32(ActualAddress, SpriteTempVar0)
+                ActualAddress = ActualAddress + 4
             end
 	    elseif SpriteNo == 2 then
 		    --Battle Icon 1
-		    SpriteTempVar0 = ActualAddress + 256 + (IsBiking * 256) - 80
+		    ActualAddress = ActualAddress + 256 + (IsBiking * 256) - 80
             for k,v in pairs(maleSprites["battleIcon"]["sprite"]) do
-                SpriteTempVar1 = v
-                emu:write32(SpriteTempVar0, SpriteTempVar1)
-                SpriteTempVar1 = SpriteTempVar1 + 4
+				SpriteTempVar0 = v
+		        emu:write32(ActualAddress, SpriteTempVar0)
+                ActualAddress = ActualAddress + 4
             end
 		    
 	    end
