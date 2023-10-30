@@ -12,9 +12,6 @@ local ConfirmPackett = 0
 local EnableScript = false
 local ClientConnection
 
-local u32 SpriteTempVar0 = 0
-local u32 SpriteTempVar1 = 0
-
 --Map ID
 local u32 MapAddress = 0
 local u32 MapAddress2 = 0
@@ -2482,8 +2479,8 @@ function AnimatePlayerMovement(PlayerNo, AnimateID)
 		end
 		--Surfing animation
 		if AnimateID == 19 or AnimateID == 20 then
-			SpriteGenerator.createChars(Charpic,36,SpriteNumber,ScreenData)
-			if PreviousPlayerAnimation[PlayerNo] ~= 19 or PreviousPlayerAnimation[PlayerNo] ~= 20 then
+			SpriteGenerator.createChars(Charpic,"surfSitSide",SpriteNumber,ScreenData)
+			if PreviousPlayerAnimation[PlayerNo] ~= 19 and PreviousPlayerAnimation[PlayerNo] ~= 20 then
 				 PlayerAnimationFrame2[PlayerNo] = 0 PlayerAnimationFrame[PlayerNo] = 24 
 			end
 			PlayerAnimationFrameMax[PlayerNo] = 48
