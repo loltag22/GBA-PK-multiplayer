@@ -8,6 +8,7 @@ package.path = "C:/Users/domin/Documents/Projects/3-gen-MP/GBA-PK-multiplayer/de
 
 local SpriteGenerator = require "spriteGenerator"
 local GameChecker = require "gameVersionChecker"
+local PokemonTeamManager = require "pokemonTeamManager"
 
 local GameID = ""
 local ConfirmPackett = 0
@@ -169,75 +170,6 @@ function ClearAllVar()
 
 end
 
-
-function GetPokemonTeam()
-	local PokemonTeamAddress = 0
-	local PokemonTeamADRTEMP = 0
-	local ReadTemp = ""
-		if GameID == "BPR1" or GameID == "BPR2" then
-			--Addresses for Firered
-			PokemonTeamAddress = 33702532
-		elseif GameID == "BPG1" or GameID == "BPG2" then
-			--Addresses for Leafgreen
-			PokemonTeamAddress = 33702532
-		end
-		PokemonTeamADRTEMP = PokemonTeamAddress
-		for j = 1, 6 do
-			for i = 1, 25 do
-				ReadTemp = emu:read32(PokemonTeamADRTEMP) 
-				PokemonTeamADRTEMP = PokemonTeamADRTEMP + 4 
-				ReadTemp = tonumber(ReadTemp)
-				ReadTemp = ReadTemp + 1000000000
-				if i == 1 then Pokemon[j] = ReadTemp
-				else Pokemon[j] = Pokemon[j] .. ReadTemp
-				end
-			end
-		end
-	--	ConsoleForText:print("EnemyPokemon 1 data: " .. Pokemon[2])
-end
-function SetEnemyPokemonTeam(EnemyPokemonNo, EnemyPokemonPos)
-	local PokemonTeamAddress = 0
-	local PokemonTeamADRTEMP = 0
-	local ReadTemp = ""
-	local String1 = 0
-	local String2 = 0
-		if GameID == "BPR1" or GameID == "BPR2" then
-			--Addresses for Firered
-			PokemonTeamAddress = 33701932
-		elseif GameID == "BPG1" or GameID == "BPG2" then
-			--Addresses for Leafgreen
-			PokemonTeamAddress = 33701932
-		end
-		PokemonTeamADRTEMP = PokemonTeamAddress
-		if EnemyPokemonNo == 0 then
-			for j = 1, 6 do
-				for i = 1, 25 do
-					if i == 1 then String1 = i
-					else String1 = String1 + 10
-					end
-					String2 = String1 + 9
-					ReadTemp = string.sub(EnemyPokemon[j],String1,String2)
-					ReadTemp = tonumber(ReadTemp)
-					ReadTemp = ReadTemp - 1000000000
-					emu:write32(PokemonTeamADRTEMP, ReadTemp)
-					PokemonTeamADRTEMP = PokemonTeamADRTEMP + 4
-				end
-			end
-		else
-			PokemonTeamADRTEMP = PokemonTeamADRTEMP + ((EnemyPokemonPos - 1) * 100)
-			for i = 1, 25 do
-				if i == 1 then String1 = i
-				else String1 = String1 + 10
-				end
-				String2 = String1 + 9
-				ReadTemp = string.sub(EnemyPokemon[EnemyPokemonNo],String1,String2)
-				ReadTemp = tonumber(ReadTemp)
-				ReadTemp = ReadTemp - 1000000000
-				emu:write32(PokemonTeamADRTEMP, ReadTemp)
-				PokemonTeamADRTEMP = PokemonTeamADRTEMP + 4
-			end
-		end
-end
 
 function FixAddress()
 	local MultichoiceAdr = 0
@@ -1697,7 +1629,7 @@ function BattlescriptClassic()
 			emu:write8(33700834, 0)
 			if BattleVars[11] >= 150 then
 				--Set enemy team
-				SetEnemyPokemonTeam(0,1)
+				PokemonTeamManager.SetEnemyPokemonTeam(0,1, GameID)
 				BattleVars[1] = 2
 			end
 		
@@ -1932,7 +1864,7 @@ function Tradescript()
 				TradeVars[1] = 5
 				TradeVars[2] = 2
 				local TeamPos = EnemyTradeVars[3] + 1
-				SetEnemyPokemonTeam(TeamPos, 1)
+				PokemonTeamManager.SetEnemyPokemonTeam(TeamPos, 1, GameID)
 				Loadscript(17)
 			else
 				TradeVars[2] = 0
@@ -1957,7 +1889,7 @@ function Tradescript()
 			TradeVars[2] = 2
 			TradeVars[1] = 5
 			local TeamPos = EnemyTradeVars[3] + 1
-			SetEnemyPokemonTeam(TeamPos, 1)
+			PokemonTeamManager.SetEnemyPokemonTeam(TeamPos, 1, GameID)
 			Loadscript(17)
 		else
 	--		console:log("VARS: " .. Var8000[2] .. " " .. EnemyTradeVars[2] .. " " .. EnemyTradeVars[1])
@@ -3695,7 +3627,7 @@ end
 function CreatePackettSpecial(RequestTemp, OptionalData)
 	if RequestTemp == "POKE" then
 		PlayerReceiveID = PlayerTalkingID2
-		GetPokemonTeam()
+		PokemonTeamManager.GetPokemonTeam(GameID)
 		local PokeTemp
 		local StartNum = 0
 		local StartNum2 = 0
