@@ -7,8 +7,8 @@ local Nickname = ""
 package.path = "C:/Users/domin/Documents/Projects/3-gen-MP/GBA-PK-multiplayer/dependencies/?.lua;" .. package.path
 
 local SpriteGenerator = require "spriteGenerator"
+local GameChecker = require "gameVersionChecker"
 local GameID = ""
-local GameCode = "None"
 local ConfirmPackett = 0
 local EnableScript = false
 local ClientConnection
@@ -114,7 +114,7 @@ local Pokemon = {"","","","","",""}
 
 local EnemyPokemon = {"","","","","",""}
 
-local ConsoleForText
+ConsoleForText = nil
 local Keypressholding = 0
 local LockFromScript = 0
 local HideSeek = 0
@@ -153,7 +153,6 @@ function ClearAllVar()
 	LockFromScript = 0
 	
 	 GameID = ""
-	 GameCode = "None"
 --	 Nickname = ""
 	 ConfirmPackett = 0
 	 EnableScript = false
@@ -179,62 +178,6 @@ function ClearAllVar()
 
 end
 
-
-function GetGameVersion()
-	GameCode = emu:getGameCode()
-	if (GameCode == "AGB-BPRE") or (GameCode == "AGB-ZBDM")
-	then
-		local GameVersion = emu:read16(134217916)
-		if GameVersion == 26624 then
-			ConsoleForText:print("Pokemon Firered 1.0 detected. Script enabled.")
-			EnableScript = true
-			GameID = "BPR1"
-		elseif GameVersion == 26369 then
-			ConsoleForText:print("Pokemon Firered 1.1 detected. Script enabled.")
-			EnableScript = true
-			GameID = "BPR2"
-		else
-			ConsoleForText:print("Unknown version of Pokemon Firered detected. Defaulting to 1.0. Script enabled.")
-			EnableScript = true
-			GameID = "BPR1"
-		end
-	elseif (GameCode == "AGB-BPGE")
-		then
-		local GameVersion = emu:read16(134217916)
-		if GameVersion == 33024 then
-			ConsoleForText:print("Pokemon Leafgreen 1.0 detected. Script enabled.")
-			EnableScript = true
-			GameID = "BPG1"
-		elseif GameVersion == 32769 then
-			ConsoleForText:print("Pokemon Leafgreen 1.1 detected. Script enabled.")
-			EnableScript = true
-			GameID = "BPG2"
-		else
-			ConsoleForText:print("Unknown version of Pokemon Leafgreen detected. Defaulting to 1.0. Script enabled.")
-			EnableScript = true
-			GameID = "BPG1"
-		end
-	elseif (GameCode == "AGB-BPEE")
-		then
-			ConsoleForText:print("Pokemon Emerald detected. Script disabled.")
-			EnableScript = true
-			GameID = "BPEE"
-	elseif (GameCode == "AGB-AXVE")
-		then
-			ConsoleForText:print("Pokemon Ruby detected. Script disabled.")
-			EnableScript = true
-			GameID = "AXVE"
-	elseif (GameCode == "AGB-AXPE")
-		then
-			ConsoleForText:print("Pokemon Sapphire detected. Script disabled.")
-			EnableScript = true
-			GameID = "AXPE"
-	else
-		ConsoleForText:print("Unknown game. Script disabled.")
-		EnableScript = false
-	end
-	ConsoleForText:moveCursor(0,2)
-end
 
 function GetPokemonTeam()
 	local PokemonTeamAddress = 0
@@ -3505,7 +3448,7 @@ function GetNewGame()
 	ConsoleForText:print("A new game has started")
 	ConsoleForText:moveCursor(0,1)
 	FFTimer2 = os.time()
-	GetGameVersion()
+	EnableScript, GameID = GameChecker.GetGameVersion()
 end
 
 function shutdownGame()
@@ -4459,7 +4402,7 @@ if not (emu == nil) then
 	ConsoleForText:clear()
 	ConsoleForText:moveCursor(0,1)
 	FFTimer2 = os.time()
-    GetGameVersion()
+	EnableScript, GameID = GameChecker.GetGameVersion()
 end
 
 --SocketMain:add("received", ConnectNetwork)
