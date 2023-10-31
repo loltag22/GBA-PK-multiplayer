@@ -2,7 +2,7 @@ local IPAddress, Port = "127.0.0.1", 4096
 local MaxPlayers = 4
 local Nickname = ""
 
-
+package.path = ";../?.lua" .. ";../spriteLoader/?.lua" .. package.path
 local SpriteGenerator = require "male_FRLG"
 local GameID = ""
 local GameCode = "None"
