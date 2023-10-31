@@ -9,12 +9,13 @@ package.path = "C:/Users/domin/Documents/Projects/3-gen-MP/GBA-PK-multiplayer/de
 local SpriteGenerator = require "spriteGenerator"
 local GameChecker = require "gameVersionChecker"
 local PokemonTeamManager = require "pokemonTeamManager"
+local MVars = require "multiplayerVars"
+
 
 local GameID = ""
 local ConfirmPackett = 0
 local EnableScript = false
 local ClientConnection
-
 
 
 --Map ID
@@ -27,6 +28,7 @@ local ScriptTimePrev = 0
 local initialized = 0
 local ScriptTimeFrame = 4
 
+
 --Internet Play
 --local tcp = assert(socket.tcp())
 local SocketMain = socket:tcp()
@@ -38,49 +40,12 @@ local ReturnConnectionType = ""
 local FramesPS = 0
 
 
-
---MULTIPLAYER VARS
-local PlayerReceiveID = 1000
-local MultiplayerConsoleFlags = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-local PlayerTalkingID = 0
-local PlayerTalkingID2 = 1000
-local Players = {socket:tcp(),socket:tcp(),socket:tcp(),socket:tcp(),socket:tcp(),socket:tcp(),socket:tcp(),socket:tcp()}
-local PlayerIDNick = {"None","None","None","None","None","None","None","None"}
-local timeout = {0,0,0,0,0,0,0,0}
-local AnimationX = {0,0,0,0,0,0,0,0}
-local AnimationY = {0,0,0,0,0,0,0,0}
-local FutureX = {0,0,0,0,0,0,0,0}
-local FutureY = {0,0,0,0,0,0,0,0}
-local CurrentX = {0,0,0,0,0,0,0,0}
-local CurrentY = {0,0,0,0,0,0,0,0}
-local PreviousX = {0,0,0,0,0,0,0,0}
-local PreviousY = {0,0,0,0,0,0,0,0}
-local StartX = {2000,2000,2000,2000,2000,2000,2000,2000}
-local StartY = {2000,2000,2000,2000,2000,2000,2000,2000}
-local DifferentMapX = {0,0,0,0,0,0,0,0}
-local DifferentMapY = {0,0,0,0,0,0,0,0}
-local RelativeX = {0,0,0,0,0,0,0,0}
-local RelativeY = {0,0,0,0,0,0,0,0}
-local CurrentFacingDirection = {0,0,0,0,0,0,0,0}
-local FutureFacingDirection = {0,0,0,0,0,0,0,0}
-local CurrentMapID = {0,0,0,0,0,0,0,0}
-local PreviousMapID = {0,0,0,0,0,0,0,0}
-local MapEntranceType = {1,1,1,1,1,1,1,1}
-local PlayerExtra1 = {0,0,0,0,0,0,0,0}
-local PlayerExtra2 = {0,0,0,0,0,0,0,0}
-local PlayerExtra3 = {0,0,0,0,0,0,0,0}
-local PlayerExtra4 = {0,0,0,0,0,0,0,0}
-local PlayerVis = {1,0,0,0,0,0,0,0}
-local Facing2 = {0,0,0,0,0,0,0,0}
-local MapID = {0,0,0,0,0,0,0,0}
-local PrevMapID = {0,0,0,0,0,0,0,0}
-local MapChange = {0,0,0,0,0,0,0,0}
-local HasErasedPlayer = {false,false,false,false,false,false,false,false}
 --Animation frames
 local PlayerAnimationFrame = {0,0,0,0,0,0,0,0}
 local PlayerAnimationFrame2 = {0,0,0,0,0,0,0,0}
 local PlayerAnimationFrameMax = {0,0,0,0,0,0,0,0}
 local PreviousPlayerAnimation = {0,0,0,0,0,0,0,0}
+
 
 --PLAYER VARS
 local StartXPlayer = 2000
@@ -166,14 +131,14 @@ function ClearAllVar()
 
 --If 0 then don't render players
 	ScreenData = 0
-	MultiplayerConsoleFlags[1] = 0
+	MVars.MultiplayerConsoleFlags[1] = 0
 	
 	for i = 1, MaxPlayers do
 		MultFlags = i + 1
-		 PlayerVis[i] = 0
-		 MultiplayerConsoleFlags[MultFlags] = 0
-		 HasErasedPlayer[i] = false
-		if i ~= PlayerID and PlayerIDNick[i] ~= "None" then
+		 MVars.PlayerVis[i] = 0
+		 MVars.MultiplayerConsoleFlags[MultFlags] = 0
+		 MVars.HasErasedPlayer[i] = false
+		if i ~= PlayerID and MVars.PlayerIDNick[i] ~= "None" then
 			RemovePlayerFromConsole(i)
 		end
 	end
@@ -226,7 +191,7 @@ function Loadscript(ScriptNo)
 			--Convert 4-byte buffer to readable bytes in case its needed
 				TextToNum = 0
 				for i = 1, 4 do
-					NickNameNum = string.sub(PlayerIDNick[PlayerTalkingID],i,i)
+					NickNameNum = string.sub(MVars.PlayerIDNick[MVars.PlayerTalkingID],i,i)
 					NickNameNum = string.byte(NickNameNum)
 					NickNameNum = tonumber(NickNameNum)
 					if NickNameNum > 64 and NickNameNum < 93 then
@@ -1681,7 +1646,7 @@ function BattlescriptClassic()
 			--	BattleVars[13] = ReadBuffers()
 			--	ConsoleForText:print("First")
 			-- SEND DATA
-				CreatePackettSpecial("BAT2", Players[PlayerTalkingID])
+				CreatePackettSpecial("BAT2", MVars.Players[MVars.PlayerTalkingID])
 				
 			--Animate
 			elseif BattleVars[7] == 1 and EnemyBattleVars[7] == 1 and TurnTime == 0 then
@@ -1749,7 +1714,7 @@ function BattlescriptClassic()
 	if BattleVars[1] >= 2 and BattleVars[3] == 1 then LockFromScript = 0 end
 	
 	
-	if SendTimer == 0 then CreatePackettSpecial("BATT", Players[PlayerTalkingID]) end
+	if SendTimer == 0 then CreatePackettSpecial("BATT", MVars.Players[MVars.PlayerTalkingID]) end
 end
 
 function WriteBuffers(BufferOffset, BufferVar, Length)
@@ -1836,7 +1801,7 @@ function Tradescript()
 	--You have canceled or have not selected a valid pokemon slot
 	elseif Var8000[2] == 1 and TradeVars[1] == 1 then
 		Loadscript(16)
-		SendData("CTRA",Players[PlayerTalkingID])
+		SendData("CTRA",MVars.Players[MVars.PlayerTalkingID])
 		LockFromScript = 0
 		TradeVars[1] = 0
 		TradeVars[2] = 0
@@ -1890,7 +1855,7 @@ function Tradescript()
 	elseif TradeVars[1] == 3 then
 		--If you decline
 		if Var8000[2] == 1 then
-			SendData("ROFF", Players[PlayerTalkingID])
+			SendData("ROFF", MVars.Players[MVars.PlayerTalkingID])
 			Loadscript(16)
 			LockFromScript = 7
 			TradeVars[1] = 0
@@ -1962,7 +1927,7 @@ function Tradescript()
 		end
 	end
 	
-	if SendTimer == 0 then CreatePackettSpecial("TRAD", Players[PlayerTalkingID]) end
+	if SendTimer == 0 then CreatePackettSpecial("TRAD", MVars.Players[MVars.PlayerTalkingID]) end
 end
 		--	if Var8000[2] ~= 0 then
 		--		Loadscript(16)
@@ -1973,26 +1938,26 @@ end
 		--		TradeVars[3] = 0
 
 function RenderPlayersOnDifferentMap()
-	--if MapChange[1] ~= 0 then console:log("MAP CHANGE PLAYER 1") MapChange[1] = 0 end
-	--if MapChange[2] ~= 0 then console:log("MAP CHANGE PLAYER 2") MapChange[2] = 0 end
+	--if MVars.MapChange[1] ~= 0 then console:log("MAP CHANGE PLAYER 1") MVars.MapChange[1] = 0 end
+	--if MVars.MapChange[2] ~= 0 then console:log("MAP CHANGE PLAYER 2") MVars.MapChange[2] = 0 end
 	for i = 1, MaxPlayers do
-		if PlayerID ~= i and PlayerIDNick[i] ~= "None" then
-			if PlayerMapID == CurrentMapID[i] then
-				PlayerVis[i] = 1
-				DifferentMapX[i] = 0
-				DifferentMapY[i] = 0
-				MapChange[i] = 0
-			elseif (PlayerMapIDPrev == CurrentMapID[i] or PlayerMapID == PreviousMapID[i]) and MapEntranceType[i] == 0 then
-				PlayerVis[i] = 1
-				if MapChange[i] == 1 then
-					DifferentMapX[i] = ((PreviousX[i] - StartX[i]) * 16)
-					DifferentMapY[i] = ((PreviousY[i] - StartY[i]) * 16)
+		if PlayerID ~= i and MVars.PlayerIDNick[i] ~= "None" then
+			if PlayerMapID == MVars.CurrentMapID[i] then
+				MVars.PlayerVis[i] = 1
+				MVars.DifferentMapX[i] = 0
+				MVars.DifferentMapY[i] = 0
+				MVars.MapChange[i] = 0
+			elseif (PlayerMapIDPrev == MVars.CurrentMapID[i] or PlayerMapID == MVars.PreviousMapID[i]) and MVars.MapEntranceType[i] == 0 then
+				MVars.PlayerVis[i] = 1
+				if MVars.MapChange[i] == 1 then
+					MVars.DifferentMapX[i] = ((MVars.PreviousX[i] - MVars.StartX[i]) * 16)
+					MVars.DifferentMapY[i] = ((MVars.PreviousY[i] - MVars.StartY[i]) * 16)
 				end
 			else
-				PlayerVis[i] = 0
-				DifferentMapX[i] = 0
-				DifferentMapY[i] = 0
-				MapChange[i] = 0
+				MVars.PlayerVis[i] = 0
+				MVars.DifferentMapX[i] = 0
+				MVars.DifferentMapY[i] = 0
+				MVars.MapChange[i] = 0
 			end
 		end
 	end
@@ -2031,17 +1996,17 @@ function GetPosition()
 		if Bike > 3000 then Bike = Bike - 3320 end
 	end
 	PlayerFacing = emu:read8(PlayerFaceAddress)
-	Facing2[PlayerID] = PlayerFacing + 100
+	MVars.Facing2[PlayerID] = PlayerFacing + 100
 	--Prev map
 	PlayerMapIDPrev = emu:read16(PrevMapIDAddress)
 	PlayerMapIDPrev = PlayerMapIDPrev + 100000
 	if PlayerMapIDPrev == PlayerMapID then
-		PreviousX[PlayerID] = CurrentX[PlayerID]
-		PreviousY[PlayerID] = CurrentY[PlayerID]
+		MVars.PreviousX[PlayerID] = MVars.CurrentX[PlayerID]
+		MVars.PreviousY[PlayerID] = MVars.CurrentY[PlayerID]
 		PlayerMapEntranceType = emu:read8(ConnectionTypeAddress)
 		if PlayerMapEntranceType > 10 then PlayerMapEntranceType = 9 end
 		PlayerMapChange = 1
-		MapChange[PlayerID] = 1
+		MVars.MapChange[PlayerID] = 1
 	end
 	PlayerMapID = emu:read16(MapAddress)
 	PlayerMapID = PlayerMapID + 100000
@@ -2050,168 +2015,168 @@ function GetPosition()
 	PlayerMapX = PlayerMapX + 2000
 	PlayerMapY = PlayerMapY + 2000
 		
-	CurrentX[PlayerID] = PlayerMapX
-	CurrentY[PlayerID] = PlayerMapY
---	console:log("X: " .. CurrentX[PlayerID])
+	MVars.CurrentX[PlayerID] = PlayerMapX
+	MVars.CurrentY[PlayerID] = PlayerMapY
+--	console:log("X: " .. MVars.CurrentX[PlayerID])
 	--Male Firered Sprite from 1.0, 1.1, and leafgreen
 	if ((Bike == 160 or Bike == 272) or (Bike == 128 or Bike == 240)) then
-		PlayerExtra2[PlayerID] = 0
-		PlayerExtra3[PlayerID] = 0
+		MVars.PlayerExtra2[PlayerID] = 0
+		MVars.PlayerExtra3[PlayerID] = 0
 	--	if TempVar2 == 0 then ConsoleForText:print("Male on Foot") end
 	--Male Firered Biking Sprite
 	elseif (Bike == 320 or Bike == 432 or Bike == 288 or Bike == 400) then
-		PlayerExtra2[PlayerID] = 0
-		PlayerExtra3[PlayerID] = 1
+		MVars.PlayerExtra2[PlayerID] = 0
+		MVars.PlayerExtra3[PlayerID] = 1
 	--	if TempVar2 == 0 then ConsoleForText:print("Male on Bike") end
 	--Male Firered Surfing Sprite
 	elseif (Bike == 624 or Bike == 736 or Bike == 592 or Bike == 704) then
-		PlayerExtra2[PlayerID] = 0
-		PlayerExtra3[PlayerID] = 2
+		MVars.PlayerExtra2[PlayerID] = 0
+		MVars.PlayerExtra3[PlayerID] = 2
 	--Female sprite
 	elseif ((Bike == 392 or Bike == 504) or (Bike == 360 or Bike == 472)) then
-		PlayerExtra2[PlayerID] = 1
-		PlayerExtra3[PlayerID] = 0
+		MVars.PlayerExtra2[PlayerID] = 1
+		MVars.PlayerExtra3[PlayerID] = 0
 	--	if TempVar2 == 0 then ConsoleForText:print("Female on Foot") end
 	--Female Biking sprite
 	elseif ((Bike == 552 or Bike == 664) or (Bike == 520 or Bike == 632)) then
-		PlayerExtra2[PlayerID] = 1
-		PlayerExtra3[PlayerID] = 1
+		MVars.PlayerExtra2[PlayerID] = 1
+		MVars.PlayerExtra3[PlayerID] = 1
 	--	if TempVar2 == 0 then ConsoleForText:print("Female on Bike") end
 	--Female Firered Surfing Sprite
 	elseif (Bike == 720 or Bike == 832 or Bike == 688 or Bike == 800) then
-		PlayerExtra2[PlayerID] = 1
-		PlayerExtra3[PlayerID] = 2
+		MVars.PlayerExtra2[PlayerID] = 1
+		MVars.PlayerExtra3[PlayerID] = 2
 	else
 	--If in bag when connecting will automatically be firered male
 	--	if TempVar2 == 0 then ConsoleForText:print("Bag/Unknown") end
 	end
-	if PlayerExtra1[PlayerID] ~= 0 then PlayerExtra1[PlayerID] = PlayerExtra1[PlayerID] - 100
-	else PlayerExtra1[PlayerID] = 0
+	if MVars.PlayerExtra1[PlayerID] ~= 0 then MVars.PlayerExtra1[PlayerID] = MVars.PlayerExtra1[PlayerID] - 100
+	else MVars.PlayerExtra1[PlayerID] = 0
 	end
-	if PlayerExtra3[PlayerID] == 2 then
+	if MVars.PlayerExtra3[PlayerID] == 2 then
 		PreviousPlayerDirection = PlayerDirection
 		--Facing
-		if PlayerFacing == 0 then PlayerExtra1[PlayerID] = 33 PlayerDirection = 4 end
-		if PlayerFacing == 1 then PlayerExtra1[PlayerID] = 34 PlayerDirection = 3 end
-		if PlayerFacing == 2 then PlayerExtra1[PlayerID] = 35 PlayerDirection = 1 end
-		if PlayerFacing == 3 then PlayerExtra1[PlayerID] = 36 PlayerDirection = 2 end
+		if PlayerFacing == 0 then MVars.PlayerExtra1[PlayerID] = 33 PlayerDirection = 4 end
+		if PlayerFacing == 1 then MVars.PlayerExtra1[PlayerID] = 34 PlayerDirection = 3 end
+		if PlayerFacing == 2 then MVars.PlayerExtra1[PlayerID] = 35 PlayerDirection = 1 end
+		if PlayerFacing == 3 then MVars.PlayerExtra1[PlayerID] = 36 PlayerDirection = 2 end
 		--Surfing
-		if PlayerFacing == 29 then PlayerExtra1[PlayerID] = 37 PlayerDirection = 4 end
-		if PlayerFacing == 30 then PlayerExtra1[PlayerID] = 38 PlayerDirection = 3 end
-		if PlayerFacing == 31 then PlayerExtra1[PlayerID] = 39 PlayerDirection = 1 end
-		if PlayerFacing == 32 then PlayerExtra1[PlayerID] = 40 PlayerDirection = 2 end
+		if PlayerFacing == 29 then MVars.PlayerExtra1[PlayerID] = 37 PlayerDirection = 4 end
+		if PlayerFacing == 30 then MVars.PlayerExtra1[PlayerID] = 38 PlayerDirection = 3 end
+		if PlayerFacing == 31 then MVars.PlayerExtra1[PlayerID] = 39 PlayerDirection = 1 end
+		if PlayerFacing == 32 then MVars.PlayerExtra1[PlayerID] = 40 PlayerDirection = 2 end
 		--Turning
-		if PlayerFacing == 41 then PlayerExtra1[PlayerID] = 33 PlayerDirection = 4 end
-		if PlayerFacing == 42 then PlayerExtra1[PlayerID] = 34 PlayerDirection = 3 end
-		if PlayerFacing == 43 then PlayerExtra1[PlayerID] = 35 PlayerDirection = 1 end
-		if PlayerFacing == 44 then PlayerExtra1[PlayerID] = 36 PlayerDirection = 2 end
+		if PlayerFacing == 41 then MVars.PlayerExtra1[PlayerID] = 33 PlayerDirection = 4 end
+		if PlayerFacing == 42 then MVars.PlayerExtra1[PlayerID] = 34 PlayerDirection = 3 end
+		if PlayerFacing == 43 then MVars.PlayerExtra1[PlayerID] = 35 PlayerDirection = 1 end
+		if PlayerFacing == 44 then MVars.PlayerExtra1[PlayerID] = 36 PlayerDirection = 2 end
 		--hitting a wall
-		if PlayerFacing == 33 then PlayerExtra1[PlayerID] = 33 PlayerDirection = 4 end
-		if PlayerFacing == 34 then PlayerExtra1[PlayerID] = 34 PlayerDirection = 3 end
-		if PlayerFacing == 35 then PlayerExtra1[PlayerID] = 35 PlayerDirection = 1 end
-		if PlayerFacing == 36 then PlayerExtra1[PlayerID] = 36 PlayerDirection = 2 end
+		if PlayerFacing == 33 then MVars.PlayerExtra1[PlayerID] = 33 PlayerDirection = 4 end
+		if PlayerFacing == 34 then MVars.PlayerExtra1[PlayerID] = 34 PlayerDirection = 3 end
+		if PlayerFacing == 35 then MVars.PlayerExtra1[PlayerID] = 35 PlayerDirection = 1 end
+		if PlayerFacing == 36 then MVars.PlayerExtra1[PlayerID] = 36 PlayerDirection = 2 end
 		--getting on pokemon
-		if PlayerFacing == 70 then PlayerExtra1[PlayerID] = 37 PlayerDirection = 4 end
-		if PlayerFacing == 71 then PlayerExtra1[PlayerID] = 38 PlayerDirection = 3 end
-		if PlayerFacing == 72 then PlayerExtra1[PlayerID] = 39 PlayerDirection = 1 end
-		if PlayerFacing == 73 then PlayerExtra1[PlayerID] = 40 PlayerDirection = 2 end
+		if PlayerFacing == 70 then MVars.PlayerExtra1[PlayerID] = 37 PlayerDirection = 4 end
+		if PlayerFacing == 71 then MVars.PlayerExtra1[PlayerID] = 38 PlayerDirection = 3 end
+		if PlayerFacing == 72 then MVars.PlayerExtra1[PlayerID] = 39 PlayerDirection = 1 end
+		if PlayerFacing == 73 then MVars.PlayerExtra1[PlayerID] = 40 PlayerDirection = 2 end
 		--getting off pokemon
-		if PlayerFacing == 166 then PlayerExtra1[PlayerID] = 5 PlayerDirection = 4 end
-		if PlayerFacing == 167 then PlayerExtra1[PlayerID] = 6 PlayerDirection = 3 end
-		if PlayerFacing == 168 then PlayerExtra1[PlayerID] = 7 PlayerDirection = 1 end
-		if PlayerFacing == 169 then PlayerExtra1[PlayerID] = 8 PlayerDirection = 2 end
+		if PlayerFacing == 166 then MVars.PlayerExtra1[PlayerID] = 5 PlayerDirection = 4 end
+		if PlayerFacing == 167 then MVars.PlayerExtra1[PlayerID] = 6 PlayerDirection = 3 end
+		if PlayerFacing == 168 then MVars.PlayerExtra1[PlayerID] = 7 PlayerDirection = 1 end
+		if PlayerFacing == 169 then MVars.PlayerExtra1[PlayerID] = 8 PlayerDirection = 2 end
 		--calling pokemon out
-		if PlayerFacing == 69 then PlayerExtra1[PlayerID] = 33 PlayerDirection = 4 end
+		if PlayerFacing == 69 then MVars.PlayerExtra1[PlayerID] = 33 PlayerDirection = 4 end
 		
 		if ScreenData == 0 then
-			if PlayerDirection == 4 then PlayerExtra1[PlayerID] = 33 PlayerFacing = 0 end
-			if PlayerDirection == 3 then PlayerExtra1[PlayerID] = 34 PlayerFacing = 1 end
-			if PlayerDirection == 1 then PlayerExtra1[PlayerID] = 35 PlayerFacing = 2 end
-			if PlayerDirection == 2 then PlayerExtra1[PlayerID] = 36 PlayerFacing = 3 end
+			if PlayerDirection == 4 then MVars.PlayerExtra1[PlayerID] = 33 PlayerFacing = 0 end
+			if PlayerDirection == 3 then MVars.PlayerExtra1[PlayerID] = 34 PlayerFacing = 1 end
+			if PlayerDirection == 1 then MVars.PlayerExtra1[PlayerID] = 35 PlayerFacing = 2 end
+			if PlayerDirection == 2 then MVars.PlayerExtra1[PlayerID] = 36 PlayerFacing = 3 end
 		end
-	elseif PlayerExtra3[PlayerID] == 1 then
-		if PlayerFacing == 0 then PlayerExtra1[PlayerID] = 17 PlayerDirection = 4 end
-		if PlayerFacing == 1 then PlayerExtra1[PlayerID] = 18 PlayerDirection = 3 end
-		if PlayerFacing == 2 then PlayerExtra1[PlayerID] = 19 PlayerDirection = 1 end
-		if PlayerFacing == 3 then PlayerExtra1[PlayerID] = 20 PlayerDirection = 2 end
+	elseif MVars.PlayerExtra3[PlayerID] == 1 then
+		if PlayerFacing == 0 then MVars.PlayerExtra1[PlayerID] = 17 PlayerDirection = 4 end
+		if PlayerFacing == 1 then MVars.PlayerExtra1[PlayerID] = 18 PlayerDirection = 3 end
+		if PlayerFacing == 2 then MVars.PlayerExtra1[PlayerID] = 19 PlayerDirection = 1 end
+		if PlayerFacing == 3 then MVars.PlayerExtra1[PlayerID] = 20 PlayerDirection = 2 end
 		--Standard speed
-		if PlayerFacing == 49 then PlayerExtra1[PlayerID] = 21 PlayerDirection = 4 end
-		if PlayerFacing == 50 then PlayerExtra1[PlayerID] = 22 PlayerDirection = 3 end
-		if PlayerFacing == 51 then PlayerExtra1[PlayerID] = 23 PlayerDirection = 1 end
-		if PlayerFacing == 52 then PlayerExtra1[PlayerID] = 24 PlayerDirection = 2 end
+		if PlayerFacing == 49 then MVars.PlayerExtra1[PlayerID] = 21 PlayerDirection = 4 end
+		if PlayerFacing == 50 then MVars.PlayerExtra1[PlayerID] = 22 PlayerDirection = 3 end
+		if PlayerFacing == 51 then MVars.PlayerExtra1[PlayerID] = 23 PlayerDirection = 1 end
+		if PlayerFacing == 52 then MVars.PlayerExtra1[PlayerID] = 24 PlayerDirection = 2 end
 		--In case you use a fast bike
-		if PlayerFacing == 61 then PlayerExtra1[PlayerID] = 25 PlayerDirection = 4 end
-		if PlayerFacing == 62 then PlayerExtra1[PlayerID] = 26 PlayerDirection = 3 end
-		if PlayerFacing == 63 then PlayerExtra1[PlayerID] = 27 PlayerDirection = 1 end
-		if PlayerFacing == 64 then PlayerExtra1[PlayerID] = 28 PlayerDirection = 2 end
+		if PlayerFacing == 61 then MVars.PlayerExtra1[PlayerID] = 25 PlayerDirection = 4 end
+		if PlayerFacing == 62 then MVars.PlayerExtra1[PlayerID] = 26 PlayerDirection = 3 end
+		if PlayerFacing == 63 then MVars.PlayerExtra1[PlayerID] = 27 PlayerDirection = 1 end
+		if PlayerFacing == 64 then MVars.PlayerExtra1[PlayerID] = 28 PlayerDirection = 2 end
 		--hitting a wall
-		if PlayerFacing == 37 then PlayerExtra1[PlayerID] = 29 PlayerDirection = 4 end
-		if PlayerFacing == 38 then PlayerExtra1[PlayerID] = 30 PlayerDirection = 3 end
-		if PlayerFacing == 39 then PlayerExtra1[PlayerID] = 31 PlayerDirection = 1 end
-		if PlayerFacing == 40 then PlayerExtra1[PlayerID] = 32 PlayerDirection = 2 end
+		if PlayerFacing == 37 then MVars.PlayerExtra1[PlayerID] = 29 PlayerDirection = 4 end
+		if PlayerFacing == 38 then MVars.PlayerExtra1[PlayerID] = 30 PlayerDirection = 3 end
+		if PlayerFacing == 39 then MVars.PlayerExtra1[PlayerID] = 31 PlayerDirection = 1 end
+		if PlayerFacing == 40 then MVars.PlayerExtra1[PlayerID] = 32 PlayerDirection = 2 end
 		
 		--calling pokemon out
-		if PlayerFacing == 69 then PlayerExtra1[PlayerID] = 1 PlayerDirection = 4 end
+		if PlayerFacing == 69 then MVars.PlayerExtra1[PlayerID] = 1 PlayerDirection = 4 end
 		
 		if ScreenData == 0 then
-			if PlayerDirection == 4 then PlayerExtra1[PlayerID] = 17 PlayerFacing = 0 end
-			if PlayerDirection == 3 then PlayerExtra1[PlayerID] = 18 PlayerFacing = 1 end
-			if PlayerDirection == 1 then PlayerExtra1[PlayerID] = 19 PlayerFacing = 2 end
-			if PlayerDirection == 2 then PlayerExtra1[PlayerID] = 20 PlayerFacing = 3 end
+			if PlayerDirection == 4 then MVars.PlayerExtra1[PlayerID] = 17 PlayerFacing = 0 end
+			if PlayerDirection == 3 then MVars.PlayerExtra1[PlayerID] = 18 PlayerFacing = 1 end
+			if PlayerDirection == 1 then MVars.PlayerExtra1[PlayerID] = 19 PlayerFacing = 2 end
+			if PlayerDirection == 2 then MVars.PlayerExtra1[PlayerID] = 20 PlayerFacing = 3 end
 		end
 	else
 		--Standing still
-		if PlayerFacing == 0 then PlayerExtra1[PlayerID] = 1 PlayerDirection = 4 end
-		if PlayerFacing == 1 then PlayerExtra1[PlayerID] = 2 PlayerDirection = 3 end
-		if PlayerFacing == 2 then PlayerExtra1[PlayerID] = 3 PlayerDirection = 1 end
-		if PlayerFacing == 3 then PlayerExtra1[PlayerID] = 4 PlayerDirection = 2 end
+		if PlayerFacing == 0 then MVars.PlayerExtra1[PlayerID] = 1 PlayerDirection = 4 end
+		if PlayerFacing == 1 then MVars.PlayerExtra1[PlayerID] = 2 PlayerDirection = 3 end
+		if PlayerFacing == 2 then MVars.PlayerExtra1[PlayerID] = 3 PlayerDirection = 1 end
+		if PlayerFacing == 3 then MVars.PlayerExtra1[PlayerID] = 4 PlayerDirection = 2 end
 		
 		--Hitting stuff
-		if PlayerFacing == 33 then PlayerExtra1[PlayerID] = 1 PlayerDirection = 4 end
-		if PlayerFacing == 34 then PlayerExtra1[PlayerID] = 2 PlayerDirection = 3 end
-		if PlayerFacing == 35 then PlayerExtra1[PlayerID] = 3 PlayerDirection = 1 end
-		if PlayerFacing == 36 then PlayerExtra1[PlayerID] = 4 PlayerDirection = 2 end
+		if PlayerFacing == 33 then MVars.PlayerExtra1[PlayerID] = 1 PlayerDirection = 4 end
+		if PlayerFacing == 34 then MVars.PlayerExtra1[PlayerID] = 2 PlayerDirection = 3 end
+		if PlayerFacing == 35 then MVars.PlayerExtra1[PlayerID] = 3 PlayerDirection = 1 end
+		if PlayerFacing == 36 then MVars.PlayerExtra1[PlayerID] = 4 PlayerDirection = 2 end
 		
-		if PlayerFacing == 37 then PlayerExtra1[PlayerID] = 1 PlayerDirection = 4 end
-		if PlayerFacing == 38 then PlayerExtra1[PlayerID] = 2 PlayerDirection = 3 end
-		if PlayerFacing == 39 then PlayerExtra1[PlayerID] = 3 PlayerDirection = 1 end
-		if PlayerFacing == 40 then PlayerExtra1[PlayerID] = 4 PlayerDirection = 2 end
+		if PlayerFacing == 37 then MVars.PlayerExtra1[PlayerID] = 1 PlayerDirection = 4 end
+		if PlayerFacing == 38 then MVars.PlayerExtra1[PlayerID] = 2 PlayerDirection = 3 end
+		if PlayerFacing == 39 then MVars.PlayerExtra1[PlayerID] = 3 PlayerDirection = 1 end
+		if PlayerFacing == 40 then MVars.PlayerExtra1[PlayerID] = 4 PlayerDirection = 2 end
 		
 		--Walking
-		if PlayerFacing == 16 then PlayerExtra1[PlayerID] = 5 PlayerDirection = 4 end
-		if PlayerFacing == 17 then PlayerExtra1[PlayerID] = 6 PlayerDirection = 3 end
-		if PlayerFacing == 18 then PlayerExtra1[PlayerID] = 7 PlayerDirection = 1 end
-		if PlayerFacing == 19 then PlayerExtra1[PlayerID] = 8 PlayerDirection = 2 end
+		if PlayerFacing == 16 then MVars.PlayerExtra1[PlayerID] = 5 PlayerDirection = 4 end
+		if PlayerFacing == 17 then MVars.PlayerExtra1[PlayerID] = 6 PlayerDirection = 3 end
+		if PlayerFacing == 18 then MVars.PlayerExtra1[PlayerID] = 7 PlayerDirection = 1 end
+		if PlayerFacing == 19 then MVars.PlayerExtra1[PlayerID] = 8 PlayerDirection = 2 end
 		
 		--Jumping over route
-		if PlayerFacing == 20 then PlayerExtra1[PlayerID] = 13 PlayerDirection = 4 end
-		if PlayerFacing == 21 then PlayerExtra1[PlayerID] = 14 PlayerDirection = 3 end
-		if PlayerFacing == 22 then PlayerExtra1[PlayerID] = 15 PlayerDirection = 1 end
-		if PlayerFacing == 23 then PlayerExtra1[PlayerID] = 16 PlayerDirection = 2 end
+		if PlayerFacing == 20 then MVars.PlayerExtra1[PlayerID] = 13 PlayerDirection = 4 end
+		if PlayerFacing == 21 then MVars.PlayerExtra1[PlayerID] = 14 PlayerDirection = 3 end
+		if PlayerFacing == 22 then MVars.PlayerExtra1[PlayerID] = 15 PlayerDirection = 1 end
+		if PlayerFacing == 23 then MVars.PlayerExtra1[PlayerID] = 16 PlayerDirection = 2 end
 		--Turning
-		if PlayerFacing == 41 then PlayerExtra1[PlayerID] = 9 PlayerDirection = 4 end
-		if PlayerFacing == 42 then PlayerExtra1[PlayerID] = 10 PlayerDirection = 3 end
-		if PlayerFacing == 43 then PlayerExtra1[PlayerID] = 11 PlayerDirection = 1 end
-		if PlayerFacing == 44 then PlayerExtra1[PlayerID] = 12 PlayerDirection = 2 end
+		if PlayerFacing == 41 then MVars.PlayerExtra1[PlayerID] = 9 PlayerDirection = 4 end
+		if PlayerFacing == 42 then MVars.PlayerExtra1[PlayerID] = 10 PlayerDirection = 3 end
+		if PlayerFacing == 43 then MVars.PlayerExtra1[PlayerID] = 11 PlayerDirection = 1 end
+		if PlayerFacing == 44 then MVars.PlayerExtra1[PlayerID] = 12 PlayerDirection = 2 end
 		--Running
-		if PlayerFacing == 61 then PlayerExtra1[PlayerID] = 13 PlayerDirection = 4 end
-		if PlayerFacing == 62 then PlayerExtra1[PlayerID] = 14 PlayerDirection = 3 end
-		if PlayerFacing == 63 then PlayerExtra1[PlayerID] = 15 PlayerDirection = 1 end
-		if PlayerFacing == 64 then PlayerExtra1[PlayerID] = 16 PlayerDirection = 2 end
+		if PlayerFacing == 61 then MVars.PlayerExtra1[PlayerID] = 13 PlayerDirection = 4 end
+		if PlayerFacing == 62 then MVars.PlayerExtra1[PlayerID] = 14 PlayerDirection = 3 end
+		if PlayerFacing == 63 then MVars.PlayerExtra1[PlayerID] = 15 PlayerDirection = 1 end
+		if PlayerFacing == 64 then MVars.PlayerExtra1[PlayerID] = 16 PlayerDirection = 2 end
 		
 		--calling pokemon out
-		if PlayerFacing == 69 then PlayerExtra1[PlayerID] = 1 PlayerDirection = 4 end
+		if PlayerFacing == 69 then MVars.PlayerExtra1[PlayerID] = 1 PlayerDirection = 4 end
 		
 		if ScreenData == 0 then
-			if PlayerDirection == 4 then PlayerExtra1[PlayerID] = 1 PlayerFacing = 0 end
-			if PlayerDirection == 3 then PlayerExtra1[PlayerID] = 2 PlayerFacing = 1 end
-			if PlayerDirection == 1 then PlayerExtra1[PlayerID] = 3 PlayerFacing = 2 end
-			if PlayerDirection == 2 then PlayerExtra1[PlayerID] = 4 PlayerFacing = 3 end
+			if PlayerDirection == 4 then MVars.PlayerExtra1[PlayerID] = 1 PlayerFacing = 0 end
+			if PlayerDirection == 3 then MVars.PlayerExtra1[PlayerID] = 2 PlayerFacing = 1 end
+			if PlayerDirection == 1 then MVars.PlayerExtra1[PlayerID] = 3 PlayerFacing = 2 end
+			if PlayerDirection == 2 then MVars.PlayerExtra1[PlayerID] = 4 PlayerFacing = 3 end
 		end
-		--	if Facing == 255 then PlayerExtra1 = 0 end
+		--	if Facing == 255 then MVars.PlayerExtra1 = 0 end
 	end
-	PlayerExtra1[PlayerID] = PlayerExtra1[PlayerID] + 100
-	CurrentFacingDirection[PlayerID] = PlayerDirection
+	MVars.PlayerExtra1[PlayerID] = MVars.PlayerExtra1[PlayerID] + 100
+	MVars.CurrentFacingDirection[PlayerID] = PlayerDirection
 end
 
 function NoPlayersIfScreen()
@@ -2250,9 +2215,9 @@ function NoPlayersIfScreen()
 		--	console:log("SCREENDATA ON")
 		end
 		if ScreenData4 == 1 then
-			PlayerExtra4[PlayerID] = 1
+			MVars.PlayerExtra4[PlayerID] = 1
 		else
-			PlayerExtra4[PlayerID] = 0
+			MVars.PlayerExtra4[PlayerID] = 0
 		end
 end
 
@@ -2275,12 +2240,12 @@ function AnimatePlayerMovement(PlayerNo, AnimateID)
 	--11 = Face up
 	--12 = Face left/right
 	
-if CurrentX[PlayerNo] == 0 then CurrentX[PlayerNo] = FutureX[PlayerNo] end
-if CurrentY[PlayerNo] == 0 then CurrentY[PlayerNo] = FutureY[PlayerNo] end
-local AnimationMovementX = FutureX[PlayerNo] - CurrentX[PlayerNo]
-local AnimationMovementY = FutureY[PlayerNo] - CurrentY[PlayerNo]
+if MVars.CurrentX[PlayerNo] == 0 then MVars.CurrentX[PlayerNo] = MVars.FutureX[PlayerNo] end
+if MVars.CurrentY[PlayerNo] == 0 then MVars.CurrentY[PlayerNo] = MVars.FutureY[PlayerNo] end
+local AnimationMovementX = MVars.FutureX[PlayerNo] - MVars.CurrentX[PlayerNo]
+local AnimationMovementY = MVars.FutureY[PlayerNo] - MVars.CurrentY[PlayerNo]
 local Charpic = PlayerNo - 1
-local SpriteNumber = PlayerExtra2[PlayerNo]
+local SpriteNumber = MVars.PlayerExtra2[PlayerNo]
 		
 if PlayerAnimationFrame[PlayerNo] < 0 then PlayerAnimationFrame[PlayerNo] = 0 end
 PlayerAnimationFrame[PlayerNo] = PlayerAnimationFrame[PlayerNo] + 1
@@ -2291,9 +2256,9 @@ if AnimationMovementX < 0 then
 		--Walk
 	if AnimateID == 3 then
 		PlayerAnimationFrameMax[PlayerNo] = 14
-		AnimationX[PlayerNo] = AnimationX[PlayerNo] - 1
-		if PlayerAnimationFrame[PlayerNo] == 5 then AnimationX[PlayerNo] = AnimationX[PlayerNo] - 1 end
-		if PlayerAnimationFrame[PlayerNo] == 9 then AnimationX[PlayerNo] = AnimationX[PlayerNo] - 1 end
+		MVars.AnimationX[PlayerNo] = MVars.AnimationX[PlayerNo] - 1
+		if PlayerAnimationFrame[PlayerNo] == 5 then MVars.AnimationX[PlayerNo] = MVars.AnimationX[PlayerNo] - 1 end
+		if PlayerAnimationFrame[PlayerNo] == 9 then MVars.AnimationX[PlayerNo] = MVars.AnimationX[PlayerNo] - 1 end
 		if PlayerAnimationFrame[PlayerNo] >= 3 and PlayerAnimationFrame[PlayerNo] <= 11 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
 				SpriteGenerator.createChars(Charpic, "walkL1", SpriteNumber, ScreenData)
@@ -2306,7 +2271,7 @@ if AnimationMovementX < 0 then
 	--Run
 	elseif AnimateID == 6 then
 		PlayerAnimationFrameMax[PlayerNo] = 9
-		AnimationX[PlayerNo] = AnimationX[PlayerNo] - 4
+		MVars.AnimationX[PlayerNo] = MVars.AnimationX[PlayerNo] - 4
 	--	ConsoleForText:print("Frame: " .. PlayerAnimationFrame)
 		if PlayerAnimationFrame[PlayerNo] > 5 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
@@ -2320,7 +2285,7 @@ if AnimationMovementX < 0 then
 	--Bike
 	elseif AnimateID == 9 then
 		PlayerAnimationFrameMax[PlayerNo] = 6
-		AnimationX[PlayerNo] = AnimationX[PlayerNo] + ((AnimationMovementX*16)/3)
+		MVars.AnimationX[PlayerNo] = MVars.AnimationX[PlayerNo] + ((AnimationMovementX*16)/3)
 		if PlayerAnimationFrame[PlayerNo] >= 1 and PlayerAnimationFrame[PlayerNo] < 5 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
 				SpriteGenerator.createChars(Charpic,"cicleBikeL1",SpriteNumber,ScreenData)
@@ -2333,7 +2298,7 @@ if AnimationMovementX < 0 then
 	--Surf
 	elseif AnimateID == 23 then
 		PlayerAnimationFrameMax[PlayerNo] = 4
-		AnimationX[PlayerNo] = AnimationX[PlayerNo] - 4
+		MVars.AnimationX[PlayerNo] = MVars.AnimationX[PlayerNo] - 4
 		SpriteGenerator.createChars(Charpic,"surfSideLIdle1",SpriteNumber,ScreenData)
 		SpriteGenerator.createChars(Charpic,"surfSitSide",SpriteNumber,ScreenData)
 	else
@@ -2344,9 +2309,9 @@ if AnimationMovementX < 0 then
 	elseif AnimationMovementX > 0 then
 	if AnimateID == 13 then
 		PlayerAnimationFrameMax[PlayerNo] = 14
-		AnimationX[PlayerNo] = AnimationX[PlayerNo] + 1
-		if PlayerAnimationFrame[PlayerNo] == 5 then AnimationX[PlayerNo] = AnimationX[PlayerNo] + 1 end
-		if PlayerAnimationFrame[PlayerNo] == 9 then AnimationX[PlayerNo] = AnimationX[PlayerNo] + 1 end
+		MVars.AnimationX[PlayerNo] = MVars.AnimationX[PlayerNo] + 1
+		if PlayerAnimationFrame[PlayerNo] == 5 then MVars.AnimationX[PlayerNo] = MVars.AnimationX[PlayerNo] + 1 end
+		if PlayerAnimationFrame[PlayerNo] == 9 then MVars.AnimationX[PlayerNo] = MVars.AnimationX[PlayerNo] + 1 end
 		if PlayerAnimationFrame[PlayerNo] >= 3 and PlayerAnimationFrame[PlayerNo] <= 11 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
 				SpriteGenerator.createChars(Charpic,"walkL1",SpriteNumber,ScreenData)
@@ -2360,7 +2325,7 @@ if AnimationMovementX < 0 then
 	--	console:log("RUNNING RIGHT. FRAME: " .. PlayerAnimationFrame .. " FRAME2: " .. PlayerAnimationFrame2)
 	--	ConsoleForText:print("Running")
 		PlayerAnimationFrameMax[PlayerNo] = 9
-		AnimationX[PlayerNo] = AnimationX[PlayerNo] + 4
+		MVars.AnimationX[PlayerNo] = MVars.AnimationX[PlayerNo] + 4
 		if PlayerAnimationFrame[PlayerNo] > 5 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
 				SpriteGenerator.createChars(Charpic,"runSideLCicle1",SpriteNumber, ScreenData)
@@ -2373,7 +2338,7 @@ if AnimationMovementX < 0 then
 	elseif AnimateID == 15 then
 	--	ConsoleForText:print("Bike")
 		PlayerAnimationFrameMax[PlayerNo] = 6
-		AnimationX[PlayerNo] = AnimationX[PlayerNo] + ((AnimationMovementX*16)/3)
+		MVars.AnimationX[PlayerNo] = MVars.AnimationX[PlayerNo] + ((AnimationMovementX*16)/3)
 		if PlayerAnimationFrame[PlayerNo] >= 1 and PlayerAnimationFrame[PlayerNo] < 5 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
 				SpriteGenerator.createChars(Charpic,"cicleBikeL1",SpriteNumber,ScreenData)
@@ -2386,15 +2351,15 @@ if AnimationMovementX < 0 then
 	--Surf
 	elseif AnimateID == 24 then
 		PlayerAnimationFrameMax[PlayerNo] = 4
-		AnimationX[PlayerNo] = AnimationX[PlayerNo] + 4
+		MVars.AnimationX[PlayerNo] = MVars.AnimationX[PlayerNo] + 4
 		SpriteGenerator.createChars(Charpic,"surfSideLIdle1",SpriteNumber,ScreenData)
 		SpriteGenerator.createChars(Charpic,"surfSitSide",SpriteNumber,ScreenData)
 	else
 	
 	end
 	else
-	AnimationX[PlayerNo] = 0
-	CurrentX[PlayerNo] = FutureX[PlayerNo]
+	MVars.AnimationX[PlayerNo] = 0
+	MVars.CurrentX[PlayerNo] = MVars.FutureX[PlayerNo]
 	--Turn player left/right
 	if AnimateID == 12 then
 		PlayerAnimationFrameMax[PlayerNo] = 8
@@ -2428,9 +2393,9 @@ if AnimationMovementX < 0 then
 	if AnimationMovementY < 0 then
 	if AnimateID == 2 then
 		PlayerAnimationFrameMax[PlayerNo] = 14
-		AnimationY[PlayerNo] = AnimationY[PlayerNo] - 1
-		if PlayerAnimationFrame[PlayerNo] == 5 then AnimationY[PlayerNo] = AnimationY[PlayerNo] - 1 end
-		if PlayerAnimationFrame[PlayerNo] == 9 then AnimationY[PlayerNo] = AnimationY[PlayerNo] - 1 end
+		MVars.AnimationY[PlayerNo] = MVars.AnimationY[PlayerNo] - 1
+		if PlayerAnimationFrame[PlayerNo] == 5 then MVars.AnimationY[PlayerNo] = MVars.AnimationY[PlayerNo] - 1 end
+		if PlayerAnimationFrame[PlayerNo] == 9 then MVars.AnimationY[PlayerNo] = MVars.AnimationY[PlayerNo] - 1 end
 		if PlayerAnimationFrame[PlayerNo] >= 3 and PlayerAnimationFrame[PlayerNo] <= 11 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
 				SpriteGenerator.createChars(Charpic,"walkUp1",SpriteNumber,ScreenData)
@@ -2442,7 +2407,7 @@ if AnimationMovementX < 0 then
 		end
 	elseif AnimateID == 5 then
 		PlayerAnimationFrameMax[PlayerNo] = 9
-		AnimationY[PlayerNo] = AnimationY[PlayerNo] - 4
+		MVars.AnimationY[PlayerNo] = MVars.AnimationY[PlayerNo] - 4
 		if PlayerAnimationFrame[PlayerNo] > 5 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
 				SpriteGenerator.createChars(Charpic,"runSideUpCicle1",SpriteNumber,ScreenData)
@@ -2454,7 +2419,7 @@ if AnimationMovementX < 0 then
 		end
 	elseif AnimateID == 8 then
 		PlayerAnimationFrameMax[PlayerNo] = 6
-		AnimationY[PlayerNo] = AnimationY[PlayerNo] + ((AnimationMovementY*16)/3)
+		MVars.AnimationY[PlayerNo] = MVars.AnimationY[PlayerNo] + ((AnimationMovementY*16)/3)
 		if PlayerAnimationFrame[PlayerNo] >= 1 and PlayerAnimationFrame[PlayerNo] < 5 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
 				SpriteGenerator.createChars(Charpic,"cicleBikeUp1",SpriteNumber,ScreenData)
@@ -2467,7 +2432,7 @@ if AnimationMovementX < 0 then
 	--Surf
 	elseif AnimateID == 22 then
 		PlayerAnimationFrameMax[PlayerNo] = 4
-		AnimationY[PlayerNo] = AnimationY[PlayerNo] - 4
+		MVars.AnimationY[PlayerNo] = MVars.AnimationY[PlayerNo] - 4
 		SpriteGenerator.createChars(Charpic,"surfSideUpIdle",SpriteNumber,ScreenData)
 		SpriteGenerator.createChars(Charpic,"surfSitUp",SpriteNumber,ScreenData)
 	end
@@ -2476,9 +2441,9 @@ if AnimationMovementX < 0 then
 	elseif AnimationMovementY > 0 then
 	if AnimateID == 1 then
 		PlayerAnimationFrameMax[PlayerNo] = 14
-		AnimationY[PlayerNo] = AnimationY[PlayerNo] + 1
-		if PlayerAnimationFrame[PlayerNo] == 5 then AnimationY[PlayerNo] = AnimationY[PlayerNo] + 1 end
-		if PlayerAnimationFrame[PlayerNo] == 9 then AnimationY[PlayerNo] = AnimationY[PlayerNo] + 1 end
+		MVars.AnimationY[PlayerNo] = MVars.AnimationY[PlayerNo] + 1
+		if PlayerAnimationFrame[PlayerNo] == 5 then MVars.AnimationY[PlayerNo] = MVars.AnimationY[PlayerNo] + 1 end
+		if PlayerAnimationFrame[PlayerNo] == 9 then MVars.AnimationY[PlayerNo] = MVars.AnimationY[PlayerNo] + 1 end
 		if PlayerAnimationFrame[PlayerNo] >= 3 and PlayerAnimationFrame[PlayerNo] <= 11 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
 				SpriteGenerator.createChars(Charpic,"walkDown1",SpriteNumber,ScreenData)
@@ -2490,7 +2455,7 @@ if AnimationMovementX < 0 then
 		end
 	elseif AnimateID == 4 then
 		PlayerAnimationFrameMax[PlayerNo] = 9
-		AnimationY[PlayerNo] = AnimationY[PlayerNo] + 4
+		MVars.AnimationY[PlayerNo] = MVars.AnimationY[PlayerNo] + 4
 		if PlayerAnimationFrame[PlayerNo] > 5 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
 				SpriteGenerator.createChars(Charpic,"runSideDownCicle1",SpriteNumber,ScreenData)
@@ -2502,7 +2467,7 @@ if AnimationMovementX < 0 then
 		end
 	elseif AnimateID == 7 then
 		PlayerAnimationFrameMax[PlayerNo] = 6
-		AnimationY[PlayerNo] = AnimationY[PlayerNo] + ((AnimationMovementY*16)/3)
+		MVars.AnimationY[PlayerNo] = MVars.AnimationY[PlayerNo] + ((AnimationMovementY*16)/3)
 		if PlayerAnimationFrame[PlayerNo] >= 1 and PlayerAnimationFrame[PlayerNo] < 5 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
 				SpriteGenerator.createChars(Charpic,"cicleBikeDown1",SpriteNumber,ScreenData)
@@ -2515,14 +2480,14 @@ if AnimationMovementX < 0 then
 	--Surf
 	elseif AnimateID == 21 then
 		PlayerAnimationFrameMax[PlayerNo] = 4
-		AnimationY[PlayerNo] = AnimationY[PlayerNo] + 4
+		MVars.AnimationY[PlayerNo] = MVars.AnimationY[PlayerNo] + 4
 		SpriteGenerator.createChars(Charpic,"surfSideDownIdle",SpriteNumber,ScreenData)
 		SpriteGenerator.createChars(Charpic,"surfSitDown",SpriteNumber,ScreenData)
 	--If they are now equal
 	end
 	else
-	AnimationY[PlayerNo] = 0
-	CurrentY[PlayerNo] = FutureY[PlayerNo]
+	MVars.AnimationY[PlayerNo] = 0
+	MVars.CurrentY[PlayerNo] = MVars.FutureY[PlayerNo]
 	--Turn player down
 	if AnimateID == 10 then
 		PlayerAnimationFrameMax[PlayerNo] = 8
@@ -2584,31 +2549,31 @@ end
 		
 	if AnimateID == 251 then
 		PlayerAnimationFrame[PlayerNo] = 0
-		AnimationX[PlayerNo] = 0
-		AnimationY[PlayerNo] = 0
-		CurrentX[PlayerNo] = FutureX[PlayerNo]
-		CurrentY[PlayerNo] = FutureY[PlayerNo]
+		MVars.AnimationX[PlayerNo] = 0
+		MVars.AnimationY[PlayerNo] = 0
+		MVars.CurrentX[PlayerNo] = MVars.FutureX[PlayerNo]
+		MVars.CurrentY[PlayerNo] = MVars.FutureY[PlayerNo]
 	elseif AnimateID == 252 then
 		PlayerAnimationFrame[PlayerNo] = 0
-		AnimationX[PlayerNo] = 0
-		AnimationY[PlayerNo] = 0
-		CurrentX[PlayerNo] = FutureX[PlayerNo]
-		CurrentY[PlayerNo] = FutureY[PlayerNo]
+		MVars.AnimationX[PlayerNo] = 0
+		MVars.AnimationY[PlayerNo] = 0
+		MVars.CurrentX[PlayerNo] = MVars.FutureX[PlayerNo]
+		MVars.CurrentY[PlayerNo] = MVars.FutureY[PlayerNo]
 	elseif AnimateID == 253 then
 		PlayerAnimationFrame[PlayerNo] = 0
-		AnimationX[PlayerNo] = 0
-		AnimationY[PlayerNo] = 0
-		CurrentX[PlayerNo] = FutureX[PlayerNo]
-		CurrentY[PlayerNo] = FutureY[PlayerNo]
+		MVars.AnimationX[PlayerNo] = 0
+		MVars.AnimationY[PlayerNo] = 0
+		MVars.CurrentX[PlayerNo] = MVars.FutureX[PlayerNo]
+		MVars.CurrentY[PlayerNo] = MVars.FutureY[PlayerNo]
 	elseif AnimateID == 254 then
 		PlayerAnimationFrame[PlayerNo] = 0
-		AnimationX[PlayerNo] = 0
-		AnimationY[PlayerNo] = 0
-		CurrentX[PlayerNo] = FutureX[PlayerNo]
-		CurrentY[PlayerNo] = FutureY[PlayerNo]
+		MVars.AnimationX[PlayerNo] = 0
+		MVars.AnimationY[PlayerNo] = 0
+		MVars.CurrentX[PlayerNo] = MVars.FutureX[PlayerNo]
+		MVars.CurrentY[PlayerNo] = MVars.FutureY[PlayerNo]
 	elseif AnimateID == 255 then
-		CurrentX[PlayerNo] = FutureX[PlayerNo]
-		CurrentY[PlayerNo] = FutureY[PlayerNo]
+		MVars.CurrentX[PlayerNo] = MVars.FutureX[PlayerNo]
+		MVars.CurrentY[PlayerNo] = MVars.FutureY[PlayerNo]
 	end
 		
 	if PlayerAnimationFrameMax[PlayerNo] <= PlayerAnimationFrame[PlayerNo] then
@@ -2619,13 +2584,13 @@ end
 			PlayerAnimationFrame2[PlayerNo] = 0
 		end
 	end
-	if AnimationX[PlayerNo] > 15 or AnimationX[PlayerNo] < -15 then
-		CurrentX[PlayerNo] = FutureX[PlayerNo]
-		AnimationX[PlayerNo] = 0
+	if MVars.AnimationX[PlayerNo] > 15 or MVars.AnimationX[PlayerNo] < -15 then
+		MVars.CurrentX[PlayerNo] = MVars.FutureX[PlayerNo]
+		MVars.AnimationX[PlayerNo] = 0
 	end
-	if AnimationY[PlayerNo] > 15 or AnimationY[PlayerNo] < -15 then
-		CurrentY[PlayerNo] = FutureY[PlayerNo]
-		AnimationY[PlayerNo] = 0
+	if MVars.AnimationY[PlayerNo] > 15 or MVars.AnimationY[PlayerNo] < -15 then
+		MVars.CurrentY[PlayerNo] = MVars.FutureY[PlayerNo]
+		MVars.AnimationY[PlayerNo] = 0
 	end
 	PreviousPlayerAnimation[PlayerNo] = AnimateID
 end
@@ -2654,132 +2619,132 @@ function HandleSprites()
 	local PlayerChar = 0
 	for i = 1, MaxPlayers do
 		PlayerChar = i - 1
-		if PlayerID ~= i and PlayerIDNick[i] ~= "None" then
+		if PlayerID ~= i and MVars.PlayerIDNick[i] ~= "None" then
 			--Facing down
-			if PlayerExtra1[i] == 1 then SpriteGenerator.createChars(PlayerChar,"sideDown",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 4 Facing2[i] = 0 AnimatePlayerMovement(i, 251)
+			if MVars.PlayerExtra1[i] == 1 then SpriteGenerator.createChars(PlayerChar,"sideDown",MVars.PlayerExtra2[i],ScreenData) MVars.CurrentFacingDirection[i] = 4 MVars.Facing2[i] = 0 AnimatePlayerMovement(i, 251)
 			
 			--Facing up
-			elseif PlayerExtra1[i] == 2 then SpriteGenerator.createChars(PlayerChar,"sideUp",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 3 Facing2[i] = 0 AnimatePlayerMovement(i, 252)
+			elseif MVars.PlayerExtra1[i] == 2 then SpriteGenerator.createChars(PlayerChar,"sideUp",MVars.PlayerExtra2[i],ScreenData) MVars.CurrentFacingDirection[i] = 3 MVars.Facing2[i] = 0 AnimatePlayerMovement(i, 252)
 			
 			--Facing left
-			elseif PlayerExtra1[i] == 3 then SpriteGenerator.createChars(PlayerChar,"sideLR",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 1 Facing2[i] = 0 AnimatePlayerMovement(i, 253)
+			elseif MVars.PlayerExtra1[i] == 3 then SpriteGenerator.createChars(PlayerChar,"sideLR",MVars.PlayerExtra2[i],ScreenData) MVars.CurrentFacingDirection[i] = 1 MVars.Facing2[i] = 0 AnimatePlayerMovement(i, 253)
 			
 			--Facing right
-			elseif PlayerExtra1[i] == 4 then SpriteGenerator.createChars(PlayerChar,"sideLR",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 2 Facing2[i] = 1 AnimatePlayerMovement(i, 254)
+			elseif MVars.PlayerExtra1[i] == 4 then SpriteGenerator.createChars(PlayerChar,"sideLR",MVars.PlayerExtra2[i],ScreenData) MVars.CurrentFacingDirection[i] = 2 MVars.Facing2[i] = 1 AnimatePlayerMovement(i, 254)
 			
 			--walk down
-			elseif PlayerExtra1[i] == 5 then Facing2[i] = 0 CurrentFacingDirection[i] = 4 AnimatePlayerMovement(i, 1)
+			elseif MVars.PlayerExtra1[i] == 5 then MVars.Facing2[i] = 0 MVars.CurrentFacingDirection[i] = 4 AnimatePlayerMovement(i, 1)
 			
 			--walk up
-			elseif PlayerExtra1[i] == 6 then Facing2[i] = 0 CurrentFacingDirection[i] = 3 AnimatePlayerMovement(i, 2)
+			elseif MVars.PlayerExtra1[i] == 6 then MVars.Facing2[i] = 0 MVars.CurrentFacingDirection[i] = 3 AnimatePlayerMovement(i, 2)
 			
 			--walk left
-			elseif PlayerExtra1[i] == 7 then Facing2[i] = 0 CurrentFacingDirection[i] = 1 AnimatePlayerMovement(i, 3)
+			elseif MVars.PlayerExtra1[i] == 7 then MVars.Facing2[i] = 0 MVars.CurrentFacingDirection[i] = 1 AnimatePlayerMovement(i, 3)
 			
 			--walk right
-			elseif PlayerExtra1[i] == 8 then Facing2[i] = 1 CurrentFacingDirection[i] = 2 AnimatePlayerMovement(i, 13)
+			elseif MVars.PlayerExtra1[i] == 8 then MVars.Facing2[i] = 1 MVars.CurrentFacingDirection[i] = 2 AnimatePlayerMovement(i, 13)
 			
 			--turn down
-			elseif PlayerExtra1[i] == 9 then Facing2[i] = 0 CurrentFacingDirection[i] = 4 AnimatePlayerMovement(i, 10)
+			elseif MVars.PlayerExtra1[i] == 9 then MVars.Facing2[i] = 0 MVars.CurrentFacingDirection[i] = 4 AnimatePlayerMovement(i, 10)
 			
 			--turn up
-			elseif PlayerExtra1[i] == 10 then Facing2[i] = 0 CurrentFacingDirection[i] = 3 AnimatePlayerMovement(i, 11)
+			elseif MVars.PlayerExtra1[i] == 10 then MVars.Facing2[i] = 0 MVars.CurrentFacingDirection[i] = 3 AnimatePlayerMovement(i, 11)
 			
 			--turn left
-			elseif PlayerExtra1[i] == 11 then Facing2[i] = 0 CurrentFacingDirection[i] = 1 AnimatePlayerMovement(i, 12)
+			elseif MVars.PlayerExtra1[i] == 11 then MVars.Facing2[i] = 0 MVars.CurrentFacingDirection[i] = 1 AnimatePlayerMovement(i, 12)
 			
 			--turn right
-			elseif PlayerExtra1[i] == 12 then Facing2[i] = 1 CurrentFacingDirection[i] = 2 AnimatePlayerMovement(i, 12)
+			elseif MVars.PlayerExtra1[i] == 12 then MVars.Facing2[i] = 1 MVars.CurrentFacingDirection[i] = 2 AnimatePlayerMovement(i, 12)
 			
 			--run down
-			elseif PlayerExtra1[i] == 13 then Facing2[i] = 0 CurrentFacingDirection[i] = 4 AnimatePlayerMovement(i, 4)
+			elseif MVars.PlayerExtra1[i] == 13 then MVars.Facing2[i] = 0 MVars.CurrentFacingDirection[i] = 4 AnimatePlayerMovement(i, 4)
 			
 			--run up
-			elseif PlayerExtra1[i] == 14 then Facing2[i] = 0 CurrentFacingDirection[i] = 3 AnimatePlayerMovement(i, 5)
+			elseif MVars.PlayerExtra1[i] == 14 then MVars.Facing2[i] = 0 MVars.CurrentFacingDirection[i] = 3 AnimatePlayerMovement(i, 5)
 			
 			--run left
-			elseif PlayerExtra1[i] == 15 then Facing2[i] = 0 CurrentFacingDirection[i] = 1 AnimatePlayerMovement(i, 6)
+			elseif MVars.PlayerExtra1[i] == 15 then MVars.Facing2[i] = 0 MVars.CurrentFacingDirection[i] = 1 AnimatePlayerMovement(i, 6)
 			
 			--run right
-			elseif PlayerExtra1[i] == 16 then Facing2[i] = 1 CurrentFacingDirection[i] = 2 AnimatePlayerMovement(i, 14)
+			elseif MVars.PlayerExtra1[i] == 16 then MVars.Facing2[i] = 1 MVars.CurrentFacingDirection[i] = 2 AnimatePlayerMovement(i, 14)
 			
 			--bike face down
-			elseif PlayerExtra1[i] == 17 then SpriteGenerator.createChars(PlayerChar,"sideBikeDown",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 4 Facing2[i] = 0 AnimatePlayerMovement(i, 251)
+			elseif MVars.PlayerExtra1[i] == 17 then SpriteGenerator.createChars(PlayerChar,"sideBikeDown",MVars.PlayerExtra2[i],ScreenData) MVars.CurrentFacingDirection[i] = 4 MVars.Facing2[i] = 0 AnimatePlayerMovement(i, 251)
 			
 			--bike face up
-			elseif PlayerExtra1[i] == 18 then SpriteGenerator.createChars(PlayerChar,"sideBikeUp",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 3 Facing2[i] = 0 AnimatePlayerMovement(i, 252)
+			elseif MVars.PlayerExtra1[i] == 18 then SpriteGenerator.createChars(PlayerChar,"sideBikeUp",MVars.PlayerExtra2[i],ScreenData) MVars.CurrentFacingDirection[i] = 3 MVars.Facing2[i] = 0 AnimatePlayerMovement(i, 252)
 			
 			--bike face left
-			elseif PlayerExtra1[i] == 19 then SpriteGenerator.createChars(PlayerChar,"sideBikeL",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 1 Facing2[i] = 0 AnimatePlayerMovement(i, 253)
+			elseif MVars.PlayerExtra1[i] == 19 then SpriteGenerator.createChars(PlayerChar,"sideBikeL",MVars.PlayerExtra2[i],ScreenData) MVars.CurrentFacingDirection[i] = 1 MVars.Facing2[i] = 0 AnimatePlayerMovement(i, 253)
 			
 			--bike face right
-			elseif PlayerExtra1[i] == 20 then SpriteGenerator.createChars(PlayerChar,"sideBikeL",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 2 Facing2[i] = 1 AnimatePlayerMovement(i, 254)
+			elseif MVars.PlayerExtra1[i] == 20 then SpriteGenerator.createChars(PlayerChar,"sideBikeL",MVars.PlayerExtra2[i],ScreenData) MVars.CurrentFacingDirection[i] = 2 MVars.Facing2[i] = 1 AnimatePlayerMovement(i, 254)
 			
 			--bike move down
-			elseif PlayerExtra1[i] == 21 then Facing2[i] = 0 CurrentFacingDirection[i] = 4 AnimatePlayerMovement(i, 7)
+			elseif MVars.PlayerExtra1[i] == 21 then MVars.Facing2[i] = 0 MVars.CurrentFacingDirection[i] = 4 AnimatePlayerMovement(i, 7)
 			
 			--bike move up
-			elseif PlayerExtra1[i] == 22 then Facing2[i] = 0 CurrentFacingDirection[i] = 3 AnimatePlayerMovement(i, 8)
+			elseif MVars.PlayerExtra1[i] == 22 then MVars.Facing2[i] = 0 MVars.CurrentFacingDirection[i] = 3 AnimatePlayerMovement(i, 8)
 			
 			--bike move left
-			elseif PlayerExtra1[i] == 23 then Facing2[i] = 0 CurrentFacingDirection[i] = 1 AnimatePlayerMovement(i, 9)
+			elseif MVars.PlayerExtra1[i] == 23 then MVars.Facing2[i] = 0 MVars.CurrentFacingDirection[i] = 1 AnimatePlayerMovement(i, 9)
 			
 			--bike move right
-			elseif PlayerExtra1[i] == 24 then Facing2[i] = 1 CurrentFacingDirection[i] = 2 AnimatePlayerMovement(i, 15)
+			elseif MVars.PlayerExtra1[i] == 24 then MVars.Facing2[i] = 1 MVars.CurrentFacingDirection[i] = 2 AnimatePlayerMovement(i, 15)
 			
 			--bike fast move down
-			elseif PlayerExtra1[i] == 25 then Facing2[i] = 0 CurrentFacingDirection[i] = 4 AnimatePlayerMovement(i, 7)
+			elseif MVars.PlayerExtra1[i] == 25 then MVars.Facing2[i] = 0 MVars.CurrentFacingDirection[i] = 4 AnimatePlayerMovement(i, 7)
 			
 			--bike fast move up
-			elseif PlayerExtra1[i] == 26 then Facing2[i] = 0 CurrentFacingDirection[i] = 3 AnimatePlayerMovement(i, 8)
+			elseif MVars.PlayerExtra1[i] == 26 then MVars.Facing2[i] = 0 MVars.CurrentFacingDirection[i] = 3 AnimatePlayerMovement(i, 8)
 			
 			--bike fast move left
-			elseif PlayerExtra1[i] == 27 then Facing2[i] = 0 CurrentFacingDirection[i] = 1 AnimatePlayerMovement(i, 9)
+			elseif MVars.PlayerExtra1[i] == 27 then MVars.Facing2[i] = 0 MVars.CurrentFacingDirection[i] = 1 AnimatePlayerMovement(i, 9)
 			
 			--bike fast move right
-			elseif PlayerExtra1[i] == 28 then Facing2[i] = 1 CurrentFacingDirection[i] = 2 AnimatePlayerMovement(i, 15)
+			elseif MVars.PlayerExtra1[i] == 28 then MVars.Facing2[i] = 1 MVars.CurrentFacingDirection[i] = 2 AnimatePlayerMovement(i, 15)
 			
 			--bike hit wall down
-			elseif PlayerExtra1[i] == 29 then SpriteGenerator.createChars(PlayerChar,"sideBikeDown",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 4 Facing2[i] = 0 AnimatePlayerMovement(i, 251)
+			elseif MVars.PlayerExtra1[i] == 29 then SpriteGenerator.createChars(PlayerChar,"sideBikeDown",MVars.PlayerExtra2[i],ScreenData) MVars.CurrentFacingDirection[i] = 4 MVars.Facing2[i] = 0 AnimatePlayerMovement(i, 251)
 			
 			--bike hit wall up
-			elseif PlayerExtra1[i] == 30 then SpriteGenerator.createChars(PlayerChar,"sideBikeUp",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 3 Facing2[i] = 0 AnimatePlayerMovement(i, 252)
+			elseif MVars.PlayerExtra1[i] == 30 then SpriteGenerator.createChars(PlayerChar,"sideBikeUp",MVars.PlayerExtra2[i],ScreenData) MVars.CurrentFacingDirection[i] = 3 MVars.Facing2[i] = 0 AnimatePlayerMovement(i, 252)
 			
 			--bike hit wall left
-			elseif PlayerExtra1[i] == 31 then SpriteGenerator.createChars(PlayerChar,"sideBikeL",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 1 Facing2[i] = 0 AnimatePlayerMovement(i, 253)
+			elseif MVars.PlayerExtra1[i] == 31 then SpriteGenerator.createChars(PlayerChar,"sideBikeL",MVars.PlayerExtra2[i],ScreenData) MVars.CurrentFacingDirection[i] = 1 MVars.Facing2[i] = 0 AnimatePlayerMovement(i, 253)
 			
 			--bike hit wall right
-			elseif PlayerExtra1[i] == 32 then SpriteGenerator.createChars(PlayerChar,"sideBikeL",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 2 Facing2[i] = 1 AnimatePlayerMovement(i, 254)
+			elseif MVars.PlayerExtra1[i] == 32 then SpriteGenerator.createChars(PlayerChar,"sideBikeL",MVars.PlayerExtra2[i],ScreenData) MVars.CurrentFacingDirection[i] = 2 MVars.Facing2[i] = 1 AnimatePlayerMovement(i, 254)
 			
 			--Surfing
 			
 			--Facing down
-			elseif PlayerExtra1[i] == 33 then CurrentFacingDirection[i] = 4 Facing2[i] = 0 AnimatePlayerMovement(i, 17)
+			elseif MVars.PlayerExtra1[i] == 33 then MVars.CurrentFacingDirection[i] = 4 MVars.Facing2[i] = 0 AnimatePlayerMovement(i, 17)
 			
 			--Facing up
-			elseif PlayerExtra1[i] == 34 then CurrentFacingDirection[i] = 3 Facing2[i] = 0 AnimatePlayerMovement(i, 18)
+			elseif MVars.PlayerExtra1[i] == 34 then MVars.CurrentFacingDirection[i] = 3 MVars.Facing2[i] = 0 AnimatePlayerMovement(i, 18)
 			
 			--Facing left
-			elseif PlayerExtra1[i] == 35 then CurrentFacingDirection[i] = 1 Facing2[i] = 0 AnimatePlayerMovement(i, 19)
+			elseif MVars.PlayerExtra1[i] == 35 then MVars.CurrentFacingDirection[i] = 1 MVars.Facing2[i] = 0 AnimatePlayerMovement(i, 19)
 			
 			--Facing right
-			elseif PlayerExtra1[i] == 36 then CurrentFacingDirection[i] = 2 Facing2[i] = 1 AnimatePlayerMovement(i, 20)
+			elseif MVars.PlayerExtra1[i] == 36 then MVars.CurrentFacingDirection[i] = 2 MVars.Facing2[i] = 1 AnimatePlayerMovement(i, 20)
 			
 			--surf down
-			elseif PlayerExtra1[i] == 37 then Facing2[i] = 0 CurrentFacingDirection[i] = 4 AnimatePlayerMovement(i, 21)
+			elseif MVars.PlayerExtra1[i] == 37 then MVars.Facing2[i] = 0 MVars.CurrentFacingDirection[i] = 4 AnimatePlayerMovement(i, 21)
 			
 			--surf up
-			elseif PlayerExtra1[i] == 38 then Facing2[i] = 0 CurrentFacingDirection[i] = 3 AnimatePlayerMovement(i, 22)
+			elseif MVars.PlayerExtra1[i] == 38 then MVars.Facing2[i] = 0 MVars.CurrentFacingDirection[i] = 3 AnimatePlayerMovement(i, 22)
 			
 			--surf left
-			elseif PlayerExtra1[i] == 39 then Facing2[i] = 0 CurrentFacingDirection[i] = 1 AnimatePlayerMovement(i, 23)
+			elseif MVars.PlayerExtra1[i] == 39 then MVars.Facing2[i] = 0 MVars.CurrentFacingDirection[i] = 1 AnimatePlayerMovement(i, 23)
 			
 			--surf right
-			elseif PlayerExtra1[i] == 40 then Facing2[i] = 1 CurrentFacingDirection[i] = 2 AnimatePlayerMovement(i, 24)
+			elseif MVars.PlayerExtra1[i] == 40 then MVars.Facing2[i] = 1 MVars.CurrentFacingDirection[i] = 2 AnimatePlayerMovement(i, 24)
 			
 			
 			--default position
-			elseif PlayerExtra1[i] == 0 then Facing2[i] = 0 AnimatePlayerMovement(i, 255)
+			elseif MVars.PlayerExtra1[i] == 0 then MVars.Facing2[i] = 0 AnimatePlayerMovement(i, 255)
 			
 			end
 		end
@@ -2834,24 +2799,24 @@ function CalculateCamera()
 			--Calculations for X and Y of new map
 			if PlayerMapChange == 1 and (CameraX == 0 and CameraY == 0) then
 				PlayerMapChange = 0
-				StartX[PlayerID] = PlayerMapX
-				StartY[PlayerID] = PlayerMapY
-				DifferentMapXPlayer = (StartX[PlayerID] - PreviousX[PlayerID]) * 16
-				DifferentMapYPlayer = (StartY[PlayerID] - PreviousY[PlayerID]) * 16
+				MVars.StartX[PlayerID] = PlayerMapX
+				MVars.StartY[PlayerID] = PlayerMapY
+				DifferentMapXPlayer = (MVars.StartX[PlayerID] - MVars.PreviousX[PlayerID]) * 16
+				DifferentMapYPlayer = (MVars.StartY[PlayerID] - MVars.PreviousY[PlayerID]) * 16
 				if PlayerDirection == 1 then
-					StartX[PlayerID] = StartX[PlayerID] + 1
+					MVars.StartX[PlayerID] = MVars.StartX[PlayerID] + 1
 				elseif PlayerDirection == 2 then
-					StartX[PlayerID] = StartX[PlayerID] - 1
+					MVars.StartX[PlayerID] = MVars.StartX[PlayerID] - 1
 				elseif PlayerDirection == 3 then
-					StartY[PlayerID] = StartY[PlayerID] + 1
+					MVars.StartY[PlayerID] = MVars.StartY[PlayerID] + 1
 				elseif PlayerDirection == 4 then
-					StartY[PlayerID] = StartY[PlayerID] - 1
+					MVars.StartY[PlayerID] = MVars.StartY[PlayerID] - 1
 				end
 			--	console:log("YOU HAVE MOVED MAPS")
 				--For New Positions if player moves
-			--	console:log("X: " .. DifferentMapX[i] .. " Y: " .. DifferentMapY[i])
+			--	console:log("X: " .. MVars.DifferentMapX[i] .. " Y: " .. MVars.DifferentMapY[i])
 				--if PlayerDirection == 4 then
-				--	DifferentMapY[i] = DifferentMapY[i] + 16
+				--	MVars.DifferentMapY[i] = MVars.DifferentMapY[i] + 16
 				--end
 			end
 end
@@ -2862,25 +2827,25 @@ function CalculateRelativePositions()
 	local TempX2 = 0
 	local TempY2 = 0
 	for i = 1, MaxPlayers do
-		TempX = ((CurrentX[i] - PlayerMapX) * 16) + DifferentMapX[i]
-		TempY = ((CurrentY[i] - PlayerMapY) * 16) + DifferentMapY[i]
-		if PlayerID ~= i and PlayerIDNick[i] ~= "None" then
-			if PlayerMapEntranceType == 0 and (PlayerMapIDPrev == CurrentMapID[i] or PlayerMapID == PreviousMapID[i]) and MapChange[i] == 0 then
-				PlayerVis[i] = 1
+		TempX = ((MVars.CurrentX[i] - PlayerMapX) * 16) + MVars.DifferentMapX[i]
+		TempY = ((MVars.CurrentY[i] - PlayerMapY) * 16) + MVars.DifferentMapY[i]
+		if PlayerID ~= i and MVars.PlayerIDNick[i] ~= "None" then
+			if PlayerMapEntranceType == 0 and (PlayerMapIDPrev == MVars.CurrentMapID[i] or PlayerMapID == MVars.PreviousMapID[i]) and MVars.MapChange[i] == 0 then
+				MVars.PlayerVis[i] = 1
 				TempX2 = TempX + DifferentMapXPlayer
 				TempY2 = TempY + DifferentMapYPlayer
 			else
 				TempX2 = TempX
 				TempY2 = TempY
 			end
-			--AnimationX is -16 - 16 and is purely to animate sprites
+			--MVars.AnimationX is -16 - 16 and is purely to animate sprites
 			--CameraX can be between -16 and 16 and is to get the camera movement while moving
 			--Current X is the X the current sprite has
 			--Player X is the X the player sprite has
-			RelativeX[i] = AnimationX[i] + CameraX + TempX2
-			RelativeY[i] = AnimationY[i] + CameraY + TempY2
-			--console:log("X: " .. RelativeX[i] .. " " .. CurrentX[i] .. " " .. PlayerMapX .. " " .. DifferentMapX[i])
-			--console:log("Y: " .. RelativeY[i] .. " " .. AnimationY[i] .. " " .. CameraY .. " " .. TempY)
+			MVars.RelativeX[i] = MVars.AnimationX[i] + CameraX + TempX2
+			MVars.RelativeY[i] = MVars.AnimationY[i] + CameraY + TempY2
+			--console:log("X: " .. MVars.RelativeX[i] .. " " .. MVars.CurrentX[i] .. " " .. PlayerMapX .. " " .. MVars.DifferentMapX[i])
+			--console:log("Y: " .. MVars.RelativeY[i] .. " " .. MVars.AnimationY[i] .. " " .. CameraY .. " " .. TempY)
 		end
 	end
 end
@@ -2897,17 +2862,17 @@ function DrawChars()
 		CalculateRelativePositions()
 		if ScreenData == 1 then
 			for i = 1, MaxPlayers do
-				if HasErasedPlayer[i] == false then
-					HasErasedPlayer[i] = true
+				if MVars.HasErasedPlayer[i] == false then
+					MVars.HasErasedPlayer[i] = true
 					ErasePlayer(i)
 				end
-				if PlayerID ~= i and PlayerIDNick[i] ~= "None" then
+				if PlayerID ~= i and MVars.PlayerIDNick[i] ~= "None" then
 					DrawPlayer(i)
 				end
 			end
 		else
 			for i = 1, MaxPlayers do
-				HasErasedPlayer[i] = false
+				MVars.HasErasedPlayer[i] = false
 			end
 		end
 	end
@@ -2959,24 +2924,24 @@ function DrawPlayer(PlayerNo)
 		local MinY = -32
 		local MaxY = 144
 		--This is for the bike + surf
-		if PlayerExtra1[PlayerNo] >= 17 and PlayerExtra1[PlayerNo] <= 40 then MinX = -8 end
-		if PlayerExtra1[PlayerNo] >= 33 and PlayerExtra1[PlayerNo] <= 40 then MinX = 8 end
+		if MVars.PlayerExtra1[PlayerNo] >= 17 and MVars.PlayerExtra1[PlayerNo] <= 40 then MinX = -8 end
+		if MVars.PlayerExtra1[PlayerNo] >= 33 and MVars.PlayerExtra1[PlayerNo] <= 40 then MinX = 8 end
 		
 		--112 and 56 = middle of screen
-		local FinalMapX = RelativeX[PlayerNo] + 112
-		local FinalMapY = RelativeY[PlayerNo] + 56
+		local FinalMapX = MVars.RelativeX[PlayerNo] + 112
+		local FinalMapY = MVars.RelativeY[PlayerNo] + 56
 		
 		--Flip sprite if facing right
 		local FacingTemp = 128
-		if Facing2[PlayerNo] == 1 then FacingTemp = 144
+		if MVars.Facing2[PlayerNo] == 1 then FacingTemp = 144
 		else FacingTemp = 128
 		end
 		
 		if not ((FinalMapX > MaxX or FinalMapX < MinX) or (FinalMapY > MaxY or FinalMapY < MinY)) then 
 			
-			if PlayerVis[PlayerNo] == 1 then
+			if MVars.PlayerVis[PlayerNo] == 1 then
 				--Bikes need different vars
-				if PlayerExtra1[PlayerNo] >= 17 and PlayerExtra1[PlayerNo] <= 32 then
+				if MVars.PlayerExtra1[PlayerNo] >= 17 and MVars.PlayerExtra1[PlayerNo] <= 32 then
 				FinalMapX = FinalMapX - 8
 				emu:write8(PlayerXAddress, FinalMapX)
 				emu:write8(PlayerYAddress, FinalMapY)
@@ -3002,7 +2967,7 @@ function DrawPlayer(PlayerNo)
 				emu:write8(PlayerExtra3Address, 0)
 				emu:write8(PlayerExtra4Address, 1)
 				--Add fighting symbol if in battle
-					if PlayerExtra4[PlayerNo] == 1 then
+					if MVars.PlayerExtra4[PlayerNo] == 1 then
 						local SymbolY = FinalMapY - 8
 						local SymbolX = FinalMapX + 8
 						local Charpic = PlayerNo - 1
@@ -3042,8 +3007,8 @@ function DrawPlayer(PlayerNo)
 						emu:write8(PlayerExtra4Address, 1)
 					end
 				--Same with surf
-				elseif PlayerExtra1[PlayerNo] >= 33 and PlayerExtra1[PlayerNo] <= 40 then
-				if PlayerAnimationFrame2[PlayerNo] == 1 and PlayerExtra1[PlayerNo] <= 36 then FinalMapY = FinalMapY + 1 end
+				elseif MVars.PlayerExtra1[PlayerNo] >= 33 and MVars.PlayerExtra1[PlayerNo] <= 40 then
+				if PlayerAnimationFrame2[PlayerNo] == 1 and MVars.PlayerExtra1[PlayerNo] <= 36 then FinalMapY = FinalMapY + 1 end
 				--Sitting char
 				emu:write8(PlayerXAddress, FinalMapX)
 				emu:write8(PlayerYAddress, FinalMapY)
@@ -3053,7 +3018,7 @@ function DrawPlayer(PlayerNo)
 				emu:write8(PlayerExtra3Address, 0)
 				emu:write8(PlayerExtra4Address, 0)
 				--Add fighting symbol if in battle
-				if PlayerExtra4[PlayerNo] == 1 then
+				if MVars.PlayerExtra4[PlayerNo] == 1 then
 					local SymbolY = FinalMapY - 8
 					local SymbolX = FinalMapX
 					local Charpic = PlayerNo - 1
@@ -3093,7 +3058,7 @@ function DrawPlayer(PlayerNo)
 					emu:write8(PlayerExtra4Address, 1)
 				end
 				--Surfing char
-				if PlayerAnimationFrame2[PlayerNo] == 1 and PlayerExtra1[PlayerNo] <= 36 then FinalMapY = FinalMapY - 1 end
+				if PlayerAnimationFrame2[PlayerNo] == 1 and MVars.PlayerExtra1[PlayerNo] <= 36 then FinalMapY = FinalMapY - 1 end
 				FinalMapX = FinalMapX - 8
 				FinalMapY = FinalMapY + 8
 				PlayerYAddress = Player1Address + 8
@@ -3136,7 +3101,7 @@ function DrawPlayer(PlayerNo)
 				emu:write8(PlayerExtra3Address, 0)
 				emu:write8(PlayerExtra4Address, 1)
 				--Add fighting symbol if in battle
-					if PlayerExtra4[PlayerNo] == 1 then
+					if MVars.PlayerExtra4[PlayerNo] == 1 then
 						local SymbolY = FinalMapY - 8
 						local SymbolX = FinalMapX
 						local Charpic = PlayerNo - 1
@@ -3339,15 +3304,15 @@ end
 function AddPlayerToConsole(PlayerNumber)
 	local MultiplayerPlayerNumber = PlayerNumber + 1
 	local ConsoleLine = PlayerNumber + 8
-	if MultiplayerConsoleFlags[MultiplayerPlayerNumber] == 0 and PlayerIDNick[PlayerNumber] ~= "None" then
+	if MVars.MultiplayerConsoleFlags[MultiplayerPlayerNumber] == 0 and MVars.PlayerIDNick[PlayerNumber] ~= "None" then
 		ConsoleForText:moveCursor(0,4)
-		MultiplayerConsoleFlags[1] = MultiplayerConsoleFlags[1] + 1
-		ConsoleForText:print("Players found!                                                  ")
+		MVars.MultiplayerConsoleFlags[1] = MVars.MultiplayerConsoleFlags[1] + 1
+		ConsoleForText:print("MVars.Players found!                                                  ")
 			
 			
-		MultiplayerConsoleFlags[MultiplayerPlayerNumber] = 1
+		MVars.MultiplayerConsoleFlags[MultiplayerPlayerNumber] = 1
 		ConsoleForText:moveCursor(0,ConsoleLine)
-		ConsoleForText:print("Player " .. PlayerNumber .. ": " .. PlayerIDNick[PlayerNumber]  .. "                            ")
+		ConsoleForText:print("Player " .. PlayerNumber .. ": " .. MVars.PlayerIDNick[PlayerNumber]  .. "                            ")
 		
 	end
 end
@@ -3355,14 +3320,14 @@ end
 function RemovePlayerFromConsole(PlayerNumber)
 	local MultiplayerPlayerNumber = PlayerNumber + 1
 	local ConsoleLine = PlayerNumber + 8
-	if MultiplayerConsoleFlags[MultiplayerPlayerNumber] == 1 then
-		MultiplayerConsoleFlags[1] = MultiplayerConsoleFlags[1] - 1
-		if MultiplayerConsoleFlags[1] <= 0 then
-			MultiplayerConsoleFlags[1] = 0
+	if MVars.MultiplayerConsoleFlags[MultiplayerPlayerNumber] == 1 then
+		MVars.MultiplayerConsoleFlags[1] = MVars.MultiplayerConsoleFlags[1] - 1
+		if MVars.MultiplayerConsoleFlags[1] <= 0 then
+			MVars.MultiplayerConsoleFlags[1] = 0
 			ConsoleForText:moveCursor(0,4)
 			ConsoleForText:print("Searching for player...                                                ")
 		end
-		MultiplayerConsoleFlags[MultiplayerPlayerNumber] = 0
+		MVars.MultiplayerConsoleFlags[MultiplayerPlayerNumber] = 0
 		ConsoleForText:moveCursor(0,ConsoleLine)
 		ConsoleForText:print("                                                                     ")
 		
@@ -3440,11 +3405,11 @@ function ReceiveData(Clientell)
 				--	ConsoleForText:print("Type: " .. ReceiveDataSmall[4])
 				--	if ReceiveDataSmall[5] == "POKE" then console:log("Player " .. ReceiveDataSmall[4] .. " is being sent pokemon by " .. ReceiveDataSmall[3]) end
 					if ReceiveDataSmall[17] == "U" and ReceiveDataSmall[4] > PlayerID2 then
-						if PlayerIDNick[RECEIVEDID2] ~= "None" then
-							Players[RECEIVEDID2]:send(ReadData)
+						if MVars.PlayerIDNick[RECEIVEDID2] ~= "None" then
+							MVars.Players[RECEIVEDID2]:send(ReadData)
 						end
 					elseif ReceiveDataSmall[17] == "U" and ReceiveDataSmall[5] == "SLNK" then
-							timeout[RECEIVEDID] = timeoutmax
+							MVars.timeout[RECEIVEDID] = timeoutmax
 							ReceiveDataSmall[6] = string.sub(ReadData,21,30)
 							ReceiveDataSmall[6] = tonumber(ReceiveDataSmall[6])
 							if ReceiveDataSmall[6] ~= 0 then
@@ -3452,12 +3417,12 @@ function ReceiveData(Clientell)
 								ReceiveMultiplayerPackets(ReceiveDataSmall[6])
 							end
 					elseif ReceiveDataSmall[17] == "U" and ReceiveDataSmall[5] == "POKE" then
-							timeout[RECEIVEDID] = timeoutmax
+							MVars.timeout[RECEIVEDID] = timeoutmax
 							local PokeTemp2 = string.sub(ReadData,21,45)
 							SetPokemonData(PokeTemp2)
 							
 					elseif ReceiveDataSmall[17] == "U" and ReceiveDataSmall[5] == "TRAD" then
-						timeout[RECEIVEDID] = timeoutmax
+						MVars.timeout[RECEIVEDID] = timeoutmax
 						EnemyTradeVars[1] = string.sub(ReadData,21,21)
 						EnemyTradeVars[2] = string.sub(ReadData,22,22)
 						EnemyTradeVars[3] = string.sub(ReadData,23,23)
@@ -3466,7 +3431,7 @@ function ReceiveData(Clientell)
 						EnemyTradeVars[2] = tonumber(EnemyTradeVars[2])
 						EnemyTradeVars[3] = tonumber(EnemyTradeVars[3])
 					elseif ReceiveDataSmall[17] == "U" and ReceiveDataSmall[5] == "BATT" then
-						timeout[RECEIVEDID] = timeoutmax
+						MVars.timeout[RECEIVEDID] = timeoutmax
 						EnemyBattleVars[1] = string.sub(ReadData,21,21)
 						EnemyBattleVars[2] = string.sub(ReadData,22,22)
 						EnemyBattleVars[3] = string.sub(ReadData,23,23)
@@ -3515,42 +3480,42 @@ function ReceiveData(Clientell)
 							--Extra 4
 							ReceiveDataSmall[13] = string.sub(ReadData,41,41)
 							ReceiveDataSmall[13] = tonumber(ReceiveDataSmall[13])
-							--MapID
+							--MVars.MapID
 							ReceiveDataSmall[14] = string.sub(ReadData,42,47)
 							ReceiveDataSmall[14] = tonumber(ReceiveDataSmall[14])
-							--PreviousMapID
+							--MVars.PreviousMapID
 							ReceiveDataSmall[15] = string.sub(ReadData,48,53)
 							ReceiveDataSmall[15] = tonumber(ReceiveDataSmall[15])
 							--MapConnectionType
 							ReceiveDataSmall[16] = string.sub(ReadData,54,54)
 							ReceiveDataSmall[16] = tonumber(ReceiveDataSmall[16])
-							--StartX
+							--MVars.StartX
 							ReceiveDataSmall[18] = string.sub(ReadData,55,58)
 							ReceiveDataSmall[18] = tonumber(ReceiveDataSmall[18])
-							--StartY
+							--MVars.StartY
 							ReceiveDataSmall[19] = string.sub(ReadData,59,62)
 							ReceiveDataSmall[19] = tonumber(ReceiveDataSmall[19])
 							--63 is a filler byte.
 						
 						--Set connection type to var
 							ReturnConnectionType = ReceiveDataSmall[5]
-							timeout[RECEIVEDID] = timeoutmax
+							MVars.timeout[RECEIVEDID] = timeoutmax
 						
 					--	ConsoleForText:print("Valid package! Contents: " .. ReadData)
 				--	if ReceiveDataSmall[5] == "DTRA" then ConsoleForText:print("Locktype: " .. LockFromScript) end
 						
 						if ReceiveDataSmall[5] == "RPOK" and ReceiveDataSmall[3] ~= PlayerID2 then
-							CreatePackettSpecial("POKE",Players[RECEIVEDID])
+							CreatePackettSpecial("POKE",MVars.Players[RECEIVEDID])
 						end
 						
 						--If a player requests for a battle
 						if ReceiveDataSmall[5] == "RBAT" and ReceiveDataSmall[3] ~= PlayerID2 then
 							local TooBusyByte = emu:read8(50335644)
 							if (TooBusyByte ~= 0 or LockFromScript ~= 0) then
-								SendData("TBUS", Players[RECEIVEDID])
+								SendData("TBUS", MVars.Players[RECEIVEDID])
 							else
-								PlayerTalkingID = ReceiveDataSmall[3] - 1000
-								PlayerTalkingID2 = ReceiveDataSmall[3]
+								MVars.PlayerTalkingID = ReceiveDataSmall[3] - 1000
+								MVars.PlayerTalkingID2 = ReceiveDataSmall[3]
 								OtherPlayerHasCancelled = 0
 								LockFromScript = 12
 								Loadscript(10)
@@ -3561,10 +3526,10 @@ function ReceiveData(Clientell)
 						if ReceiveDataSmall[5] == "RTRA" and ReceiveDataSmall[3] ~= PlayerID2 then
 							local TooBusyByte = emu:read8(50335644)
 							if (TooBusyByte ~= 0 or LockFromScript ~= 0) then
-								SendData("TBUS", Players[RECEIVEDID])
+								SendData("TBUS", MVars.Players[RECEIVEDID])
 							else
-								PlayerTalkingID = ReceiveDataSmall[3] - 1000
-								PlayerTalkingID2 = ReceiveDataSmall[3]
+								MVars.PlayerTalkingID = ReceiveDataSmall[3] - 1000
+								MVars.PlayerTalkingID2 = ReceiveDataSmall[3]
 								OtherPlayerHasCancelled = 0
 								LockFromScript = 13
 								Loadscript(6)
@@ -3572,7 +3537,7 @@ function ReceiveData(Clientell)
 						end
 						
 						--The player is too busy to battle
-						if ReceiveDataSmall[5] == "TBUS" and ReceiveDataSmall[3] == PlayerTalkingID2 and LockFromScript == 4 then
+						if ReceiveDataSmall[5] == "TBUS" and ReceiveDataSmall[3] == MVars.PlayerTalkingID2 and LockFromScript == 4 then
 						--	ConsoleForText:print("Other player is too busy to battle.")
 							if Var8000[2] ~= 0 then
 								LockFromScript = 7
@@ -3581,7 +3546,7 @@ function ReceiveData(Clientell)
 								TextSpeedWait = 5
 							end
 						--The player is too busy to trade
-						elseif ReceiveDataSmall[5] == "TBUS" and ReceiveDataSmall[3] == PlayerTalkingID2 and LockFromScript == 5 then
+						elseif ReceiveDataSmall[5] == "TBUS" and ReceiveDataSmall[3] == MVars.PlayerTalkingID2 and LockFromScript == 5 then
 						--	ConsoleForText:print("Other player is too busy to trade.")
 							if Var8000[2] ~= 0 then
 								LockFromScript = 7
@@ -3592,19 +3557,19 @@ function ReceiveData(Clientell)
 						end
 						
 						--If the other player cancels battle
-						if ReceiveDataSmall[5] == "CBAT" and ReceiveDataSmall[3] == PlayerTalkingID2 then
+						if ReceiveDataSmall[5] == "CBAT" and ReceiveDataSmall[3] == MVars.PlayerTalkingID2 then
 					--		ConsoleForText:print("Other player has canceled battle.")
 							OtherPlayerHasCancelled = 1
 						end
 						--If the other player cancels trade
-						if ReceiveDataSmall[5] == "CTRA" and ReceiveDataSmall[3] == PlayerTalkingID2 then
+						if ReceiveDataSmall[5] == "CTRA" and ReceiveDataSmall[3] == MVars.PlayerTalkingID2 then
 					--		ConsoleForText:print("Other player has canceled trade.")
 							OtherPlayerHasCancelled = 2
 						end
 						
 						--If the other player accepts your battle request
-						if ReceiveDataSmall[5] == "SBAT" and ReceiveDataSmall[3] == PlayerTalkingID2 and LockFromScript == 4 then
-							SendData("RPOK", Players[RECEIVEDID])
+						if ReceiveDataSmall[5] == "SBAT" and ReceiveDataSmall[3] == MVars.PlayerTalkingID2 and LockFromScript == 4 then
+							SendData("RPOK", MVars.Players[RECEIVEDID])
 							if Var8000[2] ~= 0 then
 								LockFromScript = 8
 								Loadscript(13)
@@ -3613,8 +3578,8 @@ function ReceiveData(Clientell)
 							end
 						end
 						--If the other player accepts your trade request
-						if ReceiveDataSmall[5] == "STRA" and ReceiveDataSmall[3] == PlayerTalkingID2 and LockFromScript == 5 then
-							SendData("RPOK", Players[RECEIVEDID])
+						if ReceiveDataSmall[5] == "STRA" and ReceiveDataSmall[3] == MVars.PlayerTalkingID2 and LockFromScript == 5 then
+							SendData("RPOK", MVars.Players[RECEIVEDID])
 							if Var8000[2] ~= 0 then
 								LockFromScript = 9
 							else
@@ -3623,7 +3588,7 @@ function ReceiveData(Clientell)
 						end
 						
 						--If the other player denies your battle request
-						if ReceiveDataSmall[5] == "DBAT" and ReceiveDataSmall[3] == PlayerTalkingID2 and LockFromScript == 4 then
+						if ReceiveDataSmall[5] == "DBAT" and ReceiveDataSmall[3] == MVars.PlayerTalkingID2 and LockFromScript == 4 then
 							if Var8000[2] ~= 0 then
 								LockFromScript = 7
 								Loadscript(11)
@@ -3632,8 +3597,8 @@ function ReceiveData(Clientell)
 							end
 						end
 						--If the other player denies your trade request
-						if ReceiveDataSmall[5] == "DTRA" then console:log("RD: " .. ReceiveDataSmall[3] .. " PTID: " .. PlayerTalkingID .. " LFS: " .. LockFromScript) end
-						if ReceiveDataSmall[5] == "DTRA" and ReceiveDataSmall[3] == PlayerTalkingID2 and LockFromScript == 5 then
+						if ReceiveDataSmall[5] == "DTRA" then console:log("RD: " .. ReceiveDataSmall[3] .. " PTID: " .. MVars.PlayerTalkingID .. " LFS: " .. LockFromScript) end
+						if ReceiveDataSmall[5] == "DTRA" and ReceiveDataSmall[3] == MVars.PlayerTalkingID2 and LockFromScript == 5 then
 							if Var8000[2] ~= 0 then
 								LockFromScript = 7
 								Loadscript(7)
@@ -3643,35 +3608,35 @@ function ReceiveData(Clientell)
 						end
 						
 						--If the other player refuses trade offer
-						if ReceiveDataSmall[5] == "ROFF" and ReceiveDataSmall[3] == PlayerTalkingID2 and LockFromScript == 9 then
+						if ReceiveDataSmall[5] == "ROFF" and ReceiveDataSmall[3] == MVars.PlayerTalkingID2 and LockFromScript == 9 then
 							OtherPlayerHasCancelled = 3
 						end
 						
 						
 						--SPOS
 						if ReceiveDataSmall[5] == "SPOS" and ReceiveDataSmall[3] ~= PlayerID2 then
-								PlayerIDNick[RECEIVEDID] = ReceiveDataSmall[2]
-								if CurrentMapID[RECEIVEDID] ~= ReceiveDataSmall[14] then
+								MVars.PlayerIDNick[RECEIVEDID] = ReceiveDataSmall[2]
+								if MVars.CurrentMapID[RECEIVEDID] ~= ReceiveDataSmall[14] then
 									PlayerAnimationFrame[RECEIVEDID] = 0
 									PlayerAnimationFrame2[RECEIVEDID] = 0
 									PlayerAnimationFrameMax[RECEIVEDID] = 0
-									CurrentMapID[RECEIVEDID] = ReceiveDataSmall[14]
-									PreviousMapID[RECEIVEDID] = ReceiveDataSmall[15]
-									MapEntranceType[RECEIVEDID] = ReceiveDataSmall[16]
-									MapChange[RECEIVEDID] = 1
-									PreviousX[RECEIVEDID] = CurrentX[RECEIVEDID]
-									PreviousY[RECEIVEDID] = CurrentY[RECEIVEDID]
-									CurrentX[RECEIVEDID] = ReceiveDataSmall[7]
-									CurrentY[RECEIVEDID] = ReceiveDataSmall[8]
+									MVars.CurrentMapID[RECEIVEDID] = ReceiveDataSmall[14]
+									MVars.PreviousMapID[RECEIVEDID] = ReceiveDataSmall[15]
+									MVars.MapEntranceType[RECEIVEDID] = ReceiveDataSmall[16]
+									MVars.MapChange[RECEIVEDID] = 1
+									MVars.PreviousX[RECEIVEDID] = MVars.CurrentX[RECEIVEDID]
+									MVars.PreviousY[RECEIVEDID] = MVars.CurrentY[RECEIVEDID]
+									MVars.CurrentX[RECEIVEDID] = ReceiveDataSmall[7]
+									MVars.CurrentY[RECEIVEDID] = ReceiveDataSmall[8]
 								end
-								FutureX[RECEIVEDID] = ReceiveDataSmall[7]
-								FutureY[RECEIVEDID] = ReceiveDataSmall[8]
-								PlayerExtra1[RECEIVEDID] = ReceiveDataSmall[10]
-								PlayerExtra2[RECEIVEDID] = ReceiveDataSmall[11]
-								PlayerExtra3[RECEIVEDID] = ReceiveDataSmall[12]
-								PlayerExtra4[RECEIVEDID] = ReceiveDataSmall[13]
-								StartX[RECEIVEDID] = ReceiveDataSmall[18]
-								StartY[RECEIVEDID] = ReceiveDataSmall[19]
+								MVars.FutureX[RECEIVEDID] = ReceiveDataSmall[7]
+								MVars.FutureY[RECEIVEDID] = ReceiveDataSmall[8]
+								MVars.PlayerExtra1[RECEIVEDID] = ReceiveDataSmall[10]
+								MVars.PlayerExtra2[RECEIVEDID] = ReceiveDataSmall[11]
+								MVars.PlayerExtra3[RECEIVEDID] = ReceiveDataSmall[12]
+								MVars.PlayerExtra4[RECEIVEDID] = ReceiveDataSmall[13]
+								MVars.StartX[RECEIVEDID] = ReceiveDataSmall[18]
+								MVars.StartY[RECEIVEDID] = ReceiveDataSmall[19]
 						end
 						--TIME
 			--			if ReceiveDataSmall[5] == "TIME" then
@@ -3687,14 +3652,14 @@ function ReceiveData(Clientell)
 						
 						--If nickname doesn't already exist on server and request to join
 						if ReceiveDataSmall[5] == "JOIN" then
-						--	if (ReceiveDataSmall[2] ~= None) then if (ReceiveDataSmall[2] ~= PlayerIDNick[2] and ReceiveDataSmall[2] ~= Player3ID  and ReceiveDataSmall[2] ~= Player4ID) then
+						--	if (ReceiveDataSmall[2] ~= None) then if (ReceiveDataSmall[2] ~= MVars.PlayerIDNick[2] and ReceiveDataSmall[2] ~= Player3ID  and ReceiveDataSmall[2] ~= Player4ID) then
 							if (ReceiveDataSmall[2] ~= "None") then
 								local n = 1
 								for i = 1, MaxPlayers do
 									if n > 0 then
-										if PlayerID ~= i and PlayerIDNick[i] == "None" then
+										if PlayerID ~= i and MVars.PlayerIDNick[i] == "None" then
 											for i = 1, MaxPlayers do
-												if (ReceiveDataSmall[2] == PlayerIDNick[i]) then
+												if (ReceiveDataSmall[2] == MVars.PlayerIDNick[i]) then
 													ConsoleForText:moveCursor(0,4)
 													ConsoleForText:print("A player that is already in the game is trying to join!                ")
 													n = 0
@@ -3702,23 +3667,23 @@ function ReceiveData(Clientell)
 											end
 											if n > 0 then
 												if Connected == 0 then Connected = 1 end
-												PlayerIDNick[i] = ReceiveDataSmall[2]
-												console:log("Player " .. PlayerIDNick[i] .. " has successfully connected")
+												MVars.PlayerIDNick[i] = ReceiveDataSmall[2]
+												console:log("Player " .. MVars.PlayerIDNick[i] .. " has successfully connected")
 												AddPlayerToConsole(i)
-												Players[i] = Clientell
-											--	Players[i]:add("received",ReceiveData(Players[i]))
-												PlayerVis[i] = 1
+												MVars.Players[i] = Clientell
+											--	MVars.Players[i]:add("received",ReceiveData(MVars.Players[i]))
+												MVars.PlayerVis[i] = 1
 												PlayerAnimationFrame[i] = 0
 												PlayerAnimationFrame2[i] = 0
 												PlayerAnimationFrameMax[i] = 0
-												CurrentX[i] = ReceiveDataSmall[7]
-												CurrentY[i] = ReceiveDataSmall[8]
-												MapChange[i] = 0
-												MapID[i] = ReceiveDataSmall[14]
-												PrevMapID[i] = ReceiveDataSmall[15]
+												MVars.CurrentX[i] = ReceiveDataSmall[7]
+												MVars.CurrentY[i] = ReceiveDataSmall[8]
+												MVars.MapChange[i] = 0
+												MVars.MapID[i] = ReceiveDataSmall[14]
+												MVars.PrevMapID[i] = ReceiveDataSmall[15]
 												local NewPlayerID = i + 1000
-												SendData("NewPlayer", Players[i], NewPlayerID)
-												timeout[i] = timeoutmax
+												SendData("NewPlayer", MVars.Players[i], NewPlayerID)
+												MVars.timeout[i] = timeoutmax
 												n = 0
 											end
 										else
@@ -3743,7 +3708,7 @@ end
 
 function CreatePackettSpecial(RequestTemp, Socket2, OptionalData)
 	if RequestTemp == "POKE" then
-		PlayerReceiveID = PlayerTalkingID2
+		MVars.PlayerReceiveID = MVars.PlayerTalkingID2
 		PokemonTeamManager.GetPokemonTeam(GameID)
 		local PokeTemp
 		local StartNum = 0
@@ -3754,29 +3719,29 @@ function CreatePackettSpecial(RequestTemp, Socket2, OptionalData)
 			StartNum = ((i - 1) * 25) + 1
 			StartNum2 = StartNum + 24
 			PokeTemp = string.sub(Pokemon[j],StartNum,StartNum2)
-			Packett = GameID .. Nickname .. PlayerID2 .. PlayerReceiveID .. RequestTemp .. PokeTemp .. Filler .. "U"
+			Packett = GameID .. Nickname .. PlayerID2 .. MVars.PlayerReceiveID .. RequestTemp .. PokeTemp .. Filler .. "U"
 			Socket2:send(Packett)
 			end
 		end
 	elseif RequestTemp == "TRAD" then
-		PlayerReceiveID = PlayerTalkingID2
-		Packett = GameID .. Nickname .. PlayerID2 .. PlayerReceiveID .. RequestTemp .. TradeVars[1] .. TradeVars[2] .. TradeVars[3] .. TradeVars[5] .. "U"
+		MVars.PlayerReceiveID = MVars.PlayerTalkingID2
+		Packett = GameID .. Nickname .. PlayerID2 .. MVars.PlayerReceiveID .. RequestTemp .. TradeVars[1] .. TradeVars[2] .. TradeVars[3] .. TradeVars[5] .. "U"
 		--4 + 4 + 4 + 4 + 4 + 3 + 40 + 1
 		Socket2:send(Packett)
 	elseif RequestTemp == "BATT" then
-		PlayerReceiveID = PlayerTalkingID2
+		MVars.PlayerReceiveID = MVars.PlayerTalkingID2
 		local FillerSend = "100000000000000000000000000000000"
-		Packett = GameID .. Nickname .. PlayerID2 .. PlayerReceiveID .. RequestTemp .. BattleVars[1] .. BattleVars[2] .. BattleVars[3] .. BattleVars[4] .. BattleVars[5] .. BattleVars[6] .. BattleVars[7] .. BattleVars[8] .. BattleVars[9] .. BattleVars[10] .. FillerSend .. "U"
+		Packett = GameID .. Nickname .. PlayerID2 .. MVars.PlayerReceiveID .. RequestTemp .. BattleVars[1] .. BattleVars[2] .. BattleVars[3] .. BattleVars[4] .. BattleVars[5] .. BattleVars[6] .. BattleVars[7] .. BattleVars[8] .. BattleVars[9] .. BattleVars[10] .. FillerSend .. "U"
 	--	ConsoleForText:print("Packett: " .. Packett)
 		Socket2:send(Packett)
 	elseif RequestTemp == "SLNK" then
-		PlayerReceiveID = PlayerTalkingID2
+		MVars.PlayerReceiveID = MVars.PlayerTalkingID2
 		OptionalData = OptionalData or 0
 		local Filler = "100000000000000000000000000000000"
 		local SizeAct = OptionalData + 1000000000
  --		SizeAct = tostring(SizeAct)
 --		SizeAct = string.format("%.0f",SizeAct)
-		Packett = GameID .. Nickname .. PlayerID2 .. PlayerReceiveID .. RequestTemp .. SizeAct .. Filler .. "U"
+		Packett = GameID .. Nickname .. PlayerID2 .. MVars.PlayerReceiveID .. RequestTemp .. SizeAct .. Filler .. "U"
 --		ConsoleForText:print("Packett: " .. Packett)
 		Socket2:send(Packett)
 	end
@@ -3784,13 +3749,13 @@ end
 --Send Data to clients
 function CreatePackett(RequestTemp, PackettTemp)
 	local FillerStuff = "F"
-	Packett = GameID .. Nickname .. PlayerID2 .. PlayerReceiveID .. RequestTemp .. PackettTemp .. CurrentX[PlayerID] .. CurrentY[PlayerID] .. Facing2[PlayerID] .. PlayerExtra1[PlayerID] .. PlayerExtra2[PlayerID] .. PlayerExtra3[PlayerID] .. PlayerExtra4[PlayerID] .. PlayerMapID .. PlayerMapIDPrev .. PlayerMapEntranceType .. StartX[PlayerID] .. StartY[PlayerID] .. FillerStuff .. "U"
+	Packett = GameID .. Nickname .. PlayerID2 .. MVars.PlayerReceiveID .. RequestTemp .. PackettTemp .. MVars.CurrentX[PlayerID] .. MVars.CurrentY[PlayerID] .. MVars.Facing2[PlayerID] .. MVars.PlayerExtra1[PlayerID] .. MVars.PlayerExtra2[PlayerID] .. MVars.PlayerExtra3[PlayerID] .. MVars.PlayerExtra4[PlayerID] .. PlayerMapID .. PlayerMapIDPrev .. PlayerMapEntranceType .. MVars.StartX[PlayerID] .. MVars.StartY[PlayerID] .. FillerStuff .. "U"
 end
 
 function SendData(DataType, Socket, ExtraData)
 	--If you have made a server
 	if (DataType == "NewPlayer") then
-		PlayerReceiveID = 1000
+		MVars.PlayerReceiveID = 1000
 	--	ConsoleForText:print("Request accepted!")
 		CreatePackett("STRT", ExtraData)
 		Socket:send(Packett)
@@ -3807,17 +3772,17 @@ function SendData(DataType, Socket, ExtraData)
 		CreatePackett("SPOS", "1000")
 		Socket:send(Packett)
 	elseif (DataType == "Request") then
-		PlayerReceiveID = 1000
+		MVars.PlayerReceiveID = 1000
 		CreatePackett("JOIN", "1000")
 		Socket:send(Packett)
 	elseif (DataType == "Hide") then
 		CreatePackett("HIDE", "1000")
 		Socket:send(Packett)
 	elseif (DataType == "POKE") then
-		PlayerReceiveID = PlayerTalkingID2
+		MVars.PlayerReceiveID = MVars.PlayerTalkingID2
 		CreatePackettSpecial("POKE",Socket)
 	elseif (DataType == "RPOK") then
-		PlayerReceiveID = PlayerTalkingID2
+		MVars.PlayerReceiveID = MVars.PlayerTalkingID2
 		local whiletempmax = 100000
 		EnemyPokemon[1] = ""
 		EnemyPokemon[2] = ""
@@ -3836,50 +3801,50 @@ function SendData(DataType, Socket, ExtraData)
 		whiletempmax = whiletempmax - 1
 		end
 	elseif (DataType == "RTRA") then
-		PlayerReceiveID = PlayerTalkingID2
+		MVars.PlayerReceiveID = MVars.PlayerTalkingID2
 		CreatePackett("RTRA", "1000")
 		Socket:send(Packett)
 	elseif (DataType == "RBAT") then
-		PlayerReceiveID = PlayerTalkingID2
+		MVars.PlayerReceiveID = MVars.PlayerTalkingID2
 		CreatePackett("RBAT", "1000")
 		Socket:send(Packett)
 	elseif (DataType == "STRA") then
-		PlayerReceiveID = PlayerTalkingID2
+		MVars.PlayerReceiveID = MVars.PlayerTalkingID2
 		CreatePackett("STRA", "1000")
 		Socket:send(Packett)
 	elseif (DataType == "SBAT") then
-		PlayerReceiveID = PlayerTalkingID2
+		MVars.PlayerReceiveID = MVars.PlayerTalkingID2
 		CreatePackett("SBAT", "1000")
 		Socket:send(Packett)
 	elseif (DataType == "DTRA") then
-		PlayerReceiveID = PlayerTalkingID2
+		MVars.PlayerReceiveID = MVars.PlayerTalkingID2
 		CreatePackett("DTRA", "1000")
 		Socket:send(Packett)
 	elseif (DataType == "DBAT") then
-		PlayerReceiveID = PlayerTalkingID2
+		MVars.PlayerReceiveID = MVars.PlayerTalkingID2
 		CreatePackett("DBAT", "1000")
 		Socket:send(Packett)
 	elseif (DataType == "CTRA") then
-		PlayerReceiveID = PlayerTalkingID2
+		MVars.PlayerReceiveID = MVars.PlayerTalkingID2
 		CreatePackett("CTRA", "1000")
 		Socket:send(Packett)
 	elseif (DataType == "CBAT") then
-		PlayerReceiveID = PlayerTalkingID2
+		MVars.PlayerReceiveID = MVars.PlayerTalkingID2
 		CreatePackett("CBAT", "1000")
 		Socket:send(Packett)
 	elseif (DataType == "TBUS") then
-		PlayerReceiveID = PlayerTalkingID2
+		MVars.PlayerReceiveID = MVars.PlayerTalkingID2
 		CreatePackett("TBUS", "1000")
 		Socket:send(Packett)
 	elseif (DataType == "ROFF") then
-		PlayerReceiveID = PlayerTalkingID2
+		MVars.PlayerReceiveID = MVars.PlayerTalkingID2
 		CreatePackett("ROFF", "1000")
 		Socket:send(Packett)
 	elseif (DataType == "TRAD") then
-		PlayerReceiveID = PlayerTalkingID2
+		MVars.PlayerReceiveID = MVars.PlayerTalkingID2
 		CreatePackettSpecial("TRAD")
 	elseif (DataType == "BATT") then
-		PlayerReceiveID = PlayerTalkingID2
+		MVars.PlayerReceiveID = MVars.PlayerTalkingID2
 		CreatePackettSpecial("BATT")
 	end
 end
@@ -3901,7 +3866,7 @@ function ConnectNetwork()
 		--	ReceiveData(PlayerData)
 			for j = 1, MaxPlayers do
 				for i = 1, MaxPlayers do
-					if PlayerID ~= i and PlayerIDNick[i] ~= "None" then ReceiveData(Players[i]) end
+					if PlayerID ~= i and MVars.PlayerIDNick[i] ~= "None" then ReceiveData(MVars.Players[i]) end
 				end
 			end
 		end
@@ -3911,21 +3876,21 @@ function ConnectNetwork()
 		if SendTimer == 0 then 
 			
 			for i = 1, MaxPlayers do
-				if PlayerID ~= i and PlayerIDNick[i] ~= "None" then
-				--	console:log("timeout for " .. PlayerIDNick[i] .. ": " .. timeout[i])
-				--	console:log("Player: " .. i .. " Time left: " .. timeout[i])
-					if timeout[i] > 0 then timeout[i] = timeout[i] - 4 end
-					if timeout[i] <= 0 then
-						console:log("Player " .. PlayerIDNick[i] .. " has timed out")
+				if PlayerID ~= i and MVars.PlayerIDNick[i] ~= "None" then
+				--	console:log("MVars.timeout for " .. MVars.PlayerIDNick[i] .. ": " .. MVars.timeout[i])
+				--	console:log("Player: " .. i .. " Time left: " .. MVars.timeout[i])
+					if MVars.timeout[i] > 0 then MVars.timeout[i] = MVars.timeout[i] - 4 end
+					if MVars.timeout[i] <= 0 then
+						console:log("Player " .. MVars.PlayerIDNick[i] .. " has timed out")
 						RemovePlayerFromConsole(i)
-						PlayerIDNick[i] = "None"
+						MVars.PlayerIDNick[i] = "None"
 						ErasePlayer(i)
-					--	Players[i]:remove("received",ReceiveData(Players[i]))
-						Players[i]:close()
+					--	MVars.Players[i]:remove("received",ReceiveData(MVars.Players[i]))
+						MVars.Players[i]:close()
 					end
 					
-				--	if PlayerIDNick[i] ~= "None" then SendData("GPOS", Players[i]) end
-					if PlayerIDNick[i] ~= "None" then SendData("SPOS", Players[i]) end
+				--	if MVars.PlayerIDNick[i] ~= "None" then SendData("GPOS", MVars.Players[i]) end
+					if MVars.PlayerIDNick[i] ~= "None" then SendData("SPOS", MVars.Players[i]) end
 				end
 			end
 		end
@@ -3988,7 +3953,7 @@ function Interact()
 					Loadscript(4)
 					Keypressholding = 1
 					Keypress = 1
-					SendData("RTRA", Players[PlayerTalkingID])
+					SendData("RTRA", MVars.Players[MVars.PlayerTalkingID])
 				
 				elseif Var8000[1] == 3 then
 		--			ConsoleForText:print("Card selected")
@@ -4023,9 +3988,9 @@ function Interact()
 				end
 				--Interact with players
 				for i = 1, MaxPlayers do
-					if PlayerID ~= i and PlayerIDNick[i] ~= "None" then
-						TalkingDirX = PlayerMapX - CurrentX[i]
-						TalkingDirY = PlayerMapY - CurrentY[i]
+					if PlayerID ~= i and MVars.PlayerIDNick[i] ~= "None" then
+						TalkingDirX = PlayerMapX - MVars.CurrentX[i]
+						TalkingDirY = PlayerMapY - MVars.CurrentY[i]
 						if PlayerDirection == 1 and TalkingDirX == 1 and TalkingDirY == 0 then
 					--		ConsoleForText:print("Player Left")
 							
@@ -4042,8 +4007,8 @@ function Interact()
 							emu:write16(Var8000Adr[1], 0) 
 							emu:write16(Var8000Adr[2], 0) 
 							emu:write16(Var8000Adr[14], 0)
-							PlayerTalkingID = i
-							PlayerTalkingID2 = i + 1000
+							MVars.PlayerTalkingID = i
+							MVars.PlayerTalkingID2 = i + 1000
 							LockFromScript = 2
 							Loadscript(2)
 						end
@@ -4055,12 +4020,12 @@ function Interact()
 			if LockFromScript == 4 and Keypressholding == 0 and Var8000[2] ~= 0 then
 				--Cancel battle request
 				Loadscript(15)
-				SendData("CBAT",Players[PlayerTalkingID])
+				SendData("CBAT",MVars.Players[MVars.PlayerTalkingID])
 				LockFromScript = 0
 			elseif LockFromScript == 5 and Keypressholding == 0 and Var8000[2] ~= 0 then
 				--Cancel trade request
 				Loadscript(16)
-					SendData("CTRA",Players[PlayerTalkingID])
+					SendData("CTRA",MVars.Players[MVars.PlayerTalkingID])
 				LockFromScript = 0
 				TradeVars[1] = 0
 				TradeVars[2] = 0
@@ -4069,7 +4034,7 @@ function Interact()
 			elseif LockFromScript == 9 and (TradeVars[1] == 2 or TradeVars[1] == 4) and Keypressholding == 0 and Var8000[2] ~= 0 then
 				--Cancel trade request
 				Loadscript(16)
-				SendData("CTRA",Players[PlayerTalkingID])
+				SendData("CTRA",MVars.Players[MVars.PlayerTalkingID])
 				LockFromScript = 0
 				TradeVars[1] = 0
 				TradeVars[2] = 0
@@ -4096,7 +4061,7 @@ function Interact()
 		--	ConsoleForText:print("Pressed R-Trigger")
 			--	ApplyMovement(0)
 		--		emu:write16(Var8001Adr, 0) 
-			--	BufferString = PlayerIDNick[2]
+			--	BufferString = MVars.PlayerIDNick[2]
 		--		Loadscript(12)
 		--		LockFromScript = 5
 		--		local TestString = ReadBuffers(33692880, 4)
@@ -4194,7 +4159,7 @@ function mainLoop()
 					ConsoleForText:moveCursor(0,4)
 				elseif MasterClient == "h" then
 					for i = 1, MaxPlayers do
-						if PlayerIDNick[i] ~= "None" then AddPlayerToConsole(i) end
+						if MVars.PlayerIDNick[i] ~= "None" then AddPlayerToConsole(i) end
 					end
 				end
 			end
@@ -4232,7 +4197,7 @@ function mainLoop()
 			
 			--If you cancel/stop
 			if LockFromScript == 0 then
-				PlayerTalkingID = 0
+				MVars.PlayerTalkingID = 0
 			end
 			
 			--Wait until other player accepts battle
@@ -4299,8 +4264,8 @@ function mainLoop()
 		--	if Var8000[2] ~= 0 then ConsoleForText:print("Var8001: " .. Var8000[2]) end
 				if Var8000[2] == 2 then
 					if OtherPlayerHasCancelled == 0 then
-						SendData("RPOK", Players[PlayerTalkingID])
-						SendData("SBAT", Players[PlayerTalkingID])
+						SendData("RPOK", MVars.Players[MVars.PlayerTalkingID])
+						SendData("SBAT", MVars.Players[MVars.PlayerTalkingID])
 						LockFromScript = 8
 						Loadscript(13)
 					else
@@ -4308,7 +4273,7 @@ function mainLoop()
 						LockFromScript = 7
 						Loadscript(18)
 					end
-				elseif Var8000[2] == 1 then LockFromScript = 0 SendData("DBAT", Players[PlayerTalkingID]) Keypressholding = 1 end
+				elseif Var8000[2] == 1 then LockFromScript = 0 SendData("DBAT", MVars.Players[MVars.PlayerTalkingID]) Keypressholding = 1 end
 				
 			--Player 2 has requested to trade
 			elseif LockFromScript == 13 then
@@ -4316,15 +4281,15 @@ function mainLoop()
 				--If accept, then send that you accept
 				if Var8000[2] == 2 then
 					if OtherPlayerHasCancelled == 0 then
-						SendData("RPOK", Players[PlayerTalkingID])
-						SendData("STRA", Players[PlayerTalkingID])
+						SendData("RPOK", MVars.Players[MVars.PlayerTalkingID])
+						SendData("STRA", MVars.Players[MVars.PlayerTalkingID])
 						LockFromScript = 9
 					else
 						OtherPlayerHasCancelled = 0
 						LockFromScript = 7
 						Loadscript(19)
 					end
-				elseif Var8000[2] == 1 then LockFromScript = 0 SendData("DTRA", Players[PlayerTalkingID]) Keypressholding = 1 end
+				elseif Var8000[2] == 1 then LockFromScript = 0 SendData("DTRA", MVars.Players[MVars.PlayerTalkingID]) Keypressholding = 1 end
 			end
 	end
 end
