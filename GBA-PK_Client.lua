@@ -2,8 +2,11 @@ local IPAddress, Port = "127.0.0.1", 4096
 local MaxPlayers = 4
 local Nickname = ""
 
-package.path = ";../?.lua" .. ";../spriteLoader/?.lua" .. package.path
-local SpriteGenerator = require "male_FRLG"
+--for testing porpuse I will use absulute path
+--package.path = "./scripts/dependencies/?.lua;" .. package.path
+package.path = "C:/Users/domin/Documents/Projects/3-gen-MP/GBA-PK-multiplayer/dependencies/?.lua;" .. package.path
+
+local SpriteGenerator = require "spriteGenerator"
 local GameID = ""
 local GameCode = "None"
 local ConfirmPackett = 0

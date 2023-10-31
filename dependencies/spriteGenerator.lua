@@ -158,7 +158,7 @@ local mod = {}
 --To fit everything in 1 file, I must unfortunately clog this file with a lot of sprite data. Luckily, this does not lag the game. It is just hard to read.
 --Also, if you are looking at this, then I am sorry. Truly      -TheHunterManX
 --IsBiking is temporary and is used for drawing the extra symbol
-function createChars(StartAddressNo, SpriteID, SpriteNo, ScreenData, IsBiking)
+function mod.createChars(StartAddressNo, SpriteID, SpriteNo, ScreenData, IsBiking)
 	--0 = Tile 190, 1 = Tile 185, etc...
 	--Tile number 190 = Player1
 	--Tile number 185 = Player2

@@ -2,9 +2,11 @@ local IPAddress, Port = "127.0.0.1", 4096
 local MaxPlayers = 4
 local Nickname = ""
 
+--for testing porpuse I will use absulute path
+--package.path = "./scripts/dependencies/?.lua;" .. package.path
+package.path = "C:/Users/domin/Documents/Projects/3-gen-MP/GBA-PK-multiplayer/dependencies/?.lua;" .. package.path
 
-
-
+local SpriteGenerator = require "spriteGenerator"
 local GameID = ""
 local GameCode = "None"
 local ConfirmPackett = 0
@@ -232,203 +234,6 @@ function GetGameVersion()
 		EnableScript = false
 	end
 	ConsoleForText:moveCursor(0,2)
-end
-
-local maleSprites = {
-    ["sideLR"] = {["id"] = 1, ["sprite"] = {
-            2290614272, 3149692928,3149645824,3149633664,0,0,0,0,34952,576443,572347,9223099,3149699231,3435965599,3435973279,3435834096,2290639872,871576576,843202560,859045888,9227195,9227468,16305356,16025804,16008328,1000225,62243,1041475,4098359296,1875378176,1758396416,1072693248,1206910976,3337617408,4278190080,0,16637583,16047862,16664822,1044467,65396,246,15,0
-        }
-    },
-    ["sideUp"] = {["id"] = 2, ["sprite"] = {
-            2290614272,3149692928,3149627392,3149645824,0,0,0,0,34952,576443,572347,9223099,3149711360,3435974400,3435958016,4240982512,2290414576,1095040768,1157623808,4293160704,9227195,16567500,16305356,253005007,255805576,16729108,1048388,16731903,3438043712,3712762688,3723490304,4008140800,1317007360,4284936192,16711680,0,69652172,70567133,5242589,425710,1046500,1009407,65280,0
-        }
-    },
-    ["sideDown"] = {["id"] = 3, ["sprite"] = {
-            2290614272,3149692928,3149627392,3149645824,0,0,0,0,34952,576443,572347,9223099,3149713152,2630668032,3402269168,2576806896,1717784320,790839040,607338496,860843776,16567227,16567497,253275308,255814041,16004710,15938290,275266,16184371,4291191360,2898670400,2614096896,4284964864,4152356864,258404352,16711680,0,69627135,70479050,5242041,423679,1046399,1009392,65280,0
-        }
-    },
-    ["walkL1"] = {["id"] = 4, ["sprite"] = {
-            0,2290614272,3149692928,3149645824,0,0,0,0,0,34952,576443,572347,3149633664,3149699231,3435965599,3435973279,3435834096,2290639872,871576576,843202560,9223099,9227195,9227468,16305356,16025804,16008328,1000228,62243,859045888,1682898944,1713565696,1714679808,4283367424,4293918720,0,0,1041475,16637512,16047814,16664783,1042039,1009263,65520,0,0,0,0,0
-        }
-    },
-    ["walkL2"] = {["id"] = 5, ["sprite"] = {
-            0,2290614272,3149692928,3149645824,0,0,0,0,0,34952,576443,572347,3149633664,3149699231,3435965599,3435973279,3435834096,2290639872,871576576,843202560,9223099,9227195,9227468,16305356,16025804,16008328,1000228,62243,859045888,4098359296,1825046528,4244570112,2146889728,4140822528,268369920,0,1041475,16637542,16007718,16663350,1000703,65535,0,0,0,0,0,0
-        }
-    },
-    ["walkUp1"] = {["id"] = 6, ["sprite"] = {
-            0,2290614272,3149692928,3149627392,0,0,0,0,0,34952,576443,572347,3149645824,3149711360,3435974400,3435958016,4240982512,2290414576,1095040832,1157587776,9223099,9227195,16567500,16305356,253005007,255805576,16729108,327492,4282672704,3438046976,3712761856,3723292672,3739676672,1315307520,4152295424,0,1008895,16142028,255247581,255053533,16740077,65508,255,0,0,0,0,0
-        }
-    },
-    ["walkUp2"] = {["id"] = 7, ["sprite"] = {
-            0,2290614272,3149692928,3149627392,0,0,0,0,0,34952,576443,572347,3149645824,3149711360,3435974400,3435958016,4240982512,2290414576,1095040768,1157578752,9223099,9227195,16567500,16305356,253005007,255805576,83837972,70713156,4282839040,3437522688,3712771056,3723244528,3739680512,1325334528,4278190080,0,73811199,16174796,312541,1035997,1011437,26340,63359,4080,0,0,0,0
-        }
-    },
-    ["walkDown1"] = {["id"] = 8, ["sprite"] = {
-            0,2290614272,3149692928,3149627392,0,0,0,0,0,34952,576443,572347,3149645824,3149713152,2630668032,3402269168,2576806896,1717784320,790839104,607340084,9223099,16567227,16567497,253275308,255814041,16004710,15938290,275266,860878388,4287393776,2899066880,2614095872,4285001728,1736376320,4134469632,0,1045555,16149759,4334794,4404409,282623,255,0,0,0,0,0,0
-        }
-    },
-    ["walkDown2"] = {["id"] = 9, ["sprite"] = {
-            0,2290614272,3149692928,3149627392,0,0,0,0,0,34952,576443,572347,3149645824,3149713152,2630668032,3402269168,2576806896,1717784320,790839040,607338496,9223099,16567227,16567497,253275308,255814041,16004710,83047154,1130640194,860876800,4291194624,2890015744,2604872704,4294197248,4278190080,0,0,1131410483,267831551,314570,1047737,1013503,63350,63087,4080,0,0,0,0
-        }
-    },
-    ["sideBikeL"] = {["id"] = 10, ["offset"] = 80, ["sprite"] = {
-            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2290614272,3149692928,3149645824,3149633664,3149699231,3435965599,0,0,34952,576443,572347,9223099,9227195,9227468,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3435973279,3435834096,2290639872,871576576,843203584,859062016,1867493120,1713568496,16305356,16025804,16008328,1000228,62243,1041475,16637512,16047686,0,0,0,0,0,0,0,0,0,1610612736,4127195136,1331691520,4210032640,1794113536,2936012800,4026531840,1714682608,4287614966,2298466303,2147482697,3338334400,4294601209,1026730,65535,16664783,107999112,1879048184,4131671287,2936852470,2795476655,4205488880,268435200,0,0,0,6,15,15,0,0
-        }
-    },
-    ["sideBikeUp"] = {["id"] = 11, ["offset"] = 80, ["sprite"] = {
-            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2290614272,3149692928,3149627392,3149645824,3149711360,3435974400,0,0,34952,576443,572347,9223099,9227195,16567500,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3435958016,4240982512,2290414576,1095040768,1157575664,4293288944,3712773888,3723292672,16305356,253005007,255805576,16729108,255065924,255225599,16172253,1035997,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1313665024,1149235200,4293918720,1827667968,2901409792,1862270976,1610612736,4026531840,1033444,1046340,4095,4047,4047,255,15,15,0,0,0,0,0,0,0,0
-        }
-    },
-    ["sideBikeDown"] = {["id"] = 12, ["offset"] = 80, ["sprite"] = {
-            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2290614272,3149692928,3149627392,3149645824,3149713152,0,0,0,34952,576443,572347,9223099,16567227,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2630668032,3402269168,2576806896,1717784320,790839040,607342336,860843776,4284690176,16567497,253275308,255814041,16004710,15938290,16003906,16184371,15873791,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2858630912,3488890880,4294963200,1827667968,2901409792,1862270976,1610612736,4026531840,15939242,282620,1048575,4047,4047,255,15,15,0,0,0,0,0,0,0,0
-        }
-    },
-    ["cicleBikeL1"] = {["id"] = 13, ["offset"] = 80, ["sprite"] = {
-            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2290089984,3150446592,3149692928,3149498368,3150547440,3435842032,0,0,559240,9223099,9157563,147569595,147635131,147639500,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3435964912,3433737984,2290499584,1060323328,606356480,860110592,1867493120,1713568496,260885708,256412876,256133256,16003651,995891,16663603,266200198,256763126,0,0,0,0,0,0,0,0,0,1610612736,4127195136,1868562432,4210032640,1794113536,2936012800,4026531840,1714682608,4287614966,2298466303,2003827785,1828384960,4294602655,1026730,65535,266636534,117374856,1879048184,4131671295,2936852479,2801399471,4205488880,268435200,0,0,0,6,15,15,0,0
-        }
-    },
-    ["cicleBikeL2"] = {["id"] = 14, ["offset"] = 80, ["sprite"] = {
-            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4026531840,4026531840,0,0,2290647040,3149645824,3149642880,3149642120,3149646217,3435973321,0,0,2184,36027,35771,576443,576699,576716,0,0,0,0,0,0,0,0,4026531840,0,0,0,0,0,0,0,3435973801,3435965103,2290648640,1128215360,858006528,859000576,1716498176,1713568496,1019084,1001612,1000520,62514,3890,65092,1039844,1002980,0,0,0,0,0,0,0,0,0,1610612736,4127195136,1331691520,4210032640,1794113536,2936012800,4026531840,4130601712,4287614966,2298466303,4294966345,2147152064,3338301343,4279216810,65535,1041548,107413240,1879048184,4131671295,2936852471,2801399542,4205488895,268435200,0,0,0,6,15,15,0,0
-        }
-    },
-    ["cicleBikeUp1"] = {["id"] = 15, ["offset"] = 80, ["sprite"] = {
-            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2290647040,3149645824,3149641728,3149642880,3149646976,3435973872,0,0,2184,36027,35771,576443,576699,1035468,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3435972848,4291593247,2290634559,1142181872,1146090480,4294861808,3721711360,3722366720,1019084,15812812,15987848,16774209,255066100,255223023,16739405,1002733,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1155854336,1146052608,4294963200,2901409792,1827667968,1862270976,1610612736,4026531840,1046350,65396,4095,4047,4047,255,15,15,0,0,0,0,0,0,0,0
-        }
-    },
-    ["cicleBikeUp2"] = {["id"] = 16, ["offset"] = 80, ["sprite"] = {
-            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2290089984,3150446592,3149398016,3149692928,3150741504,3435982848,0,0,559240,9223099,9157563,147569595,147635131,265080012,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3435720704,3431210752,2286894848,340786944,1342125040,4266025968,3569811200,3737448448,260885708,4048080127,4092889224,267665732,255849540,255258623,16535005,16575965,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3833528320,1207894016,4293918720,1827667968,1827667968,2936012800,1610612736,4026531840,1003076,455748,1048575,4047,4047,255,15,15,0,0,0,0,0,0,0,0
-        }
-    },
-    ["cicleBikeDown1"] = {["id"] = 17, ["offset"] = 80, ["sprite"] = {
-            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2290647040,3149645824,3149641728,3149642880,3149647088,0,0,0,2184,36027,35771,576443,1035451,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2580335856,3433867295,2576969535,1717974256,586298352,574829808,859109104,4294127360,1035468,15829706,15988377,1000294,996143,17204,1011523,15873647,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2858630912,3488890880,4294336512,2902454272,1827667968,1862270976,1610612736,4026531840,15939242,282620,4095,4047,4047,255,15,15,0,0,0,0,0,0,0,0
-        }
-    },
-    ["cicleBikeDown2"] = {["id"] = 18, ["offset"] = 80, ["sprite"] = {
-            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2900899843,1504465923,1493980163,1496929283,1507701760,0,0,5,592409,2230999,1575631,475695952,650756430,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,4359828482,8966991362,5742046721,7147453444,0634900481,1274813448,885985284,1336952322,650799614,0524049404,0930246652,560753662,550126422,560624982,589499391,58760950,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,8586309123,4888908804,2939187201,8276679681,8276679682,9360128001,6106127364,0265318401,59392422,826204,218871,0485274,0472,551,51,50,0,0,0,0,0,0,0
-        }
-    },
-    ["runSideLIdle"] = {["id"] = 19, ["sprite"] = {
-            2290614272,3149692928,3149645824,3149633664,0,0,0,0,34952,576443,572347,9223099,3149699231,3435965599,3435973279,3435834096,2290639872,871576576,843202560,859045888,9227195,9227468,16305356,16025804,16008328,1000228,16708387,266200131,4236247040,1693450240,804257792,1056964608,1862270976,4026531840,0,0,256763078,266637254,16711666,1046515,3948,255,0,0
-        }
-    },
-    ["runSideLCicle1"] = {["id"] = 20, ["sprite"] = {
-            0,2290614272,3149692928,3149645824,0,0,0,0,0,34952,576443,572347,3149633664,3149699231,3435965599,3435973279,3435834096,2290639872,871576576,843202560,9223099,9227195,9227468,16305356,16025804,150226056,2166309668,2180969251,859340800,4143065088,1727215616,2415915008,4293918720,0,0,0,266200131,256765516,266635468,16707468,16289655,1033983,65280,0
-        }
-    },
-    ["runSideLCicle2"] = {["id"] = 21, ["sprite"] = {
-            0,2290614272,3149692928,3149645824,0,0,0,0,0,34952,576443,572347,3149633664,3149699231,3435965599,3435973279,3435834096,2290639872,871576704,843202944,9223099,9227195,9227468,16305356,16025804,16008328,16728868,266269475,859080704,1149239296,3488612352,2003763200,1828651008,4293918720,0,0,265847875,260190052,260259695,16777164,1048575,0,0,0
-        }
-    },
-    ["runSideUpIdle"] = {["id"] = 22, ["sprite"] = {
-            2290614272,3149692928,3149627392,3149645824,0,0,0,0,34952,576443,572347,9223099,3149645824,3149713152,3435954672,3435676656,4169416448,1095300096,1157587520,4293276480,9223099,16567227,253283532,255102156,15943823,5211156,69664580,70479615,3712970496,3723292672,1307045888,4009689088,4134469632,267386880,0,0,16184541,1035997,1015508,65518,63087,4080,0,0
-        }
-    },
-    ["runSideUpCicle1"] = {["id"] = 23, ["sprite"] = {
-            0,2290614272,3149692928,3149627392,0,0,0,0,0,34952,576443,572347,3149645824,3149645824,3149713152,3435954672,3435676656,4169416448,1095302912,1157578496,9223099,9223099,16567227,253283532,255102156,15943823,1016852,1048388,4176015360,3722244096,3722440704,1155465216,4009099264,1727004672,2867855360,4278190080,16740351,253906925,255065325,16738285,4094,15,15,0
-        }
-    },
-    ["runSideUpCicle2"] = {["id"] = 24, ["sprite"] = { 
-            0,2290614272,3149692928,3149627392,0,0,0,0,0,34952,576443,572347,3149645824,3149645824,3149713152,3435954672,3435676656,4169416448,1095299072,1157623808,9223099,9223099,16567227,253283532,255102156,15943823,16745492,15990596,4294377216,3740541680,3738121200,3732340480,4025483264,4026531840,4026531840,0,1019535,1035741,1048029,64836,28654,3942,4010,255
-        }
-    },
-    ["runSideDownIdle"] = {["id"] = 25, ["sprite"] = {
-            2290614272,3149692928,3149627392,3149645824,0,0,0,0,34952,576443,572347,9223099,3149647616,3149713392,2899083760,3402298352,2576764672,1717778160,790886128,860827392,16563131,268225467,253283530,255831212,16017817,258160230,258945778,15922227,1156789248,2898718720,4285464576,4134469632,267386880,0,0,0,4407108,1010890,63231,63087,4080,0,0,0
-        }
-    },
-    ["runSideDownCicle1"] = {["id"] = 26, ["sprite"] = {
-            0,2290614272,3149692928,3149627392,0,0,0,0,0,34952,576443,572347,3149645824,3149647616,3149713152,2899083760,3402298352,2576764672,1717780224,790884352,143440827,2180823995,2180828091,253283530,255831212,16017817,15939174,996082,860876800,4284936192,2283732992,587137024,871366656,4278190080,0,0,1045555,1036287,1010858,63224,65400,4010,255,0
-        }
-    },
-    ["runSideDownCicle2"] = {["id"] = 27, ["sprite"] = {
-            0,2290614272,3149692928,3149627392,0,0,0,0,0,34952,576443,572347,3149645952,3149647640,3149713176,2899083760,3402298352,2576764672,1717780224,790884352,9223099,16563131,16567227,253283530,255831212,16017817,15939174,996082,860876800,4294766592,2865164288,2406416384,2281635840,2867855360,4278190080,0,1045555,1009407,61832,65314,3891,255,0,0
-        }
-    },
-    ["surfSideDownIdle"] = {["id"] = 28, ["offset"] = -512, ["sprite"] = {
-            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4278190080,0,0,0,0,0,0,0,255,0,0,0,0,0,0,0,0,0,0,0,0,0,4026531840,4177526784,4177526784,1727987712,2003201792,2004248304,2004248175,2003199599,1717986918,1717986918,1717986918,65382,16148087,258369399,4133906295,4133906039,1717986918,1717986918,1717986918,0,0,0,0,0,15,159,159,0,0,0,0,0,0,0,0,1718265455,1722459897,1722808576,4285071360,0,0,0,0,4134184550,2674567782,10484326,38655,0,0,0,0,0,0,0,0,0,0,0,0
-        }
-    },
-    ["surfSideUpIdle"] = {["id"] = 29, ["offset"] = -512, ["sprite"] = {
-            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4278190080,0,0,0,0,0,0,0,255,0,0,0,0,0,0,0,0,0,0,0,0,0,4026531840,4177526784,4177526784,2013200384,2004250368,2004248304,2003199599,1717986927,1717986918,1717986918,1717986918,65399,16148343,258369399,4133906039,4133906022,1717986918,1717986918,1717986918,0,0,0,0,0,15,159,159,0,0,0,0,0,0,0,0,1717986927,1717987065,1718615952,2583064320,9857280,626688,0,0,4133906022,2674288230,167769702,16150425,9857280,626688,0,0,0,0,0,0,0,0,0,0
-        }
-    },
-    ["surfSideLIdle1"] = {["id"] = 30, ["offset"] = -512, ["sprite"] = {
-            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4293918720,1718025984,0,0,0,0,0,0,4095,1046118,0,0,0,0,0,0,0,0,0,0,0,4026531840,4026531840,4026531840,2415919104,2415919104,2003199728,2004248175,2004248175,2003199590,1717986918,1717987942,1718004399,1718004399,267806311,4133906039,4133906039,1717986919,1717986918,1717986918,1717986918,4133906022,0,255,4095,4095,2559,159,255,3942,0,0,0,0,0,0,0,0,1717988089,1718024592,4294545408,2566914048,0,0,0,0,4284900966,2577360486,630783,153,0,0,0,0,40806,2415,153,0,0,0,0,0
-        }
-    },
-    ["surfSideDownIdle2"] = {["id"] = 31, ["offset"] = -512, ["sprite"] = {
-            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2415919104,4177526784,4186963968,4278190080,1727987712,2003201792,2004248304,2004248175,2003199599,1717986918,1717986918,255,65382,16148087,258369399,4133906295,4133906039,1717986918,1717986918,0,0,0,0,0,9,159,2463,2576351232,2566914048,0,0,0,0,0,0,1717986918,1718265593,1722460569,1869191424,0,0,0,0,1717986918,2674566758,2577050214,10065654,0,0,0,0,2457,153,0,0,0,0,0,0
-        }
-    },
-    ["surfSideDownIdle2"] = {["id"] = 32, ["offset"] = -512, ["sprite"] = {
-            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4177526784,4186963968,4278190080,2013200384,2004250368,2004248304,2003199599,1717986927,1717986918,1717986918,255,65399,16148343,258369399,4133906039,4133906022,1717986918,1717986918,0,0,0,0,0,0,159,2463,2576351232,2566914048,0,0,0,0,0,0,1717986918,1717986927,1717987065,4194303897,2576771472,10066176,0,0,1717986918,4133906022,2674288230,2583691167,160852377,10066176,0,0,2457,153,0,0,0,0,0,0
-        }
-    },
-    ["surfSideLIdle2"] = {["id"] = 33, ["offset"] = -512, ["sprite"] = {
-            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4293918720,0,0,0,0,0,0,0,4095,0,0,0,0,0,0,0,0,0,0,0,0,4026531840,4026531840,4177526784,2566914048,1718025984,2003199728,2004248175,2004248175,2003199590,1717986918,1717987942,1718004390,1046118,267806311,4133906039,4133906039,1717986919,1717986918,1717986918,1717986918,0,0,255,4095,40959,2463,159,255,2415919104,0,0,0,0,0,0,0,1718004393,1718024601,1869191568,2576941056,0,0,0,0,4133906022,1777755750,2426011503,629145,0,0,0,0,40806,39270,2457,0,0,0,0,0
-        }
-    },
-    ["surfSitDown"] = {["id"] = 34, ["offset"] = 20 , ["sprite"] = {
-            0,0,0,0,0,2290614272,3149692928,3149627392,3149645824,0,0,0,0,34952,576443,572347,9223099,3149713152,2630668032,3402269168,2576806896,1717784320,790839040,607338496,860843776,16567227,16567497,253275308,255814041,16004710,15938290,275266,16184371,4291781184,2898670400,4135056384,2137452544,4284936192,16711680,0,0,69663999,70479050,5207919,1009399,1009407,65280,0,0
-        }
-    },
-    ["surfSitUp"] = {["id"] = 35, ["offset"] = 20, ["sprite"] = {
-            0,0,0,0,0,2290614272,3149692928,3149627392,3149645824,0,0,0,0,34952,576443,572347,9223099,3149711360,3435974400,3435958016,4240982512,2290414576,1095040768,1157623808,4293160704,9227195,16567500,16305356,253005007,255805576,16729108,1048388,16731903,3438043712,3712762688,3723490304,4008112128,1325334528,4278190080,0,0,69652172,70567133,5242589,1011438,65508,255,0,0
-        }
-    },
-    ["surfSitSide"] = {["id"] = 36, ["offset"] = 20, ["sprite"] = {
-            0,0,0,0,0,2290089984,3150446592,3149692928,3149498368,0,0,0,0,559240,9223099,9157563,147569595,3150547440,3435842032,3435964912,3433737984,2290499584,1060323328,606339072,859832320,147635131,147639500,260885708,256412876,256133256,16003651,995891,16663619,1156579328,4244631552,2406444800,4160515840,4143378432,268369920,0,0,266201316,256764159,266637158,16711526,1048371,136,0,0
-        }
-    },
-    ["battleIcon"] = {["offset"] = 20, ["sprite"] = {
-            0,0,65280,1023744,16379904,262078464,4193255424,2667577344,0,0,1044480,1023744,63984,3999,249,15,4193320704,262143744,16773120,268435200,267452400,4080,0,0,1044729,1048479,65520,1048575,16773375,16711680,0,0
-        }
-    }
-}
-
--- for BIKE actualAddress - 80
--- for SURF-IDLE actualAddress + 512
--- for SUF-SIT actualAddress - 20
-
---To fit everything in 1 file, I must unfortunately clog this file with a lot of sprite data. Luckily, this does not lag the game. It is just hard to read.
---Also, if you are looking at this, then I am sorry. Truly      -TheHunterManX
---IsBiking is temporary and is used for drawing the extra symbol
-function createChars(StartAddressNo, SpriteID, SpriteNo, ScreenData, IsBiking)
-	--0 = Tile 190, 1 = Tile 185, etc...
-	--Tile number 190 = Player1
-	--Tile number 185 = Player2
-	--Tile number 180 = Player3
-	--Tile number 175 = Player4
-	--First will be the 4 bytes, or 32 bits
-	--SpriteID means a sprite from the chart below
-	
-	--Start address. 100745216 = 06014000 = 184th tile. can safely use 32.
-	--CHANGE 100746752 = 190th tile = 2608
-	--Because the actual data doesn't start until 06013850, we will skip 50 hexbytes, or 80 decibytes
-	local u32 ActualAddress = (100746752 - (StartAddressNo * 1280)) + 80
-    local u32 SpriteTempVar0 = 0
-	if ScreenData ~= 0 then
-	    --Firered Male Sprite
-	    if SpriteNo == 0 then
-            --moving the address back
-			if(maleSprites[SpriteID]["offset"] ~= nil) then
-				ActualAddress = ActualAddress - maleSprites[SpriteID]["offset"]
-			end
-            for k,v in pairs(maleSprites[SpriteID]["sprite"]) do
-				SpriteTempVar0 = v
-		        emu:write32(ActualAddress, SpriteTempVar0)
-                ActualAddress = ActualAddress + 4
-            end
-	    elseif SpriteNo == 2 then
-		    --Battle Icon 1
-		    ActualAddress = ActualAddress + 256 + (IsBiking * 256) - 80
-            for k,v in pairs(maleSprites["battleIcon"]["sprite"]) do
-				SpriteTempVar0 = v
-		        emu:write32(ActualAddress, SpriteTempVar0)
-                ActualAddress = ActualAddress + 4
-            end
-		    
-	    end
-	end
 end
 
 function GetPokemonTeam()
@@ -2615,12 +2420,12 @@ if AnimationMovementX < 0 then
 		if PlayerAnimationFrame[PlayerNo] == 9 then AnimationX[PlayerNo] = AnimationX[PlayerNo] - 1 end
 		if PlayerAnimationFrame[PlayerNo] >= 3 and PlayerAnimationFrame[PlayerNo] <= 11 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
-				createChars(Charpic, "walkL1", SpriteNumber, ScreenData)
+				SpriteGenerator.createChars(Charpic, "walkL1", SpriteNumber, ScreenData)
 			else
-				createChars(Charpic, "walkL2", SpriteNumber, ScreenData)
+				SpriteGenerator.createChars(Charpic, "walkL2", SpriteNumber, ScreenData)
 			end
 		else
-			createChars(Charpic, "sideLR", SpriteNumber, ScreenData)
+			SpriteGenerator.createChars(Charpic, "sideLR", SpriteNumber, ScreenData)
 		end
 	--Run
 	elseif AnimateID == 6 then
@@ -2629,12 +2434,12 @@ if AnimationMovementX < 0 then
 	--	ConsoleForText:print("Frame: " .. PlayerAnimationFrame)
 		if PlayerAnimationFrame[PlayerNo] > 5 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
-				createChars(Charpic,"runSideLCicle1",SpriteNumber, ScreenData)
+				SpriteGenerator.createChars(Charpic,"runSideLCicle1",SpriteNumber, ScreenData)
 			else
-				createChars(Charpic,"runSideLCicle2",SpriteNumber, ScreenData)
+				SpriteGenerator.createChars(Charpic,"runSideLCicle2",SpriteNumber, ScreenData)
 			end
 		else
-			createChars(Charpic,"runSideLIdle",SpriteNumber, ScreenData)
+			SpriteGenerator.createChars(Charpic,"runSideLIdle",SpriteNumber, ScreenData)
 		end
 	--Bike
 	elseif AnimateID == 9 then
@@ -2642,19 +2447,19 @@ if AnimationMovementX < 0 then
 		AnimationX[PlayerNo] = AnimationX[PlayerNo] + ((AnimationMovementX*16)/3)
 		if PlayerAnimationFrame[PlayerNo] >= 1 and PlayerAnimationFrame[PlayerNo] < 5 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
-				createChars(Charpic,"cicleBikeL1",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"cicleBikeL1",SpriteNumber,ScreenData)
 			else
-				createChars(Charpic,"cicleBikeL2",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"cicleBikeL2",SpriteNumber,ScreenData)
 			end
 		else
-			createChars(Charpic,"sideBikeL",SpriteNumber,ScreenData)
+			SpriteGenerator.createChars(Charpic,"sideBikeL",SpriteNumber,ScreenData)
 		end
 	--Surf
 	elseif AnimateID == 23 then
 		PlayerAnimationFrameMax[PlayerNo] = 4
 		AnimationX[PlayerNo] = AnimationX[PlayerNo] - 4
-		createChars(Charpic,"surfSideLIdle1",SpriteNumber,ScreenData)
-		createChars(Charpic,"surfSitSide",SpriteNumber,ScreenData)
+		SpriteGenerator.createChars(Charpic,"surfSideLIdle1",SpriteNumber,ScreenData)
+		SpriteGenerator.createChars(Charpic,"surfSitSide",SpriteNumber,ScreenData)
 	else
 	
 	end
@@ -2668,12 +2473,12 @@ if AnimationMovementX < 0 then
 		if PlayerAnimationFrame[PlayerNo] == 9 then AnimationX[PlayerNo] = AnimationX[PlayerNo] + 1 end
 		if PlayerAnimationFrame[PlayerNo] >= 3 and PlayerAnimationFrame[PlayerNo] <= 11 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
-				createChars(Charpic,"walkL1",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"walkL1",SpriteNumber,ScreenData)
 			else
-				createChars(Charpic,"walkL2",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"walkL2",SpriteNumber,ScreenData)
 			end
 		else
-			createChars(Charpic,"sideLR",SpriteNumber,ScreenData)
+			SpriteGenerator.createChars(Charpic,"sideLR",SpriteNumber,ScreenData)
 		end
 	elseif AnimateID == 14 then
 	--	console:log("RUNNING RIGHT. FRAME: " .. PlayerAnimationFrame .. " FRAME2: " .. PlayerAnimationFrame2)
@@ -2682,12 +2487,12 @@ if AnimationMovementX < 0 then
 		AnimationX[PlayerNo] = AnimationX[PlayerNo] + 4
 		if PlayerAnimationFrame[PlayerNo] > 5 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
-				createChars(Charpic,"runSideLCicle1",SpriteNumber, ScreenData)
+				SpriteGenerator.createChars(Charpic,"runSideLCicle1",SpriteNumber, ScreenData)
 			else
-				createChars(Charpic,"runSideLCicle2",SpriteNumber, ScreenData)
+				SpriteGenerator.createChars(Charpic,"runSideLCicle2",SpriteNumber, ScreenData)
 			end
 		else
-			createChars(Charpic,"runSideLIdle",SpriteNumber, ScreenData)
+			SpriteGenerator.createChars(Charpic,"runSideLIdle",SpriteNumber, ScreenData)
 		end
 	elseif AnimateID == 15 then
 	--	ConsoleForText:print("Bike")
@@ -2695,19 +2500,19 @@ if AnimationMovementX < 0 then
 		AnimationX[PlayerNo] = AnimationX[PlayerNo] + ((AnimationMovementX*16)/3)
 		if PlayerAnimationFrame[PlayerNo] >= 1 and PlayerAnimationFrame[PlayerNo] < 5 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
-				createChars(Charpic,"cicleBikeL1",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"cicleBikeL1",SpriteNumber,ScreenData)
 			else
-				createChars(Charpic,"cicleBikeL2",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"cicleBikeL2",SpriteNumber,ScreenData)
 			end
 		else
-			createChars(Charpic,"sideBikeL",SpriteNumber,ScreenData)
+			SpriteGenerator.createChars(Charpic,"sideBikeL",SpriteNumber,ScreenData)
 		end
 	--Surf
 	elseif AnimateID == 24 then
 		PlayerAnimationFrameMax[PlayerNo] = 4
 		AnimationX[PlayerNo] = AnimationX[PlayerNo] + 4
-		createChars(Charpic,"surfSideLIdle1",SpriteNumber,ScreenData)
-		createChars(Charpic,"surfSitSide",SpriteNumber,ScreenData)
+		SpriteGenerator.createChars(Charpic,"surfSideLIdle1",SpriteNumber,ScreenData)
+		SpriteGenerator.createChars(Charpic,"surfSitSide",SpriteNumber,ScreenData)
 	else
 	
 	end
@@ -2719,26 +2524,26 @@ if AnimationMovementX < 0 then
 		PlayerAnimationFrameMax[PlayerNo] = 8
 		if PlayerAnimationFrame[PlayerNo] > 1 and PlayerAnimationFrame[PlayerNo] < 6 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
-				createChars(Charpic,"walkL1",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"walkL1",SpriteNumber,ScreenData)
 			else
-				createChars(Charpic,"walkL2",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"walkL2",SpriteNumber,ScreenData)
 			end
 		else
-			createChars(Charpic,"sideLR",SpriteNumber,ScreenData)
+			SpriteGenerator.createChars(Charpic,"sideLR",SpriteNumber,ScreenData)
 		end
 	--If they are now equal
 	end
 	--Surfing animation
 	if AnimateID == 19 or AnimateID == 20 then
-		createChars(Charpic,"surfSitSide",SpriteNumber,ScreenData)
+		SpriteGenerator.createChars(Charpic,"surfSitSide",SpriteNumber,ScreenData)
 		if PreviousPlayerAnimation[PlayerNo] ~= 19 and PreviousPlayerAnimation[PlayerNo] ~= 20 then
 			 PlayerAnimationFrame2[PlayerNo] = 0 PlayerAnimationFrame[PlayerNo] = 24 
 		end
 		PlayerAnimationFrameMax[PlayerNo] = 48
 		if PlayerAnimationFrame2[PlayerNo] == 0 then 
-			createChars(Charpic,"surfSideLIdle1",SpriteNumber,ScreenData)
+			SpriteGenerator.createChars(Charpic,"surfSideLIdle1",SpriteNumber,ScreenData)
 		elseif PlayerAnimationFrame2[PlayerNo] == 1 then 
-			createChars(Charpic,"surfSitSide",SpriteNumber,ScreenData)
+			SpriteGenerator.createChars(Charpic,"surfSitSide",SpriteNumber,ScreenData)
 		end
 	end
 	
@@ -2752,43 +2557,43 @@ if AnimationMovementX < 0 then
 		if PlayerAnimationFrame[PlayerNo] == 9 then AnimationY[PlayerNo] = AnimationY[PlayerNo] - 1 end
 		if PlayerAnimationFrame[PlayerNo] >= 3 and PlayerAnimationFrame[PlayerNo] <= 11 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
-				createChars(Charpic,"walkUp1",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"walkUp1",SpriteNumber,ScreenData)
 			else
-				createChars(Charpic,"walkUp2",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"walkUp2",SpriteNumber,ScreenData)
 			end	
 		else
-			createChars(Charpic,"sideUp",SpriteNumber,ScreenData)
+			SpriteGenerator.createChars(Charpic,"sideUp",SpriteNumber,ScreenData)
 		end
 	elseif AnimateID == 5 then
 		PlayerAnimationFrameMax[PlayerNo] = 9
 		AnimationY[PlayerNo] = AnimationY[PlayerNo] - 4
 		if PlayerAnimationFrame[PlayerNo] > 5 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
-				createChars(Charpic,"runSideUpCicle1",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"runSideUpCicle1",SpriteNumber,ScreenData)
 			else
-				createChars(Charpic,"runSideUpCicle2",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"runSideUpCicle2",SpriteNumber,ScreenData)
 			end
 		else
-			createChars(Charpic,"runSideUpIdle",SpriteNumber,ScreenData)
+			SpriteGenerator.createChars(Charpic,"runSideUpIdle",SpriteNumber,ScreenData)
 		end
 	elseif AnimateID == 8 then
 		PlayerAnimationFrameMax[PlayerNo] = 6
 		AnimationY[PlayerNo] = AnimationY[PlayerNo] + ((AnimationMovementY*16)/3)
 		if PlayerAnimationFrame[PlayerNo] >= 1 and PlayerAnimationFrame[PlayerNo] < 5 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
-				createChars(Charpic,"cicleBikeUp1",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"cicleBikeUp1",SpriteNumber,ScreenData)
 			else
-				createChars(Charpic,"cicleBikeUp2",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"cicleBikeUp2",SpriteNumber,ScreenData)
 			end
 		else
-			createChars(Charpic,"sideBikeUp",SpriteNumber,ScreenData)
+			SpriteGenerator.createChars(Charpic,"sideBikeUp",SpriteNumber,ScreenData)
 		end
 	--Surf
 	elseif AnimateID == 22 then
 		PlayerAnimationFrameMax[PlayerNo] = 4
 		AnimationY[PlayerNo] = AnimationY[PlayerNo] - 4
-		createChars(Charpic,"surfSideUpIdle",SpriteNumber,ScreenData)
-		createChars(Charpic,"surfSitUp",SpriteNumber,ScreenData)
+		SpriteGenerator.createChars(Charpic,"surfSideUpIdle",SpriteNumber,ScreenData)
+		SpriteGenerator.createChars(Charpic,"surfSitUp",SpriteNumber,ScreenData)
 	end
 		
 	--Animate down movement
@@ -2800,43 +2605,43 @@ if AnimationMovementX < 0 then
 		if PlayerAnimationFrame[PlayerNo] == 9 then AnimationY[PlayerNo] = AnimationY[PlayerNo] + 1 end
 		if PlayerAnimationFrame[PlayerNo] >= 3 and PlayerAnimationFrame[PlayerNo] <= 11 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
-				createChars(Charpic,"walkDown1",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"walkDown1",SpriteNumber,ScreenData)
 			else
-				createChars(Charpic,"walkDown2",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"walkDown2",SpriteNumber,ScreenData)
 			end
 		else
-			createChars(Charpic,"sideDown",SpriteNumber,ScreenData)
+			SpriteGenerator.createChars(Charpic,"sideDown",SpriteNumber,ScreenData)
 		end
 	elseif AnimateID == 4 then
 		PlayerAnimationFrameMax[PlayerNo] = 9
 		AnimationY[PlayerNo] = AnimationY[PlayerNo] + 4
 		if PlayerAnimationFrame[PlayerNo] > 5 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
-				createChars(Charpic,"runSideDownCicle1",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"runSideDownCicle1",SpriteNumber,ScreenData)
 			else
-				createChars(Charpic,"runSideDownCicle1",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"runSideDownCicle1",SpriteNumber,ScreenData)
 			end
 		else
-			createChars(Charpic,"runSideDownIdle",SpriteNumber,ScreenData)
+			SpriteGenerator.createChars(Charpic,"runSideDownIdle",SpriteNumber,ScreenData)
 		end
 	elseif AnimateID == 7 then
 		PlayerAnimationFrameMax[PlayerNo] = 6
 		AnimationY[PlayerNo] = AnimationY[PlayerNo] + ((AnimationMovementY*16)/3)
 		if PlayerAnimationFrame[PlayerNo] >= 1 and PlayerAnimationFrame[PlayerNo] < 5 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
-				createChars(Charpic,"cicleBikeDown1",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"cicleBikeDown1",SpriteNumber,ScreenData)
 			else
-				createChars(Charpic,"cicleBikeDown2",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"cicleBikeDown2",SpriteNumber,ScreenData)
 			end
 		else
-			createChars(Charpic,"sideBikeDown",SpriteNumber,ScreenData)
+			SpriteGenerator.createChars(Charpic,"sideBikeDown",SpriteNumber,ScreenData)
 		end
 	--Surf
 	elseif AnimateID == 21 then
 		PlayerAnimationFrameMax[PlayerNo] = 4
 		AnimationY[PlayerNo] = AnimationY[PlayerNo] + 4
-		createChars(Charpic,"surfSideDownIdle",SpriteNumber,ScreenData)
-		createChars(Charpic,"surfSitDown",SpriteNumber,ScreenData)
+		SpriteGenerator.createChars(Charpic,"surfSideDownIdle",SpriteNumber,ScreenData)
+		SpriteGenerator.createChars(Charpic,"surfSitDown",SpriteNumber,ScreenData)
 	--If they are now equal
 	end
 	else
@@ -2847,12 +2652,12 @@ if AnimationMovementX < 0 then
 		PlayerAnimationFrameMax[PlayerNo] = 8
 		if PlayerAnimationFrame[PlayerNo] > 1 and PlayerAnimationFrame[PlayerNo] < 6 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
-				createChars(Charpic,"walkDown1",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"walkDown1",SpriteNumber,ScreenData)
 			else
-				createChars(Charpic,"walkDown2",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"walkDown2",SpriteNumber,ScreenData)
 			end
 		else
-			createChars(Charpic,"sideDown",SpriteNumber,ScreenData)
+			SpriteGenerator.createChars(Charpic,"sideDown",SpriteNumber,ScreenData)
 		end
 	--Turn player up
 	
@@ -2860,41 +2665,41 @@ if AnimationMovementX < 0 then
 		PlayerAnimationFrameMax[PlayerNo] = 8
 		if PlayerAnimationFrame[PlayerNo] > 1 and PlayerAnimationFrame[PlayerNo] < 6 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
-				createChars(Charpic,"walkUp1",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"walkUp1",SpriteNumber,ScreenData)
 			else
-				createChars(Charpic,"walkUp2",SpriteNumber,ScreenData)
+				SpriteGenerator.createChars(Charpic,"walkUp2",SpriteNumber,ScreenData)
 			end
 		else
-			createChars(Charpic,"sideUp",SpriteNumber,ScreenData)
+			SpriteGenerator.createChars(Charpic,"sideUp",SpriteNumber,ScreenData)
 		end
 	else
-	--		createChars(Charpic,3,SpriteNumber,ScreenData)
+	--		SpriteGenerator.createChars(Charpic,3,SpriteNumber,ScreenData)
 	end
 	
 	--Surfing animation
 	if AnimateID == 17 then
-		createChars(Charpic,"surfSitDown",SpriteNumber,ScreenData)
+		SpriteGenerator.createChars(Charpic,"surfSitDown",SpriteNumber,ScreenData)
 		if PreviousPlayerAnimation[PlayerNo] ~= 17 then
 			PlayerAnimationFrame2[PlayerNo] = 0
 			PlayerAnimationFrame[PlayerNo] = 24
 		end
 		PlayerAnimationFrameMax[PlayerNo] = 48
 		if PlayerAnimationFrame2[PlayerNo] == 0 then
-			createChars(Charpic,"surfSideDownIdle",SpriteNumber,ScreenData)
+			SpriteGenerator.createChars(Charpic,"surfSideDownIdle",SpriteNumber,ScreenData)
 		elseif PlayerAnimationFrame2[PlayerNo] == 1 then
-			createChars(Charpic,"surfSideDownIdle2",SpriteNumber,ScreenData)
+			SpriteGenerator.createChars(Charpic,"surfSideDownIdle2",SpriteNumber,ScreenData)
 		end
 	elseif AnimateID == 18 then
-		createChars(Charpic,"surfSitUp",SpriteNumber,ScreenData)
+		SpriteGenerator.createChars(Charpic,"surfSitUp",SpriteNumber,ScreenData)
 		if PreviousPlayerAnimation[PlayerNo] ~= 18 then
 			PlayerAnimationFrame2[PlayerNo] = 0
 			PlayerAnimationFrame[PlayerNo] = 24
 		end
 		PlayerAnimationFrameMax[PlayerNo] = 48
 		if PlayerAnimationFrame2[PlayerNo] == 0 then
-			createChars(Charpic,"surfSideUpIdle",SpriteNumber,ScreenData)
+			SpriteGenerator.createChars(Charpic,"surfSideUpIdle",SpriteNumber,ScreenData)
 		elseif PlayerAnimationFrame2[PlayerNo] == 1 then
-			createChars(Charpic,"surfSideDownIdle2",SpriteNumber,ScreenData)
+			SpriteGenerator.createChars(Charpic,"surfSideDownIdle2",SpriteNumber,ScreenData)
 		end
 	--If they are now equal
 	end
@@ -2975,16 +2780,16 @@ function HandleSprites()
 		PlayerChar = i - 1
 		if PlayerID ~= i and PlayerIDNick[i] ~= "None" then
 			--Facing down
-			if PlayerExtra1[i] == 1 then createChars(PlayerChar,"sideDown",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 4 Facing2[i] = 0 AnimatePlayerMovement(i, 251)
+			if PlayerExtra1[i] == 1 then SpriteGenerator.createChars(PlayerChar,"sideDown",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 4 Facing2[i] = 0 AnimatePlayerMovement(i, 251)
 			
 			--Facing up
-			elseif PlayerExtra1[i] == 2 then createChars(PlayerChar,"sideUp",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 3 Facing2[i] = 0 AnimatePlayerMovement(i, 252)
+			elseif PlayerExtra1[i] == 2 then SpriteGenerator.createChars(PlayerChar,"sideUp",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 3 Facing2[i] = 0 AnimatePlayerMovement(i, 252)
 			
 			--Facing left
-			elseif PlayerExtra1[i] == 3 then createChars(PlayerChar,"sideLR",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 1 Facing2[i] = 0 AnimatePlayerMovement(i, 253)
+			elseif PlayerExtra1[i] == 3 then SpriteGenerator.createChars(PlayerChar,"sideLR",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 1 Facing2[i] = 0 AnimatePlayerMovement(i, 253)
 			
 			--Facing right
-			elseif PlayerExtra1[i] == 4 then createChars(PlayerChar,"sideLR",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 2 Facing2[i] = 1 AnimatePlayerMovement(i, 254)
+			elseif PlayerExtra1[i] == 4 then SpriteGenerator.createChars(PlayerChar,"sideLR",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 2 Facing2[i] = 1 AnimatePlayerMovement(i, 254)
 			
 			--walk down
 			elseif PlayerExtra1[i] == 5 then Facing2[i] = 0 CurrentFacingDirection[i] = 4 AnimatePlayerMovement(i, 1)
@@ -3023,16 +2828,16 @@ function HandleSprites()
 			elseif PlayerExtra1[i] == 16 then Facing2[i] = 1 CurrentFacingDirection[i] = 2 AnimatePlayerMovement(i, 14)
 			
 			--bike face down
-			elseif PlayerExtra1[i] == 17 then createChars(PlayerChar,"sideBikeDown",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 4 Facing2[i] = 0 AnimatePlayerMovement(i, 251)
+			elseif PlayerExtra1[i] == 17 then SpriteGenerator.createChars(PlayerChar,"sideBikeDown",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 4 Facing2[i] = 0 AnimatePlayerMovement(i, 251)
 			
 			--bike face up
-			elseif PlayerExtra1[i] == 18 then createChars(PlayerChar,"sideBikeUp",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 3 Facing2[i] = 0 AnimatePlayerMovement(i, 252)
+			elseif PlayerExtra1[i] == 18 then SpriteGenerator.createChars(PlayerChar,"sideBikeUp",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 3 Facing2[i] = 0 AnimatePlayerMovement(i, 252)
 			
 			--bike face left
-			elseif PlayerExtra1[i] == 19 then createChars(PlayerChar,"sideBikeL",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 1 Facing2[i] = 0 AnimatePlayerMovement(i, 253)
+			elseif PlayerExtra1[i] == 19 then SpriteGenerator.createChars(PlayerChar,"sideBikeL",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 1 Facing2[i] = 0 AnimatePlayerMovement(i, 253)
 			
 			--bike face right
-			elseif PlayerExtra1[i] == 20 then createChars(PlayerChar,"sideBikeL",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 2 Facing2[i] = 1 AnimatePlayerMovement(i, 254)
+			elseif PlayerExtra1[i] == 20 then SpriteGenerator.createChars(PlayerChar,"sideBikeL",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 2 Facing2[i] = 1 AnimatePlayerMovement(i, 254)
 			
 			--bike move down
 			elseif PlayerExtra1[i] == 21 then Facing2[i] = 0 CurrentFacingDirection[i] = 4 AnimatePlayerMovement(i, 7)
@@ -3059,16 +2864,16 @@ function HandleSprites()
 			elseif PlayerExtra1[i] == 28 then Facing2[i] = 1 CurrentFacingDirection[i] = 2 AnimatePlayerMovement(i, 15)
 			
 			--bike hit wall down
-			elseif PlayerExtra1[i] == 29 then createChars(PlayerChar,"sideBikeDown",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 4 Facing2[i] = 0 AnimatePlayerMovement(i, 251)
+			elseif PlayerExtra1[i] == 29 then SpriteGenerator.createChars(PlayerChar,"sideBikeDown",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 4 Facing2[i] = 0 AnimatePlayerMovement(i, 251)
 			
 			--bike hit wall up
-			elseif PlayerExtra1[i] == 30 then createChars(PlayerChar,"sideBikeUp",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 3 Facing2[i] = 0 AnimatePlayerMovement(i, 252)
+			elseif PlayerExtra1[i] == 30 then SpriteGenerator.createChars(PlayerChar,"sideBikeUp",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 3 Facing2[i] = 0 AnimatePlayerMovement(i, 252)
 			
 			--bike hit wall left
-			elseif PlayerExtra1[i] == 31 then createChars(PlayerChar,"sideBikeL",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 1 Facing2[i] = 0 AnimatePlayerMovement(i, 253)
+			elseif PlayerExtra1[i] == 31 then SpriteGenerator.createChars(PlayerChar,"sideBikeL",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 1 Facing2[i] = 0 AnimatePlayerMovement(i, 253)
 			
 			--bike hit wall right
-			elseif PlayerExtra1[i] == 32 then createChars(PlayerChar,"sideBikeL",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 2 Facing2[i] = 1 AnimatePlayerMovement(i, 254)
+			elseif PlayerExtra1[i] == 32 then SpriteGenerator.createChars(PlayerChar,"sideBikeL",PlayerExtra2[i],ScreenData) CurrentFacingDirection[i] = 2 Facing2[i] = 1 AnimatePlayerMovement(i, 254)
 			
 			--Surfing
 			
@@ -3326,7 +3131,7 @@ function DrawPlayer(PlayerNo)
 						local SymbolX = FinalMapX + 8
 						local Charpic = PlayerNo - 1
 						--Create battle symbol
-						createChars(Charpic, "battleIcon", 2, ScreenData, 1)
+						SpriteGenerator.createChars(Charpic, "battleIcon", 2, ScreenData, 1)
 						--Extra Char
 						PlayerYAddress = Player1Address + 16
 						PlayerXAddress = PlayerYAddress + 2
@@ -3377,7 +3182,7 @@ function DrawPlayer(PlayerNo)
 					local SymbolX = FinalMapX
 					local Charpic = PlayerNo - 1
 					--Create battle symbol
-					createChars(Charpic, "battleIcon", 2, ScreenData, 0)
+					SpriteGenerator.createChars(Charpic, "battleIcon", 2, ScreenData, 0)
 					--Extra Char
 					PlayerYAddress = Player1Address + 16
 					PlayerXAddress = PlayerYAddress + 2
@@ -3460,7 +3265,7 @@ function DrawPlayer(PlayerNo)
 						local SymbolX = FinalMapX
 						local Charpic = PlayerNo - 1
 						--Create battle symbol
-						createChars(Charpic, "battleIcon", 2, ScreenData, 0)
+						SpriteGenerator.createChars(Charpic, "battleIcon", 2, ScreenData, 0)
 						--Extra Char
 						PlayerYAddress = Player1Address + 16
 						PlayerXAddress = PlayerYAddress + 2
