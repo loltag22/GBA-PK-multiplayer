@@ -5,7 +5,7 @@ local gameAddresses = {
 
 local mod = {}
 
-function mod.GetPokemonTeam(GameID)
+function mod.GetPokemonTeam()
 	local PokemonTeamAddress = gameAddresses[GameID]["ally"]
 	local ReadTemp = ""
 
@@ -23,7 +23,7 @@ function mod.GetPokemonTeam(GameID)
 	--	ConsoleForText:print("EnemyPokemon 1 data: " .. Pokemon[2])
 end
 
-function mod.SetEnemyPokemonTeam(EnemyPokemonNo, EnemyPokemonPos, GameID)
+function mod.SetEnemyPokemonTeam(EnemyPokemonNo, EnemyPokemonPos)
 	local PokemonTeamAddress = gameAddresses[GameID]["enemy"]
 	local ReadTemp = ""
 	local String1 = 0
