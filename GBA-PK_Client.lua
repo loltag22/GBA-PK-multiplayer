@@ -2500,7 +2500,7 @@ function ConnectNetwork()
 					SendData("SPOS")
 				end
 			end
-			MVars.timeout[1] = timeout[1] - 4
+			MVars.timeout[1] = MVars.timeout[1] - 4
 					if MVars.timeout[1] <= 0 then
 						
 						SocketMain:close()

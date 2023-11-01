@@ -5,7 +5,6 @@ local scripts = {
 local mod = {}
 
 function mod.Loadscript(ScriptNo)
-    console:log(ScriptNo)
 	local ScriptAddressTemp = 0
 	local ScriptAddressTemp1 = 0
 	--2 is where the script itself is, whereas 1 is the memory to force it to read that. 3 is an extra address to use alongside it, such as multi-choice
@@ -53,7 +52,7 @@ function mod.Loadscript(ScriptNo)
 				ScriptAddressTemp = ScriptAddress2
 				ScriptAddressTemp1 = 4294902380
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1)
-		--		LoadScriptIntoMemory()
+		--		mod.LoadScriptIntoMemory()
 			--Host script
 			elseif ScriptNo == 1 then
 				emu:write16(Var8000Adr[2], 0) 
@@ -115,7 +114,7 @@ function mod.Loadscript(ScriptNo)
 				ScriptAddressTemp = ScriptAddressTemp + 4 
 				ScriptAddressTemp1 = 16755935
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1)
-				LoadScriptIntoMemory()
+				mod.LoadScriptIntoMemory()
 		--Interaction Menu	Multi Choice
 			elseif ScriptNo == 2 then
 				emu:write16(Var8000Adr[1], 0) 
@@ -235,7 +234,7 @@ function mod.Loadscript(ScriptNo)
 				ScriptAddressTemp = ScriptAddressTemp + 4
 				ScriptAddressTemp1 = 4294961373
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1)
-				LoadScriptIntoMemory()
+				mod.LoadScriptIntoMemory()
 		--Placeholder
 			elseif ScriptNo == 3 then
 				emu:write16(Var8000Adr[2], 0) 
@@ -269,7 +268,7 @@ function mod.Loadscript(ScriptNo)
 				ScriptAddressTemp = ScriptAddressTemp + 4 
 				ScriptAddressTemp1 = 4294967295
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-				LoadScriptIntoMemory()
+				mod.LoadScriptIntoMemory()
 		--Waiting message
 			elseif ScriptNo == 4 then
 				emu:write16(Var8000Adr[2], 0) 
@@ -309,7 +308,7 @@ function mod.Loadscript(ScriptNo)
 				ScriptAddressTemp = ScriptAddressTemp + 4 
 				ScriptAddressTemp1 = 4294902015
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-				LoadScriptIntoMemory()
+				mod.LoadScriptIntoMemory()
 		--Cancel message
 			elseif ScriptNo == 5 then
 				emu:write16(Var8000Adr[2], 0) 
@@ -352,7 +351,7 @@ function mod.Loadscript(ScriptNo)
 				ScriptAddressTemp = ScriptAddressTemp + 4 
 				ScriptAddressTemp1 = 4294967040
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1)
-				LoadScriptIntoMemory()
+				mod.LoadScriptIntoMemory()
 		--Trade request
 			elseif ScriptNo == 6 then
 				emu:write16(Var8000Adr[2], 0) 
@@ -419,7 +418,7 @@ function mod.Loadscript(ScriptNo)
 				ScriptAddressTemp = ScriptAddressTemp + 4 
 				ScriptAddressTemp1 = 4294967042
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1)
-				LoadScriptIntoMemory()
+				mod.LoadScriptIntoMemory()
 				--For buffer 2
 				ScriptAddressTemp = 33692912
 				ScriptAddressTemp1 = Buffer[1]
@@ -484,7 +483,7 @@ function mod.Loadscript(ScriptNo)
 				ScriptAddressTemp = ScriptAddressTemp + 4 
 				ScriptAddressTemp1 = 4278255533
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1)
-				LoadScriptIntoMemory()
+				mod.LoadScriptIntoMemory()
 		--Trade offer
 			elseif ScriptNo == 8 then
 				emu:write16(Var8000Adr[2], 0) 
@@ -563,7 +562,7 @@ function mod.Loadscript(ScriptNo)
 				ScriptAddressTemp = ScriptAddressTemp + 4 
 				ScriptAddressTemp1 = 4294967042
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1)
-				LoadScriptIntoMemory()
+				mod.LoadScriptIntoMemory()
 		--Trade offer denied
 			elseif ScriptNo == 9 then
 				emu:write16(Var8000Adr[2], 0) 
@@ -603,7 +602,7 @@ function mod.Loadscript(ScriptNo)
 				ScriptAddressTemp = ScriptAddressTemp + 4 
 				ScriptAddressTemp1 = 4278255533
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1)
-				LoadScriptIntoMemory()
+				mod.LoadScriptIntoMemory()
 		--Battle request
 			elseif ScriptNo == 10 then
 				emu:write16(Var8000Adr[2], 0) 
@@ -667,7 +666,7 @@ function mod.Loadscript(ScriptNo)
 				ScriptAddressTemp = ScriptAddressTemp + 4 
 				ScriptAddressTemp1 = 4294967042
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1)
-				LoadScriptIntoMemory()
+				mod.LoadScriptIntoMemory()
 				--For buffer 2
 				ScriptAddressTemp = 33692912
 				ScriptAddressTemp1 = Buffer[1]
@@ -735,7 +734,7 @@ function mod.Loadscript(ScriptNo)
 				ScriptAddressTemp = ScriptAddressTemp + 4 
 				ScriptAddressTemp1 = 4294967295
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1)
-				LoadScriptIntoMemory()
+				mod.LoadScriptIntoMemory()
 		--Select Pokemon for trade
 			elseif ScriptNo == 12 then
 				emu:write16(Var8000Adr[1], 0) 
@@ -776,7 +775,7 @@ function mod.Loadscript(ScriptNo)
 				ScriptAddressTemp = ScriptAddressTemp + 4 
 				ScriptAddressTemp1 = 4294967295
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-				LoadScriptIntoMemory()
+				mod.LoadScriptIntoMemory()
 		--Battle will start
 			elseif ScriptNo == 13 then
 				emu:write16(Var8000Adr[2], 0)
@@ -819,7 +818,7 @@ function mod.Loadscript(ScriptNo)
 				ScriptAddressTemp = ScriptAddressTemp + 4 
 				ScriptAddressTemp1 = 4294902015
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-				LoadScriptIntoMemory()
+				mod.LoadScriptIntoMemory()
 		--Trade will start
 			elseif ScriptNo == 14 then
 				emu:write16(Var8000Adr[2], 0)
@@ -862,7 +861,7 @@ function mod.Loadscript(ScriptNo)
 				ScriptAddressTemp = ScriptAddressTemp + 4 
 				ScriptAddressTemp1 = 4294967040
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1)
-				LoadScriptIntoMemory()
+				mod.LoadScriptIntoMemory()
 		--You have canceled the battle
 			elseif ScriptNo == 15 then
 				emu:write16(Var8000Adr[2], 0)
@@ -905,7 +904,7 @@ function mod.Loadscript(ScriptNo)
 				ScriptAddressTemp = ScriptAddressTemp + 4 
 				ScriptAddressTemp1 = 4294967040
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-				LoadScriptIntoMemory()
+				mod.LoadScriptIntoMemory()
 		--You have canceled the trade
 			elseif ScriptNo == 16 then
 				emu:write16(Var8000Adr[2], 0)
@@ -948,7 +947,7 @@ function mod.Loadscript(ScriptNo)
 				ScriptAddressTemp = ScriptAddressTemp + 4 
 				ScriptAddressTemp1 = 4294967295
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-				LoadScriptIntoMemory()
+				mod.LoadScriptIntoMemory()
 			--Trading. Your pokemon is stored in 8004, whereas enemy pokemon is already stored through setenemypokemon command
 			elseif ScriptNo == 17 then
 				emu:write16(Var8000Adr[2], 0)
@@ -965,7 +964,7 @@ function mod.Loadscript(ScriptNo)
 				ScriptAddressTemp = ScriptAddressTemp + 4 
 				ScriptAddressTemp1 = 4294967295
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-				LoadScriptIntoMemory()
+				mod.LoadScriptIntoMemory()
 			--Cancel Battle
 			elseif ScriptNo == 18 then
 				emu:write16(Var8000Adr[2], 0)
@@ -1017,7 +1016,7 @@ function mod.Loadscript(ScriptNo)
 				ScriptAddressTemp = ScriptAddressTemp + 4 
 				ScriptAddressTemp1 = 4294967040
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-				LoadScriptIntoMemory()
+				mod.LoadScriptIntoMemory()
 			--Cancel Trading
 			elseif ScriptNo == 19 then
 				emu:write16(Var8000Adr[2], 0)
@@ -1069,7 +1068,7 @@ function mod.Loadscript(ScriptNo)
 				ScriptAddressTemp = ScriptAddressTemp + 4 
 				ScriptAddressTemp1 = 4294967295
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-				LoadScriptIntoMemory()
+				mod.LoadScriptIntoMemory()
 			--other player is too busy to battle.
 			elseif ScriptNo == 20 then
 				emu:write16(Var8000Adr[2], 0)
@@ -1118,7 +1117,7 @@ function mod.Loadscript(ScriptNo)
 				ScriptAddressTemp = ScriptAddressTemp + 4 
 				ScriptAddressTemp1 = 4294967040
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-				LoadScriptIntoMemory()
+				mod.LoadScriptIntoMemory()
 			--other player is too busy to trade.
 			elseif ScriptNo == 21 then
 				emu:write16(Var8000Adr[2], 0)
@@ -1167,14 +1166,14 @@ function mod.Loadscript(ScriptNo)
 				ScriptAddressTemp = ScriptAddressTemp + 4 
 				ScriptAddressTemp1 = 4294967295
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-				LoadScriptIntoMemory()
+				mod.LoadScriptIntoMemory()
 			--battle script
 			elseif ScriptNo == 22 then
 				emu:write16(Var8000Adr[2], 0)
 				ScriptAddressTemp = ScriptAddress2
 				ScriptAddressTemp1 = 40656234
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-				LoadScriptIntoMemory()
+				mod.LoadScriptIntoMemory()
 			--trade names script.
 			elseif ScriptNo == 23 then
 				--Other trainer aka other player
@@ -1200,53 +1199,52 @@ function mod.Loadscript(ScriptNo)
 end
 
 function mod.LoadScriptIntoMemory()
-    ConsoleForText:print("Cane")
-
     --This puts the script at ScriptAddress into the memory, forcing it to load
     
-        local u32 ScriptAddress = 50335400
-        local u32 ScriptAddress2 = 145227776
-        local ScriptAddressTemp = 0
-        local ScriptAddressTemp1 = 0
-                    ScriptAddressTemp = ScriptAddress
-                    ScriptAddressTemp1 = 0
-                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-                    ScriptAddressTemp = ScriptAddressTemp + 4 
-                    ScriptAddressTemp1 = 0
-                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-                    ScriptAddressTemp = ScriptAddressTemp + 4 
-                    --Either use 66048, 512, or 513.
-                    ScriptAddressTemp1 = 513
-                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-                    ScriptAddressTemp = ScriptAddressTemp + 4
-                    --134654353 and 145293312 freezes the game
-                    ScriptAddressTemp1 = 0
-                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-                    ScriptAddressTemp = ScriptAddressTemp + 4 
-                    ScriptAddressTemp1 = ScriptAddress2 + 1
-                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-                    ScriptAddressTemp = ScriptAddressTemp + 4 
-                    ScriptAddressTemp1 = 0
-                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-                    ScriptAddressTemp = ScriptAddressTemp + 4 
-                    ScriptAddressTemp1 = 0
-                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1)
-                    ScriptAddressTemp = ScriptAddressTemp + 4 
-                    ScriptAddressTemp1 = 0
-                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-                    ScriptAddressTemp = ScriptAddressTemp + 4 
-                    ScriptAddressTemp1 = 0
-                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1)
-                    ScriptAddressTemp = ScriptAddressTemp + 4 
-                    ScriptAddressTemp1 = 0
-                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-                    ScriptAddressTemp = ScriptAddressTemp + 4 
-                    ScriptAddressTemp1 = 0
-                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1)
-                    ScriptAddressTemp = ScriptAddressTemp + 4 
-                    ScriptAddressTemp1 = 0
-                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1)
-                    --END Block
-    end
+    local u32 ScriptAddress = 50335400
+    local u32 ScriptAddress2 = 145227776
+    local ScriptAddressTemp = 0
+    local ScriptAddressTemp1 = 0
+    
+    ScriptAddressTemp = ScriptAddress
+    ScriptAddressTemp1 = 0
+    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
+    ScriptAddressTemp = ScriptAddressTemp + 4 
+    ScriptAddressTemp1 = 0
+    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
+    ScriptAddressTemp = ScriptAddressTemp + 4 
+    --Either use 66048, 512, or 513.
+    ScriptAddressTemp1 = 513
+    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
+    ScriptAddressTemp = ScriptAddressTemp + 4
+    --134654353 and 145293312 freezes the game
+    ScriptAddressTemp1 = 0
+    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
+    ScriptAddressTemp = ScriptAddressTemp + 4 
+    ScriptAddressTemp1 = ScriptAddress2 + 1
+    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
+    ScriptAddressTemp = ScriptAddressTemp + 4 
+    ScriptAddressTemp1 = 0
+    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
+    ScriptAddressTemp = ScriptAddressTemp + 4 
+    ScriptAddressTemp1 = 0
+    emu:write32(ScriptAddressTemp, ScriptAddressTemp1)
+    ScriptAddressTemp = ScriptAddressTemp + 4 
+    ScriptAddressTemp1 = 0
+    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
+    ScriptAddressTemp = ScriptAddressTemp + 4 
+    ScriptAddressTemp1 = 0
+    emu:write32(ScriptAddressTemp, ScriptAddressTemp1)
+    ScriptAddressTemp = ScriptAddressTemp + 4 
+    ScriptAddressTemp1 = 0
+    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
+    ScriptAddressTemp = ScriptAddressTemp + 4 
+    ScriptAddressTemp1 = 0
+    emu:write32(ScriptAddressTemp, ScriptAddressTemp1)
+    ScriptAddressTemp = ScriptAddressTemp + 4 
+    ScriptAddressTemp1 = 0
+    emu:write32(ScriptAddressTemp, ScriptAddressTemp1)
+    --END Block
+end
 
 return mod

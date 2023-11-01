@@ -67,7 +67,7 @@ local Keypressholding = 0
 local LockFromScript = 0
 local HideSeek = 0
 local HideSeekTimer = 0
-local ROMCARD
+ROMCARD = nil
 if not (emu == nil) then ROMCARD = emu.memory.cart0 end
 local BufferString = "None"
 local PrevExtraAdr = 0
