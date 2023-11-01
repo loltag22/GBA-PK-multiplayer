@@ -10,6 +10,7 @@ local SpriteGenerator = require "spriteGenerator"
 local GameChecker = require "gameVersionChecker"
 local PokemonTeamManager = require "pokemonTeamManager"
 local MVars = require "multiplayerVars"
+local PVars = require "playerVars"
 
 
 local GameID = ""
@@ -46,27 +47,6 @@ local PlayerAnimationFrame2 = {0,0,0,0,0,0,0,0}
 local PlayerAnimationFrameMax = {0,0,0,0,0,0,0,0}
 local PreviousPlayerAnimation = {0,0,0,0,0,0,0,0}
 
-
---PLAYER VARS
-local StartXPlayer = 2000
-local StartYPlayer = 2000
-local CameraX = 0
-local CameraY = 0
-local PlayerMapXMovePrev = 0
-local PlayerMapYMovePrev = 0
-local PlayerX = 0
-local PlayerY = 0
-local PlayerMapID = 0
-local PlayerMapIDPrev = 0
-local PlayerMapEntranceType = 1
-local PlayerDirection = 0
-local PreviousPlayerDirection = 0
-local PlayerMapChange = 0
-local PreviousPlayerX = 0
-local PreviousPlayerY = 0
-local PlayerFacing = 0
-local DifferentMapXPlayer = 0
-local DifferentMapYPlayer = 0
 
 
 --Addresses
@@ -1942,12 +1922,12 @@ function RenderPlayersOnDifferentMap()
 	--if MVars.MapChange[2] ~= 0 then console:log("MAP CHANGE PLAYER 2") MVars.MapChange[2] = 0 end
 	for i = 1, MaxPlayers do
 		if PlayerID ~= i and MVars.PlayerIDNick[i] ~= "None" then
-			if PlayerMapID == MVars.CurrentMapID[i] then
+			if PVars.PlayerMapID == MVars.CurrentMapID[i] then
 				MVars.PlayerVis[i] = 1
 				MVars.DifferentMapX[i] = 0
 				MVars.DifferentMapY[i] = 0
 				MVars.MapChange[i] = 0
-			elseif (PlayerMapIDPrev == MVars.CurrentMapID[i] or PlayerMapID == MVars.PreviousMapID[i]) and MVars.MapEntranceType[i] == 0 then
+			elseif (PVars.PlayerMapIDPrev == MVars.CurrentMapID[i] or PVars.PlayerMapID == MVars.PreviousMapID[i]) and MVars.MapEntranceType[i] == 0 then
 				MVars.PlayerVis[i] = 1
 				if MVars.MapChange[i] == 1 then
 					MVars.DifferentMapX[i] = ((MVars.PreviousX[i] - MVars.StartX[i]) * 16)
@@ -1995,21 +1975,21 @@ function GetPosition()
 		Bike = emu:read16(BikeAddress)
 		if Bike > 3000 then Bike = Bike - 3320 end
 	end
-	PlayerFacing = emu:read8(PlayerFaceAddress)
-	MVars.Facing2[PlayerID] = PlayerFacing + 100
+	PVars.PlayerFacing = emu:read8(PlayerFaceAddress)
+	MVars.Facing2[PlayerID] = PVars.PlayerFacing + 100
 	--Prev map
-	PlayerMapIDPrev = emu:read16(PrevMapIDAddress)
-	PlayerMapIDPrev = PlayerMapIDPrev + 100000
-	if PlayerMapIDPrev == PlayerMapID then
+	PVars.PlayerMapIDPrev = emu:read16(PrevMapIDAddress)
+	PVars.PlayerMapIDPrev = PVars.PlayerMapIDPrev + 100000
+	if PVars.PlayerMapIDPrev == PVars.PlayerMapID then
 		MVars.PreviousX[PlayerID] = MVars.CurrentX[PlayerID]
 		MVars.PreviousY[PlayerID] = MVars.CurrentY[PlayerID]
-		PlayerMapEntranceType = emu:read8(ConnectionTypeAddress)
-		if PlayerMapEntranceType > 10 then PlayerMapEntranceType = 9 end
-		PlayerMapChange = 1
+		PVars.PlayerMapEntranceType = emu:read8(ConnectionTypeAddress)
+		if PVars.PlayerMapEntranceType > 10 then PVars.PlayerMapEntranceType = 9 end
+		PVars.PlayerMapChange = 1
 		MVars.MapChange[PlayerID] = 1
 	end
-	PlayerMapID = emu:read16(MapAddress)
-	PlayerMapID = PlayerMapID + 100000
+	PVars.PlayerMapID = emu:read16(MapAddress)
+	PVars.PlayerMapID = PVars.PlayerMapID + 100000
 	PlayerMapX = emu:read16(PlayerXAddress)
 	PlayerMapY = emu:read16(PlayerYAddress)
 	PlayerMapX = PlayerMapX + 2000
@@ -2054,129 +2034,129 @@ function GetPosition()
 	else MVars.PlayerExtra1[PlayerID] = 0
 	end
 	if MVars.PlayerExtra3[PlayerID] == 2 then
-		PreviousPlayerDirection = PlayerDirection
+		PVars.PreviousPlayerDirection = PVars.PlayerDirection
 		--Facing
-		if PlayerFacing == 0 then MVars.PlayerExtra1[PlayerID] = 33 PlayerDirection = 4 end
-		if PlayerFacing == 1 then MVars.PlayerExtra1[PlayerID] = 34 PlayerDirection = 3 end
-		if PlayerFacing == 2 then MVars.PlayerExtra1[PlayerID] = 35 PlayerDirection = 1 end
-		if PlayerFacing == 3 then MVars.PlayerExtra1[PlayerID] = 36 PlayerDirection = 2 end
+		if PVars.PlayerFacing == 0 then MVars.PlayerExtra1[PlayerID] = 33 PVars.PlayerDirection = 4 end
+		if PVars.PlayerFacing == 1 then MVars.PlayerExtra1[PlayerID] = 34 PVars.PlayerDirection = 3 end
+		if PVars.PlayerFacing == 2 then MVars.PlayerExtra1[PlayerID] = 35 PVars.PlayerDirection = 1 end
+		if PVars.PlayerFacing == 3 then MVars.PlayerExtra1[PlayerID] = 36 PVars.PlayerDirection = 2 end
 		--Surfing
-		if PlayerFacing == 29 then MVars.PlayerExtra1[PlayerID] = 37 PlayerDirection = 4 end
-		if PlayerFacing == 30 then MVars.PlayerExtra1[PlayerID] = 38 PlayerDirection = 3 end
-		if PlayerFacing == 31 then MVars.PlayerExtra1[PlayerID] = 39 PlayerDirection = 1 end
-		if PlayerFacing == 32 then MVars.PlayerExtra1[PlayerID] = 40 PlayerDirection = 2 end
+		if PVars.PlayerFacing == 29 then MVars.PlayerExtra1[PlayerID] = 37 PVars.PlayerDirection = 4 end
+		if PVars.PlayerFacing == 30 then MVars.PlayerExtra1[PlayerID] = 38 PVars.PlayerDirection = 3 end
+		if PVars.PlayerFacing == 31 then MVars.PlayerExtra1[PlayerID] = 39 PVars.PlayerDirection = 1 end
+		if PVars.PlayerFacing == 32 then MVars.PlayerExtra1[PlayerID] = 40 PVars.PlayerDirection = 2 end
 		--Turning
-		if PlayerFacing == 41 then MVars.PlayerExtra1[PlayerID] = 33 PlayerDirection = 4 end
-		if PlayerFacing == 42 then MVars.PlayerExtra1[PlayerID] = 34 PlayerDirection = 3 end
-		if PlayerFacing == 43 then MVars.PlayerExtra1[PlayerID] = 35 PlayerDirection = 1 end
-		if PlayerFacing == 44 then MVars.PlayerExtra1[PlayerID] = 36 PlayerDirection = 2 end
+		if PVars.PlayerFacing == 41 then MVars.PlayerExtra1[PlayerID] = 33 PVars.PlayerDirection = 4 end
+		if PVars.PlayerFacing == 42 then MVars.PlayerExtra1[PlayerID] = 34 PVars.PlayerDirection = 3 end
+		if PVars.PlayerFacing == 43 then MVars.PlayerExtra1[PlayerID] = 35 PVars.PlayerDirection = 1 end
+		if PVars.PlayerFacing == 44 then MVars.PlayerExtra1[PlayerID] = 36 PVars.PlayerDirection = 2 end
 		--hitting a wall
-		if PlayerFacing == 33 then MVars.PlayerExtra1[PlayerID] = 33 PlayerDirection = 4 end
-		if PlayerFacing == 34 then MVars.PlayerExtra1[PlayerID] = 34 PlayerDirection = 3 end
-		if PlayerFacing == 35 then MVars.PlayerExtra1[PlayerID] = 35 PlayerDirection = 1 end
-		if PlayerFacing == 36 then MVars.PlayerExtra1[PlayerID] = 36 PlayerDirection = 2 end
+		if PVars.PlayerFacing == 33 then MVars.PlayerExtra1[PlayerID] = 33 PVars.PlayerDirection = 4 end
+		if PVars.PlayerFacing == 34 then MVars.PlayerExtra1[PlayerID] = 34 PVars.PlayerDirection = 3 end
+		if PVars.PlayerFacing == 35 then MVars.PlayerExtra1[PlayerID] = 35 PVars.PlayerDirection = 1 end
+		if PVars.PlayerFacing == 36 then MVars.PlayerExtra1[PlayerID] = 36 PVars.PlayerDirection = 2 end
 		--getting on pokemon
-		if PlayerFacing == 70 then MVars.PlayerExtra1[PlayerID] = 37 PlayerDirection = 4 end
-		if PlayerFacing == 71 then MVars.PlayerExtra1[PlayerID] = 38 PlayerDirection = 3 end
-		if PlayerFacing == 72 then MVars.PlayerExtra1[PlayerID] = 39 PlayerDirection = 1 end
-		if PlayerFacing == 73 then MVars.PlayerExtra1[PlayerID] = 40 PlayerDirection = 2 end
+		if PVars.PlayerFacing == 70 then MVars.PlayerExtra1[PlayerID] = 37 PVars.PlayerDirection = 4 end
+		if PVars.PlayerFacing == 71 then MVars.PlayerExtra1[PlayerID] = 38 PVars.PlayerDirection = 3 end
+		if PVars.PlayerFacing == 72 then MVars.PlayerExtra1[PlayerID] = 39 PVars.PlayerDirection = 1 end
+		if PVars.PlayerFacing == 73 then MVars.PlayerExtra1[PlayerID] = 40 PVars.PlayerDirection = 2 end
 		--getting off pokemon
-		if PlayerFacing == 166 then MVars.PlayerExtra1[PlayerID] = 5 PlayerDirection = 4 end
-		if PlayerFacing == 167 then MVars.PlayerExtra1[PlayerID] = 6 PlayerDirection = 3 end
-		if PlayerFacing == 168 then MVars.PlayerExtra1[PlayerID] = 7 PlayerDirection = 1 end
-		if PlayerFacing == 169 then MVars.PlayerExtra1[PlayerID] = 8 PlayerDirection = 2 end
+		if PVars.PlayerFacing == 166 then MVars.PlayerExtra1[PlayerID] = 5 PVars.PlayerDirection = 4 end
+		if PVars.PlayerFacing == 167 then MVars.PlayerExtra1[PlayerID] = 6 PVars.PlayerDirection = 3 end
+		if PVars.PlayerFacing == 168 then MVars.PlayerExtra1[PlayerID] = 7 PVars.PlayerDirection = 1 end
+		if PVars.PlayerFacing == 169 then MVars.PlayerExtra1[PlayerID] = 8 PVars.PlayerDirection = 2 end
 		--calling pokemon out
-		if PlayerFacing == 69 then MVars.PlayerExtra1[PlayerID] = 33 PlayerDirection = 4 end
+		if PVars.PlayerFacing == 69 then MVars.PlayerExtra1[PlayerID] = 33 PVars.PlayerDirection = 4 end
 		
 		if ScreenData == 0 then
-			if PlayerDirection == 4 then MVars.PlayerExtra1[PlayerID] = 33 PlayerFacing = 0 end
-			if PlayerDirection == 3 then MVars.PlayerExtra1[PlayerID] = 34 PlayerFacing = 1 end
-			if PlayerDirection == 1 then MVars.PlayerExtra1[PlayerID] = 35 PlayerFacing = 2 end
-			if PlayerDirection == 2 then MVars.PlayerExtra1[PlayerID] = 36 PlayerFacing = 3 end
+			if PVars.PlayerDirection == 4 then MVars.PlayerExtra1[PlayerID] = 33 PVars.PlayerFacing = 0 end
+			if PVars.PlayerDirection == 3 then MVars.PlayerExtra1[PlayerID] = 34 PVars.PlayerFacing = 1 end
+			if PVars.PlayerDirection == 1 then MVars.PlayerExtra1[PlayerID] = 35 PVars.PlayerFacing = 2 end
+			if PVars.PlayerDirection == 2 then MVars.PlayerExtra1[PlayerID] = 36 PVars.PlayerFacing = 3 end
 		end
 	elseif MVars.PlayerExtra3[PlayerID] == 1 then
-		if PlayerFacing == 0 then MVars.PlayerExtra1[PlayerID] = 17 PlayerDirection = 4 end
-		if PlayerFacing == 1 then MVars.PlayerExtra1[PlayerID] = 18 PlayerDirection = 3 end
-		if PlayerFacing == 2 then MVars.PlayerExtra1[PlayerID] = 19 PlayerDirection = 1 end
-		if PlayerFacing == 3 then MVars.PlayerExtra1[PlayerID] = 20 PlayerDirection = 2 end
+		if PVars.PlayerFacing == 0 then MVars.PlayerExtra1[PlayerID] = 17 PVars.PlayerDirection = 4 end
+		if PVars.PlayerFacing == 1 then MVars.PlayerExtra1[PlayerID] = 18 PVars.PlayerDirection = 3 end
+		if PVars.PlayerFacing == 2 then MVars.PlayerExtra1[PlayerID] = 19 PVars.PlayerDirection = 1 end
+		if PVars.PlayerFacing == 3 then MVars.PlayerExtra1[PlayerID] = 20 PVars.PlayerDirection = 2 end
 		--Standard speed
-		if PlayerFacing == 49 then MVars.PlayerExtra1[PlayerID] = 21 PlayerDirection = 4 end
-		if PlayerFacing == 50 then MVars.PlayerExtra1[PlayerID] = 22 PlayerDirection = 3 end
-		if PlayerFacing == 51 then MVars.PlayerExtra1[PlayerID] = 23 PlayerDirection = 1 end
-		if PlayerFacing == 52 then MVars.PlayerExtra1[PlayerID] = 24 PlayerDirection = 2 end
+		if PVars.PlayerFacing == 49 then MVars.PlayerExtra1[PlayerID] = 21 PVars.PlayerDirection = 4 end
+		if PVars.PlayerFacing == 50 then MVars.PlayerExtra1[PlayerID] = 22 PVars.PlayerDirection = 3 end
+		if PVars.PlayerFacing == 51 then MVars.PlayerExtra1[PlayerID] = 23 PVars.PlayerDirection = 1 end
+		if PVars.PlayerFacing == 52 then MVars.PlayerExtra1[PlayerID] = 24 PVars.PlayerDirection = 2 end
 		--In case you use a fast bike
-		if PlayerFacing == 61 then MVars.PlayerExtra1[PlayerID] = 25 PlayerDirection = 4 end
-		if PlayerFacing == 62 then MVars.PlayerExtra1[PlayerID] = 26 PlayerDirection = 3 end
-		if PlayerFacing == 63 then MVars.PlayerExtra1[PlayerID] = 27 PlayerDirection = 1 end
-		if PlayerFacing == 64 then MVars.PlayerExtra1[PlayerID] = 28 PlayerDirection = 2 end
+		if PVars.PlayerFacing == 61 then MVars.PlayerExtra1[PlayerID] = 25 PVars.PlayerDirection = 4 end
+		if PVars.PlayerFacing == 62 then MVars.PlayerExtra1[PlayerID] = 26 PVars.PlayerDirection = 3 end
+		if PVars.PlayerFacing == 63 then MVars.PlayerExtra1[PlayerID] = 27 PVars.PlayerDirection = 1 end
+		if PVars.PlayerFacing == 64 then MVars.PlayerExtra1[PlayerID] = 28 PVars.PlayerDirection = 2 end
 		--hitting a wall
-		if PlayerFacing == 37 then MVars.PlayerExtra1[PlayerID] = 29 PlayerDirection = 4 end
-		if PlayerFacing == 38 then MVars.PlayerExtra1[PlayerID] = 30 PlayerDirection = 3 end
-		if PlayerFacing == 39 then MVars.PlayerExtra1[PlayerID] = 31 PlayerDirection = 1 end
-		if PlayerFacing == 40 then MVars.PlayerExtra1[PlayerID] = 32 PlayerDirection = 2 end
+		if PVars.PlayerFacing == 37 then MVars.PlayerExtra1[PlayerID] = 29 PVars.PlayerDirection = 4 end
+		if PVars.PlayerFacing == 38 then MVars.PlayerExtra1[PlayerID] = 30 PVars.PlayerDirection = 3 end
+		if PVars.PlayerFacing == 39 then MVars.PlayerExtra1[PlayerID] = 31 PVars.PlayerDirection = 1 end
+		if PVars.PlayerFacing == 40 then MVars.PlayerExtra1[PlayerID] = 32 PVars.PlayerDirection = 2 end
 		
 		--calling pokemon out
-		if PlayerFacing == 69 then MVars.PlayerExtra1[PlayerID] = 1 PlayerDirection = 4 end
+		if PVars.PlayerFacing == 69 then MVars.PlayerExtra1[PlayerID] = 1 PVars.PlayerDirection = 4 end
 		
 		if ScreenData == 0 then
-			if PlayerDirection == 4 then MVars.PlayerExtra1[PlayerID] = 17 PlayerFacing = 0 end
-			if PlayerDirection == 3 then MVars.PlayerExtra1[PlayerID] = 18 PlayerFacing = 1 end
-			if PlayerDirection == 1 then MVars.PlayerExtra1[PlayerID] = 19 PlayerFacing = 2 end
-			if PlayerDirection == 2 then MVars.PlayerExtra1[PlayerID] = 20 PlayerFacing = 3 end
+			if PVars.PlayerDirection == 4 then MVars.PlayerExtra1[PlayerID] = 17 PVars.PlayerFacing = 0 end
+			if PVars.PlayerDirection == 3 then MVars.PlayerExtra1[PlayerID] = 18 PVars.PlayerFacing = 1 end
+			if PVars.PlayerDirection == 1 then MVars.PlayerExtra1[PlayerID] = 19 PVars.PlayerFacing = 2 end
+			if PVars.PlayerDirection == 2 then MVars.PlayerExtra1[PlayerID] = 20 PVars.PlayerFacing = 3 end
 		end
 	else
 		--Standing still
-		if PlayerFacing == 0 then MVars.PlayerExtra1[PlayerID] = 1 PlayerDirection = 4 end
-		if PlayerFacing == 1 then MVars.PlayerExtra1[PlayerID] = 2 PlayerDirection = 3 end
-		if PlayerFacing == 2 then MVars.PlayerExtra1[PlayerID] = 3 PlayerDirection = 1 end
-		if PlayerFacing == 3 then MVars.PlayerExtra1[PlayerID] = 4 PlayerDirection = 2 end
+		if PVars.PlayerFacing == 0 then MVars.PlayerExtra1[PlayerID] = 1 PVars.PlayerDirection = 4 end
+		if PVars.PlayerFacing == 1 then MVars.PlayerExtra1[PlayerID] = 2 PVars.PlayerDirection = 3 end
+		if PVars.PlayerFacing == 2 then MVars.PlayerExtra1[PlayerID] = 3 PVars.PlayerDirection = 1 end
+		if PVars.PlayerFacing == 3 then MVars.PlayerExtra1[PlayerID] = 4 PVars.PlayerDirection = 2 end
 		
 		--Hitting stuff
-		if PlayerFacing == 33 then MVars.PlayerExtra1[PlayerID] = 1 PlayerDirection = 4 end
-		if PlayerFacing == 34 then MVars.PlayerExtra1[PlayerID] = 2 PlayerDirection = 3 end
-		if PlayerFacing == 35 then MVars.PlayerExtra1[PlayerID] = 3 PlayerDirection = 1 end
-		if PlayerFacing == 36 then MVars.PlayerExtra1[PlayerID] = 4 PlayerDirection = 2 end
+		if PVars.PlayerFacing == 33 then MVars.PlayerExtra1[PlayerID] = 1 PVars.PlayerDirection = 4 end
+		if PVars.PlayerFacing == 34 then MVars.PlayerExtra1[PlayerID] = 2 PVars.PlayerDirection = 3 end
+		if PVars.PlayerFacing == 35 then MVars.PlayerExtra1[PlayerID] = 3 PVars.PlayerDirection = 1 end
+		if PVars.PlayerFacing == 36 then MVars.PlayerExtra1[PlayerID] = 4 PVars.PlayerDirection = 2 end
 		
-		if PlayerFacing == 37 then MVars.PlayerExtra1[PlayerID] = 1 PlayerDirection = 4 end
-		if PlayerFacing == 38 then MVars.PlayerExtra1[PlayerID] = 2 PlayerDirection = 3 end
-		if PlayerFacing == 39 then MVars.PlayerExtra1[PlayerID] = 3 PlayerDirection = 1 end
-		if PlayerFacing == 40 then MVars.PlayerExtra1[PlayerID] = 4 PlayerDirection = 2 end
+		if PVars.PlayerFacing == 37 then MVars.PlayerExtra1[PlayerID] = 1 PVars.PlayerDirection = 4 end
+		if PVars.PlayerFacing == 38 then MVars.PlayerExtra1[PlayerID] = 2 PVars.PlayerDirection = 3 end
+		if PVars.PlayerFacing == 39 then MVars.PlayerExtra1[PlayerID] = 3 PVars.PlayerDirection = 1 end
+		if PVars.PlayerFacing == 40 then MVars.PlayerExtra1[PlayerID] = 4 PVars.PlayerDirection = 2 end
 		
 		--Walking
-		if PlayerFacing == 16 then MVars.PlayerExtra1[PlayerID] = 5 PlayerDirection = 4 end
-		if PlayerFacing == 17 then MVars.PlayerExtra1[PlayerID] = 6 PlayerDirection = 3 end
-		if PlayerFacing == 18 then MVars.PlayerExtra1[PlayerID] = 7 PlayerDirection = 1 end
-		if PlayerFacing == 19 then MVars.PlayerExtra1[PlayerID] = 8 PlayerDirection = 2 end
+		if PVars.PlayerFacing == 16 then MVars.PlayerExtra1[PlayerID] = 5 PVars.PlayerDirection = 4 end
+		if PVars.PlayerFacing == 17 then MVars.PlayerExtra1[PlayerID] = 6 PVars.PlayerDirection = 3 end
+		if PVars.PlayerFacing == 18 then MVars.PlayerExtra1[PlayerID] = 7 PVars.PlayerDirection = 1 end
+		if PVars.PlayerFacing == 19 then MVars.PlayerExtra1[PlayerID] = 8 PVars.PlayerDirection = 2 end
 		
 		--Jumping over route
-		if PlayerFacing == 20 then MVars.PlayerExtra1[PlayerID] = 13 PlayerDirection = 4 end
-		if PlayerFacing == 21 then MVars.PlayerExtra1[PlayerID] = 14 PlayerDirection = 3 end
-		if PlayerFacing == 22 then MVars.PlayerExtra1[PlayerID] = 15 PlayerDirection = 1 end
-		if PlayerFacing == 23 then MVars.PlayerExtra1[PlayerID] = 16 PlayerDirection = 2 end
+		if PVars.PlayerFacing == 20 then MVars.PlayerExtra1[PlayerID] = 13 PVars.PlayerDirection = 4 end
+		if PVars.PlayerFacing == 21 then MVars.PlayerExtra1[PlayerID] = 14 PVars.PlayerDirection = 3 end
+		if PVars.PlayerFacing == 22 then MVars.PlayerExtra1[PlayerID] = 15 PVars.PlayerDirection = 1 end
+		if PVars.PlayerFacing == 23 then MVars.PlayerExtra1[PlayerID] = 16 PVars.PlayerDirection = 2 end
 		--Turning
-		if PlayerFacing == 41 then MVars.PlayerExtra1[PlayerID] = 9 PlayerDirection = 4 end
-		if PlayerFacing == 42 then MVars.PlayerExtra1[PlayerID] = 10 PlayerDirection = 3 end
-		if PlayerFacing == 43 then MVars.PlayerExtra1[PlayerID] = 11 PlayerDirection = 1 end
-		if PlayerFacing == 44 then MVars.PlayerExtra1[PlayerID] = 12 PlayerDirection = 2 end
+		if PVars.PlayerFacing == 41 then MVars.PlayerExtra1[PlayerID] = 9 PVars.PlayerDirection = 4 end
+		if PVars.PlayerFacing == 42 then MVars.PlayerExtra1[PlayerID] = 10 PVars.PlayerDirection = 3 end
+		if PVars.PlayerFacing == 43 then MVars.PlayerExtra1[PlayerID] = 11 PVars.PlayerDirection = 1 end
+		if PVars.PlayerFacing == 44 then MVars.PlayerExtra1[PlayerID] = 12 PVars.PlayerDirection = 2 end
 		--Running
-		if PlayerFacing == 61 then MVars.PlayerExtra1[PlayerID] = 13 PlayerDirection = 4 end
-		if PlayerFacing == 62 then MVars.PlayerExtra1[PlayerID] = 14 PlayerDirection = 3 end
-		if PlayerFacing == 63 then MVars.PlayerExtra1[PlayerID] = 15 PlayerDirection = 1 end
-		if PlayerFacing == 64 then MVars.PlayerExtra1[PlayerID] = 16 PlayerDirection = 2 end
+		if PVars.PlayerFacing == 61 then MVars.PlayerExtra1[PlayerID] = 13 PVars.PlayerDirection = 4 end
+		if PVars.PlayerFacing == 62 then MVars.PlayerExtra1[PlayerID] = 14 PVars.PlayerDirection = 3 end
+		if PVars.PlayerFacing == 63 then MVars.PlayerExtra1[PlayerID] = 15 PVars.PlayerDirection = 1 end
+		if PVars.PlayerFacing == 64 then MVars.PlayerExtra1[PlayerID] = 16 PVars.PlayerDirection = 2 end
 		
 		--calling pokemon out
-		if PlayerFacing == 69 then MVars.PlayerExtra1[PlayerID] = 1 PlayerDirection = 4 end
+		if PVars.PlayerFacing == 69 then MVars.PlayerExtra1[PlayerID] = 1 PVars.PlayerDirection = 4 end
 		
 		if ScreenData == 0 then
-			if PlayerDirection == 4 then MVars.PlayerExtra1[PlayerID] = 1 PlayerFacing = 0 end
-			if PlayerDirection == 3 then MVars.PlayerExtra1[PlayerID] = 2 PlayerFacing = 1 end
-			if PlayerDirection == 1 then MVars.PlayerExtra1[PlayerID] = 3 PlayerFacing = 2 end
-			if PlayerDirection == 2 then MVars.PlayerExtra1[PlayerID] = 4 PlayerFacing = 3 end
+			if PVars.PlayerDirection == 4 then MVars.PlayerExtra1[PlayerID] = 1 PVars.PlayerFacing = 0 end
+			if PVars.PlayerDirection == 3 then MVars.PlayerExtra1[PlayerID] = 2 PVars.PlayerFacing = 1 end
+			if PVars.PlayerDirection == 1 then MVars.PlayerExtra1[PlayerID] = 3 PVars.PlayerFacing = 2 end
+			if PVars.PlayerDirection == 2 then MVars.PlayerExtra1[PlayerID] = 4 PVars.PlayerFacing = 3 end
 		end
 		--	if Facing == 255 then MVars.PlayerExtra1 = 0 end
 	end
 	MVars.PlayerExtra1[PlayerID] = MVars.PlayerExtra1[PlayerID] + 100
-	MVars.CurrentFacingDirection[PlayerID] = PlayerDirection
+	MVars.CurrentFacingDirection[PlayerID] = PVars.PlayerDirection
 end
 
 function NoPlayersIfScreen()
@@ -2753,7 +2733,7 @@ end
 
 function CalculateCamera()
 	--	ConsoleForText:print("Player X camera: " .. PlayerMapXMove .. "Player Y camera: " .. PlayerMapYMove)
-	--	ConsoleForText:print("PlayerMapXMove: " .. PlayerMapXMove .. "PlayerMapYMove: " .. PlayerMapYMove .. "PlayerMapXMovePREV: " .. PlayerMapXMovePrev .. "PlayerMapYMovePrev: " .. PlayerMapYMovePrev)
+	--	ConsoleForText:print("PlayerMapXMove: " .. PlayerMapXMove .. "PlayerMapYMove: " .. PlayerMapYMove .. "PlayerMapXMovePREV: " .. PVars.PlayerMapXMovePrev .. "PVars.PlayerMapYMovePrev: " .. PVars.PlayerMapYMovePrev)
 		
 		local PlayerMapXMoveTemp = 0
 		local PlayerMapYMoveTemp = 0
@@ -2767,55 +2747,55 @@ function CalculateCamera()
 			PlayerMapXMoveAddress = 33687132
 			PlayerMapYMoveAddress = 33687134
 		end
-		--if PlayerMapChange == 1 then
+		--if PVars.PlayerMapChange == 1 then
 			--Update first if map change
-			PlayerMapXMovePrev = emu:read16(PlayerMapXMoveAddress) - 8
-			PlayerMapYMovePrev = emu:read16(PlayerMapYMoveAddress)
-			PlayerMapXMoveTemp = PlayerMapXMovePrev % 16
-			PlayerMapYMoveTemp = PlayerMapYMovePrev % 16
+			PVars.PlayerMapXMovePrev = emu:read16(PlayerMapXMoveAddress) - 8
+			PVars.PlayerMapYMovePrev = emu:read16(PlayerMapYMoveAddress)
+			PlayerMapXMoveTemp = PVars.PlayerMapXMovePrev % 16
+			PlayerMapYMoveTemp = PVars.PlayerMapYMovePrev % 16
 			
-			if PlayerDirection == 1 then
-				CameraX = PlayerMapXMoveTemp * -1
+			if PVars.PlayerDirection == 1 then
+				PVars.CameraX = PlayerMapXMoveTemp * -1
 			--	console:log("XTEMP: " .. PlayerMapXMoveTemp)
-			elseif PlayerDirection == 2 then
+			elseif PVars.PlayerDirection == 2 then
 				if PlayerMapXMoveTemp > 0 then
-					CameraX = 16 - PlayerMapXMoveTemp
+					PVars.CameraX = 16 - PlayerMapXMoveTemp
 				else
-					CameraX = 0
+					PVars.CameraX = 0
 				end
 				--console:log("XTEMP: " .. PlayerMapXMoveTemp)
-			elseif PlayerDirection == 3 then
-				CameraY = PlayerMapYMoveTemp * -1
+			elseif PVars.PlayerDirection == 3 then
+				PVars.CameraY = PlayerMapYMoveTemp * -1
 				--console:log("YTEMP: " .. PlayerMapYMoveTemp)
-			elseif PlayerDirection == 4 then
+			elseif PVars.PlayerDirection == 4 then
 				--console:log("YTEMP: " .. PlayerMapYMoveTemp)
 				if PlayerMapYMoveTemp > 0 then
-					CameraY = 16 - PlayerMapYMoveTemp
+					PVars.CameraY = 16 - PlayerMapYMoveTemp
 				else
-					CameraY = 0
+					PVars.CameraY = 0
 				end
 			end
 			
 			--Calculations for X and Y of new map
-			if PlayerMapChange == 1 and (CameraX == 0 and CameraY == 0) then
-				PlayerMapChange = 0
+			if PVars.PlayerMapChange == 1 and (PVars.CameraX == 0 and PVars.CameraY == 0) then
+				PVars.PlayerMapChange = 0
 				MVars.StartX[PlayerID] = PlayerMapX
 				MVars.StartY[PlayerID] = PlayerMapY
-				DifferentMapXPlayer = (MVars.StartX[PlayerID] - MVars.PreviousX[PlayerID]) * 16
-				DifferentMapYPlayer = (MVars.StartY[PlayerID] - MVars.PreviousY[PlayerID]) * 16
-				if PlayerDirection == 1 then
+				PVars.DifferentMapXPlayer = (MVars.StartX[PlayerID] - MVars.PreviousX[PlayerID]) * 16
+				PVars.DifferentMapYPlayer = (MVars.StartY[PlayerID] - MVars.PreviousY[PlayerID]) * 16
+				if PVars.PlayerDirection == 1 then
 					MVars.StartX[PlayerID] = MVars.StartX[PlayerID] + 1
-				elseif PlayerDirection == 2 then
+				elseif PVars.PlayerDirection == 2 then
 					MVars.StartX[PlayerID] = MVars.StartX[PlayerID] - 1
-				elseif PlayerDirection == 3 then
+				elseif PVars.PlayerDirection == 3 then
 					MVars.StartY[PlayerID] = MVars.StartY[PlayerID] + 1
-				elseif PlayerDirection == 4 then
+				elseif PVars.PlayerDirection == 4 then
 					MVars.StartY[PlayerID] = MVars.StartY[PlayerID] - 1
 				end
 			--	console:log("YOU HAVE MOVED MAPS")
 				--For New Positions if player moves
 			--	console:log("X: " .. MVars.DifferentMapX[i] .. " Y: " .. MVars.DifferentMapY[i])
-				--if PlayerDirection == 4 then
+				--if PVars.PlayerDirection == 4 then
 				--	MVars.DifferentMapY[i] = MVars.DifferentMapY[i] + 16
 				--end
 			end
@@ -2830,22 +2810,22 @@ function CalculateRelativePositions()
 		TempX = ((MVars.CurrentX[i] - PlayerMapX) * 16) + MVars.DifferentMapX[i]
 		TempY = ((MVars.CurrentY[i] - PlayerMapY) * 16) + MVars.DifferentMapY[i]
 		if PlayerID ~= i and MVars.PlayerIDNick[i] ~= "None" then
-			if PlayerMapEntranceType == 0 and (PlayerMapIDPrev == MVars.CurrentMapID[i] or PlayerMapID == MVars.PreviousMapID[i]) and MVars.MapChange[i] == 0 then
+			if PVars.PlayerMapEntranceType == 0 and (PVars.PlayerMapIDPrev == MVars.CurrentMapID[i] or PVars.PlayerMapID == MVars.PreviousMapID[i]) and MVars.MapChange[i] == 0 then
 				MVars.PlayerVis[i] = 1
-				TempX2 = TempX + DifferentMapXPlayer
-				TempY2 = TempY + DifferentMapYPlayer
+				TempX2 = TempX + PVars.DifferentMapXPlayer
+				TempY2 = TempY + PVars.DifferentMapYPlayer
 			else
 				TempX2 = TempX
 				TempY2 = TempY
 			end
 			--MVars.AnimationX is -16 - 16 and is purely to animate sprites
-			--CameraX can be between -16 and 16 and is to get the camera movement while moving
+			--PVars.CameraX can be between -16 and 16 and is to get the camera movement while moving
 			--Current X is the X the current sprite has
 			--Player X is the X the player sprite has
-			MVars.RelativeX[i] = MVars.AnimationX[i] + CameraX + TempX2
-			MVars.RelativeY[i] = MVars.AnimationY[i] + CameraY + TempY2
+			MVars.RelativeX[i] = MVars.AnimationX[i] + PVars.CameraX + TempX2
+			MVars.RelativeY[i] = MVars.AnimationY[i] + PVars.CameraY + TempY2
 			--console:log("X: " .. MVars.RelativeX[i] .. " " .. MVars.CurrentX[i] .. " " .. PlayerMapX .. " " .. MVars.DifferentMapX[i])
-			--console:log("Y: " .. MVars.RelativeY[i] .. " " .. MVars.AnimationY[i] .. " " .. CameraY .. " " .. TempY)
+			--console:log("Y: " .. MVars.RelativeY[i] .. " " .. MVars.AnimationY[i] .. " " .. PVars.CameraY .. " " .. TempY)
 		end
 	end
 end
@@ -3749,7 +3729,7 @@ end
 --Send Data to clients
 function CreatePackett(RequestTemp, PackettTemp)
 	local FillerStuff = "F"
-	Packett = GameID .. Nickname .. PlayerID2 .. MVars.PlayerReceiveID .. RequestTemp .. PackettTemp .. MVars.CurrentX[PlayerID] .. MVars.CurrentY[PlayerID] .. MVars.Facing2[PlayerID] .. MVars.PlayerExtra1[PlayerID] .. MVars.PlayerExtra2[PlayerID] .. MVars.PlayerExtra3[PlayerID] .. MVars.PlayerExtra4[PlayerID] .. PlayerMapID .. PlayerMapIDPrev .. PlayerMapEntranceType .. MVars.StartX[PlayerID] .. MVars.StartY[PlayerID] .. FillerStuff .. "U"
+	Packett = GameID .. Nickname .. PlayerID2 .. MVars.PlayerReceiveID .. RequestTemp .. PackettTemp .. MVars.CurrentX[PlayerID] .. MVars.CurrentY[PlayerID] .. MVars.Facing2[PlayerID] .. MVars.PlayerExtra1[PlayerID] .. MVars.PlayerExtra2[PlayerID] .. MVars.PlayerExtra3[PlayerID] .. MVars.PlayerExtra4[PlayerID] .. PVars.PlayerMapID .. PVars.PlayerMapIDPrev .. PVars.PlayerMapEntranceType .. MVars.StartX[PlayerID] .. MVars.StartY[PlayerID] .. FillerStuff .. "U"
 end
 
 function SendData(DataType, Socket, ExtraData)
@@ -3979,7 +3959,7 @@ function Interact()
 			--SCRIPTS. LOCK AND PREVENT SPAM PRESS. 
 			if LockFromScript == 0 and Keypressholding == 0 and TooBusyByte == 0 then
 				--HIDE N SEEK AT DESK IN ROOM
-				if MasterClient == "h" and PlayerDirection == 3 and PlayerMapX == 1009 and PlayerMapY == 1009 and PlayerMapID == 100260 then
+				if MasterClient == "h" and PVars.PlayerDirection == 3 and PlayerMapX == 1009 and PlayerMapY == 1009 and PVars.PlayerMapID == 100260 then
 				--Server config through bedroom drawer
 					--For temp ram to load up script in 145227776 - 08A80000
 					--8004 is the temp var to get yes or no
@@ -3991,17 +3971,17 @@ function Interact()
 					if PlayerID ~= i and MVars.PlayerIDNick[i] ~= "None" then
 						TalkingDirX = PlayerMapX - MVars.CurrentX[i]
 						TalkingDirY = PlayerMapY - MVars.CurrentY[i]
-						if PlayerDirection == 1 and TalkingDirX == 1 and TalkingDirY == 0 then
+						if PVars.PlayerDirection == 1 and TalkingDirX == 1 and TalkingDirY == 0 then
 					--		ConsoleForText:print("Player Left")
 							
-						elseif PlayerDirection == 2 and TalkingDirX == -1 and TalkingDirY == 0 then
+						elseif PVars.PlayerDirection == 2 and TalkingDirX == -1 and TalkingDirY == 0 then
 					--		ConsoleForText:print("Player Right")
-						elseif PlayerDirection == 3 and TalkingDirY == 1 and TalkingDirX == 0 then
+						elseif PVars.PlayerDirection == 3 and TalkingDirY == 1 and TalkingDirX == 0 then
 					--		ConsoleForText:print("Player Up")
-						elseif PlayerDirection == 4 and TalkingDirY == -1 and TalkingDirX == 0 then
+						elseif PVars.PlayerDirection == 4 and TalkingDirY == -1 and TalkingDirX == 0 then
 					--		ConsoleForText:print("Player Down")
 						end
-						if (PlayerDirection == 1 and TalkingDirX == 1 and TalkingDirY == 0) or (PlayerDirection == 2 and TalkingDirX == -1 and TalkingDirY == 0) or (PlayerDirection == 3 and TalkingDirX == 0 and TalkingDirY == 1) or (PlayerDirection == 4 and TalkingDirX == 0 and TalkingDirY == -1) then
+						if (PVars.PlayerDirection == 1 and TalkingDirX == 1 and TalkingDirY == 0) or (PVars.PlayerDirection == 2 and TalkingDirX == -1 and TalkingDirY == 0) or (PVars.PlayerDirection == 3 and TalkingDirX == 0 and TalkingDirY == 1) or (PVars.PlayerDirection == 4 and TalkingDirX == 0 and TalkingDirY == -1) then
 						
 					--		ConsoleForText:print("Player Any direction")
 							emu:write16(Var8000Adr[1], 0) 
