@@ -26,9 +26,9 @@ function mod.GetGameVersion()
         end
     end
 
-    ConsoleForText:print(tableGameCodes[gameCode]["name"] .. " detected. Script Enabled.\n\n")
     EnableScript = true
     GameID = tableGameCodes[gameCode].gameID
+    ConsoleForText:print(tableGameCodes[gameCode]["name"] .. "[".. GameID  .."] detected. Script Enabled.\n\n")
 end
 
 return mod

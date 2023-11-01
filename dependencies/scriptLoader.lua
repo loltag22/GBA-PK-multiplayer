@@ -1,6 +1,11 @@
+local MVars = require "multiplayerVars"
+local scripts = {
+
+}
 local mod = {}
 
 function mod.Loadscript(ScriptNo)
+    console:log(ScriptNo)
 	local ScriptAddressTemp = 0
 	local ScriptAddressTemp1 = 0
 	--2 is where the script itself is, whereas 1 is the memory to force it to read that. 3 is an extra address to use alongside it, such as multi-choice
@@ -50,7 +55,7 @@ function mod.Loadscript(ScriptNo)
 				ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1)
 		--		LoadScriptIntoMemory()
 			--Host script
-			elseif ScriptNo == 1 then 
+			elseif ScriptNo == 1 then
 				emu:write16(Var8000Adr[2], 0) 
 				emu:write16(Var8000Adr[5], 0) 
 				ScriptAddressTemp = ScriptAddress2
@@ -1193,5 +1198,55 @@ function mod.Loadscript(ScriptNo)
 			end
 			
 end
+
+function mod.LoadScriptIntoMemory()
+    ConsoleForText:print("Cane")
+
+    --This puts the script at ScriptAddress into the memory, forcing it to load
+    
+        local u32 ScriptAddress = 50335400
+        local u32 ScriptAddress2 = 145227776
+        local ScriptAddressTemp = 0
+        local ScriptAddressTemp1 = 0
+                    ScriptAddressTemp = ScriptAddress
+                    ScriptAddressTemp1 = 0
+                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
+                    ScriptAddressTemp = ScriptAddressTemp + 4 
+                    ScriptAddressTemp1 = 0
+                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
+                    ScriptAddressTemp = ScriptAddressTemp + 4 
+                    --Either use 66048, 512, or 513.
+                    ScriptAddressTemp1 = 513
+                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
+                    ScriptAddressTemp = ScriptAddressTemp + 4
+                    --134654353 and 145293312 freezes the game
+                    ScriptAddressTemp1 = 0
+                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
+                    ScriptAddressTemp = ScriptAddressTemp + 4 
+                    ScriptAddressTemp1 = ScriptAddress2 + 1
+                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
+                    ScriptAddressTemp = ScriptAddressTemp + 4 
+                    ScriptAddressTemp1 = 0
+                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
+                    ScriptAddressTemp = ScriptAddressTemp + 4 
+                    ScriptAddressTemp1 = 0
+                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1)
+                    ScriptAddressTemp = ScriptAddressTemp + 4 
+                    ScriptAddressTemp1 = 0
+                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
+                    ScriptAddressTemp = ScriptAddressTemp + 4 
+                    ScriptAddressTemp1 = 0
+                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1)
+                    ScriptAddressTemp = ScriptAddressTemp + 4 
+                    ScriptAddressTemp1 = 0
+                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
+                    ScriptAddressTemp = ScriptAddressTemp + 4 
+                    ScriptAddressTemp1 = 0
+                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1)
+                    ScriptAddressTemp = ScriptAddressTemp + 4 
+                    ScriptAddressTemp1 = 0
+                    emu:write32(ScriptAddressTemp, ScriptAddressTemp1)
+                    --END Block
+    end
 
 return mod

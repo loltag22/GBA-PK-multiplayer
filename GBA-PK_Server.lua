@@ -165,72 +165,25 @@ function ApplyMovement(MovementType)
 		ScriptAddressTemp = ScriptAddressTemp + 2
 		ScriptAddressTemp1 = 65024
 		ROMCARD:write16(ScriptAddressTemp, ScriptAddressTemp1)
-		LoadScriptIntoMemory()
+		ScriptLoader.LoadScriptIntoMemory()
 	elseif MovementType == 1 then
 		ScriptAddressTemp = ScriptAddressTemp + 2
 		ScriptAddressTemp1 = 65025
 		ROMCARD:write16(ScriptAddressTemp, ScriptAddressTemp1)
-		LoadScriptIntoMemory()
+		ScriptLoader.LoadScriptIntoMemory()
 	elseif MovementType == 2 then
 		ScriptAddressTemp = ScriptAddressTemp + 2
 		ScriptAddressTemp1 = 65026
 		ROMCARD:write16(ScriptAddressTemp, ScriptAddressTemp1)
-		LoadScriptIntoMemory()
+		ScriptLoader.LoadScriptIntoMemory()
 	elseif MovementType == 3 then
 		ScriptAddressTemp = ScriptAddressTemp + 2
 		ScriptAddressTemp1 = 65027
 		ROMCARD:write16(ScriptAddressTemp, ScriptAddressTemp1)
-		LoadScriptIntoMemory()
+		ScriptLoader.LoadScriptIntoMemory()
 	end
 end
 
-function LoadScriptIntoMemory()
---This puts the script at ScriptAddress into the memory, forcing it to load
-
-	local u32 ScriptAddress = 50335400
-	local u32 ScriptAddress2 = 145227776
-	local ScriptAddressTemp = 0
-	local ScriptAddressTemp1 = 0
-				ScriptAddressTemp = ScriptAddress
-				ScriptAddressTemp1 = 0
-				emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-				ScriptAddressTemp = ScriptAddressTemp + 4 
-				ScriptAddressTemp1 = 0
-				emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-				ScriptAddressTemp = ScriptAddressTemp + 4 
-				--Either use 66048, 512, or 513.
-				ScriptAddressTemp1 = 513
-				emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-				ScriptAddressTemp = ScriptAddressTemp + 4
-				--134654353 and 145293312 freezes the game
-				ScriptAddressTemp1 = 0
-				emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-				ScriptAddressTemp = ScriptAddressTemp + 4 
-				ScriptAddressTemp1 = ScriptAddress2 + 1
-				emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-				ScriptAddressTemp = ScriptAddressTemp + 4 
-				ScriptAddressTemp1 = 0
-				emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-				ScriptAddressTemp = ScriptAddressTemp + 4 
-				ScriptAddressTemp1 = 0
-				emu:write32(ScriptAddressTemp, ScriptAddressTemp1)
-				ScriptAddressTemp = ScriptAddressTemp + 4 
-				ScriptAddressTemp1 = 0
-				emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-				ScriptAddressTemp = ScriptAddressTemp + 4 
-				ScriptAddressTemp1 = 0
-				emu:write32(ScriptAddressTemp, ScriptAddressTemp1)
-				ScriptAddressTemp = ScriptAddressTemp + 4 
-				ScriptAddressTemp1 = 0
-				emu:write32(ScriptAddressTemp, ScriptAddressTemp1) 
-				ScriptAddressTemp = ScriptAddressTemp + 4 
-				ScriptAddressTemp1 = 0
-				emu:write32(ScriptAddressTemp, ScriptAddressTemp1)
-				ScriptAddressTemp = ScriptAddressTemp + 4 
-				ScriptAddressTemp1 = 0
-				emu:write32(ScriptAddressTemp, ScriptAddressTemp1)
-				--END Block
-end
 
 function SendMultiplayerPackets(Offset, size, Socket)
 	local Packet = ""
