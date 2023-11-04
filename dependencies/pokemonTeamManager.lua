@@ -1,12 +1,17 @@
+local Globals = require "globalVars"
+
+local FRLGAddresses = {["ally"] = 33702532, ["enemy"] = 33701932}
 local gameAddresses = {
-    ["BPR1"] = {["ally"] = 33702532, ["enemy"] = 33701932},
-    ["BPG1"] = {["ally"] = 33702532, ["enemy"] = 33701932}
+    ["BPR1"] = FRLGAddresses,
+	["BPR2"] = FRLGAddresses,
+    ["BPG1"] = FRLGAddresses,
+    ["BPG2"] = FRLGAddresses
 }
 
 local mod = {}
 
 function mod.GetPokemonTeam()
-	local PokemonTeamAddress = gameAddresses[GameID]["ally"]
+	local PokemonTeamAddress = gameAddresses[Globals.GameID]["ally"]
 	local ReadTemp = ""
 
 	for j = 1, 6 do
@@ -20,11 +25,11 @@ function mod.GetPokemonTeam()
 			end
 		end
 	end
-	--	ConsoleForText:print("EnemyPokemon 1 data: " .. Pokemon[2])
+	--	Globals.ConsoleForText:print("EnemyPokemon 1 data: " .. Pokemon[2])
 end
 
 function mod.SetEnemyPokemonTeam(EnemyPokemonNo, EnemyPokemonPos)
-	local PokemonTeamAddress = gameAddresses[GameID]["enemy"]
+	local PokemonTeamAddress = gameAddresses[Globals.GameID]["enemy"]
 	local ReadTemp = ""
 	local String1 = 0
 	local String2 = 0

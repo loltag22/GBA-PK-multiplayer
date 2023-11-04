@@ -1,6 +1,6 @@
 local IPAddress, Port = "127.0.0.1", 4096
 local MaxPlayers = 4
-local Nickname = ""
+Nickname = ""
 
 --for testing porpuse I will use absulute path
 --package.path = "./scripts/dependencies/?.lua;" .. package.path
@@ -12,11 +12,9 @@ local PokemonTeamManager = require "pokemonTeamManager"
 local MVars = require "multiplayerVars"
 local PVars = require "playerVars"
 local ScriptLoader = require "scriptLoader"
+local Globals = require "globalVars"
 
-
-GameID = ""
 local ConfirmPackett = 0
-EnableScript = false
 local ClientConnection
 
 
@@ -58,27 +56,23 @@ local FFTimer = 0
 local FFTimer2 = 0
 local ScreenData = 0
 
-local Pokemon = {"","","","","",""}
+Pokemon = {"","","","","",""} -- maybe local
 
-local EnemyPokemon = {"","","","","",""}
+EnemyPokemon = {"","","","","",""}
 
-ConsoleForText = nil
 local Keypressholding = 0
 local LockFromScript = 0
 local HideSeek = 0
 local HideSeekTimer = 0
-ROMCARD = nil
-if not (emu == nil) then ROMCARD = emu.memory.cart0 end
+if not (emu == nil) then Globals.ROMCARD = emu.memory.cart0 end -- TODO sposta in una sorta di init dello script
 local BufferString = "None"
 local PrevExtraAdr = 0
 local SendTimer = 0
-local Var8000 = {}
-local u32 Var8000Adr = {}
 local Startvaraddress = 0
 local TextSpeedWait = 0
 local OtherPlayerHasCancelled = 0
 local TradeVars = {0,0,0,0,"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"}
-local EnemyTradeVars = {0,0,0,0,0}
+EnemyTradeVars = {0,0,0,0,0} --local probably
 local BattleVars = {0,0,0,0,0,0,0,0,0,0,0}
 local EnemyBattleVars = {0,0,0,0,0,0,0,0,0,0,0}
 local BufferVars = {0,0,0}
@@ -100,13 +94,13 @@ function ClearAllVar()
 	local MultFlags = 0
 	LockFromScript = 0
 	
-	 GameID = ""
+	Globals.Globals.GameID = ""
 --	 Nickname = ""
-	 ConfirmPackett = 0
-	 EnableScript = false
+	ConfirmPackett = 0
+	Globals.Globals.EnableScript = false
 	 
-	 ScriptTime = 0
-	 initialized = 0
+	ScriptTime = 0
+	initialized = 0
 
 --Server Switches
 
@@ -129,13 +123,13 @@ end
 
 function FixAddress()
 	local MultichoiceAdr = 0
-		if GameID == "BPR1" then
+		if Globals.GameID == "BPR1" then
 			MultichoiceAdr = 138282176
-		elseif GameID == "BPR2" then
+		elseif Globals.GameID == "BPR2" then
 			MultichoiceAdr = 138282288
-		elseif GameID == "BPG1" then
+		elseif Globals.GameID == "BPG1" then
 			MultichoiceAdr = 138281724
-		elseif GameID == "BPG2" then
+		elseif Globals.GameID == "BPG2" then
 			MultichoiceAdr = 138281836
 		end
 	if PrevExtraAdr ~= 0 then
@@ -151,35 +145,35 @@ function ApplyMovement(MovementType)
 	local ScriptAddressTemp1 = 0
 	ScriptAddressTemp = ScriptAddress2
 	ScriptAddressTemp1 = 16732010
-	ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1)
+	Globals.ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1)
 	ScriptAddressTemp = ScriptAddressTemp + 4
 	ScriptAddressTemp1 = 145227790
-	ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1)
+	Globals.ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1)
 	ScriptAddressTemp = ScriptAddressTemp + 4
 	ScriptAddressTemp1 = 1811939409
-	ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1)
+	Globals.ROMCARD:write32(ScriptAddressTemp, ScriptAddressTemp1)
 	ScriptAddressTemp = ScriptAddressTemp + 4
 	ScriptAddressTemp1 = 65282
-	ROMCARD:write16(ScriptAddressTemp, ScriptAddressTemp1)
+	Globals.ROMCARD:write16(ScriptAddressTemp, ScriptAddressTemp1)
 	if MovementType == 0 then
 		ScriptAddressTemp = ScriptAddressTemp + 2
 		ScriptAddressTemp1 = 65024
-		ROMCARD:write16(ScriptAddressTemp, ScriptAddressTemp1)
+		Globals.ROMCARD:write16(ScriptAddressTemp, ScriptAddressTemp1)
 		ScriptLoader.LoadScriptIntoMemory()
 	elseif MovementType == 1 then
 		ScriptAddressTemp = ScriptAddressTemp + 2
 		ScriptAddressTemp1 = 65025
-		ROMCARD:write16(ScriptAddressTemp, ScriptAddressTemp1)
+		Globals.ROMCARD:write16(ScriptAddressTemp, ScriptAddressTemp1)
 		ScriptLoader.LoadScriptIntoMemory()
 	elseif MovementType == 2 then
 		ScriptAddressTemp = ScriptAddressTemp + 2
 		ScriptAddressTemp1 = 65026
-		ROMCARD:write16(ScriptAddressTemp, ScriptAddressTemp1)
+		Globals.ROMCARD:write16(ScriptAddressTemp, ScriptAddressTemp1)
 		ScriptLoader.LoadScriptIntoMemory()
 	elseif MovementType == 3 then
 		ScriptAddressTemp = ScriptAddressTemp + 2
 		ScriptAddressTemp1 = 65027
-		ROMCARD:write16(ScriptAddressTemp, ScriptAddressTemp1)
+		Globals.ROMCARD:write16(ScriptAddressTemp, ScriptAddressTemp1)
 		ScriptLoader.LoadScriptIntoMemory()
 	end
 end
@@ -203,12 +197,12 @@ function SendMultiplayerPackets(Offset, size, Socket)
 				PacketAmount = PacketAmount + 1
 				ModifiedLoop = 20
 				ModifiedLoop2 = 0
-			--	ConsoleForText:print("Packet number: " .. PacketAmount)
+			--	Globals.ConsoleForText:print("Packet number: " .. PacketAmount)
 			elseif ModifiedSize <= 20 and ModifiedLoop == 0 then
 				PacketAmount = PacketAmount + 1
 				ModifiedLoop = ModifiedSize
 				ModifiedLoop2 = 0
-			--	ConsoleForText:print("Last packet. Number: " .. PacketAmount)
+			--	Globals.ConsoleForText:print("Last packet. Number: " .. PacketAmount)
 			end
 			if ModifiedLoop ~= 0 then
 				ModifiedLoop2 = ModifiedLoop2 + 1
@@ -220,7 +214,7 @@ function SendMultiplayerPackets(Offset, size, Socket)
 				end
 				if ModifiedLoop == 1 then
 					Socket:send(Packet)
-			--		ConsoleForText:print("Packet sent! Packet " .. Packet .. " end. Amount of loops: " .. ModifiedLoop2 .. " " .. Offset)
+			--		Globals.ConsoleForText:print("Packet sent! Packet " .. Packet .. " end. Amount of loops: " .. ModifiedLoop2 .. " " .. Offset)
 					Packet = ""
 					ModifiedLoop = 0
 				else
@@ -243,7 +237,7 @@ function ReceiveMultiplayerPackets(size, Socket)
 	local SizeMod = 0
 	--Using RAM 0263D000-0263DDFF for received data, as it seems free. If not, will modify later
 	local MultiplayerPacketSpace = 40095744
-	--ConsoleForText:print("TEST 1")
+	--Globals.ConsoleForText:print("TEST 1")
 	for i = 1, size do
 		--Inverse of i, size remaining. 1 = last. Also size represents hex bytes, which goes up to 255 in decimal
 		ModifiedSize = size - i + 1
@@ -252,14 +246,14 @@ function ReceiveMultiplayerPackets(size, Socket)
 			Packet = Socket:receive(60)
 			ModifiedLoop = 20
 			ModifiedLoop2 = 0
-	--		ConsoleForText:print("Packet number: " .. PacketAmount)
+	--		Globals.ConsoleForText:print("Packet number: " .. PacketAmount)
 		elseif ModifiedSize <= 20 and ModifiedLoop == 0 then
 			PacketAmount = PacketAmount + 1
 			SizeMod = ModifiedSize * 3
 			Packet = Socket:receive(SizeMod)
 			ModifiedLoop = ModifiedSize
 			ModifiedLoop2 = 0
-	--		ConsoleForText:print("Last packet. Number: " .. PacketAmount)
+	--		Globals.ConsoleForText:print("Last packet. Number: " .. PacketAmount)
 		end
 		if ModifiedLoop ~= 0 then
 			ModifiedLoop3 = ModifiedLoop2 * 3 + 1
@@ -269,10 +263,10 @@ function ReceiveMultiplayerPackets(size, Socket)
 			ModifiedRead = tonumber(ModifiedRead)
 			ModifiedRead = ModifiedRead - 100
 			emu:write8(MultiplayerPacketSpace, ModifiedRead)
-	--		ConsoleForText:print("Num: " .. ModifiedRead)
-	--		ConsoleForText:print("NUM: " .. ModifiedRead)
+	--		Globals.ConsoleForText:print("Num: " .. ModifiedRead)
+	--		Globals.ConsoleForText:print("NUM: " .. ModifiedRead)
 			if ModifiedLoop == 1 then
-		--		ConsoleForText:print("Packet " .. PacketAmount .. " end. Amount of loops: " .. ModifiedLoop2 .. " " .. MultiplayerPacketSpace)
+		--		Globals.ConsoleForText:print("Packet " .. PacketAmount .. " end. Amount of loops: " .. ModifiedLoop2 .. " " .. MultiplayerPacketSpace)
 				Packet = ""
 				ModifiedLoop = 0
 			else
@@ -385,7 +379,7 @@ function BattlescriptClassic()
 			if BattleVars[7] == 0 then
 				BattleVars[7] = 1
 			--	BattleVars[13] = ReadBuffers()
-			--	ConsoleForText:print("First")
+			--	Globals.ConsoleForText:print("First")
 			-- SEND DATA
 				CreatePackettSpecial("BAT2", MVars.Players[MVars.PlayerTalkingID])
 				
@@ -436,7 +430,7 @@ function BattlescriptClassic()
 				BattleVars[7] = 1
 			--	BattleVars[13] = ReadBuffers()
 			-- RECEIVEDATA
-			--	ConsoleForText:print("Second")
+			--	Globals.ConsoleForText:print("Second")
 			elseif BattleVars[7] == 1 and EnemyBattleVars[7] == 1 then
 				if BattleVars[12] >= 32 then
 					BattleVars[12] = BattleVars[12] - 32
@@ -488,7 +482,7 @@ function WriteRom(RomOffset, RomVar, Length)
 		RomVarSeperate = string.sub(RomVar, String1, String2)
 		RomVarSeperate = tonumber(RomVarSeperate)
 		RomVarSeperate = RomVarSeperate - 1000000000
-		ROMCARD:write32(RomOffset2, RomVarSeperate)
+		Globals.ROMCARD:write32(RomOffset2, RomVarSeperate)
 		RomOffset2 = RomOffset2 + 4
 	end
 end
@@ -527,20 +521,20 @@ function Tradescript()
 		TradeVars[4] = 1
 		ScriptLoader.Loadscript(14)
 
---	if TempVar2 == 0 then ConsoleForText:print("1: " .. TradeVars[1] .. " 8001: " .. Var8000[2] .. " OtherPlayerHasCancelled: " .. OtherPlayerHasCancelled .. " EnemyTradeVars[1]: " .. EnemyTradeVars[1]) end
+--	if TempVar2 == 0 then Globals.ConsoleForText:print("1: " .. TradeVars[1] .. " 8001: " .. Globals.Var8000[2] .. " OtherPlayerHasCancelled: " .. OtherPlayerHasCancelled .. " EnemyTradeVars[1]: " .. EnemyTradeVars[1]) end
 
 	--Text is finished before trade
-	elseif Var8000[2] ~= 0 and TradeVars[4] == 1 and TradeVars[1] == 0 then
+	elseif Globals.Var8000[2] ~= 0 and TradeVars[4] == 1 and TradeVars[1] == 0 then
 		TradeVars[1] = 1
 		TradeVars[2] = 0
 		TradeVars[3] = 0
 		TradeVars[4] = 0
-		Var8000[1] = 0
-		Var8000[2] = 0
+		Globals.Var8000[1] = 0
+		Globals.Var8000[2] = 0
 		ScriptLoader.Loadscript(12)
 	
 	--You have canceled or have not selected a valid pokemon slot
-	elseif Var8000[2] == 1 and TradeVars[1] == 1 then
+	elseif Globals.Var8000[2] == 1 and TradeVars[1] == 1 then
 		ScriptLoader.Loadscript(16)
 		SendData("CTRA",MVars.Players[MVars.PlayerTalkingID])
 		LockFromScript = 0
@@ -548,7 +542,7 @@ function Tradescript()
 		TradeVars[2] = 0
 		TradeVars[3] = 0
 	--The other player has canceled
-	elseif Var8000[2] == 2 and TradeVars[1] == 1 and OtherPlayerHasCancelled ~= 0 then
+	elseif Globals.Var8000[2] == 2 and TradeVars[1] == 1 and OtherPlayerHasCancelled ~= 0 then
 		OtherPlayerHasCancelled = 0
 		ScriptLoader.Loadscript(19)
 		LockFromScript = 7
@@ -557,9 +551,9 @@ function Tradescript()
 		TradeVars[3] = 0
 	
 	--You have finished your selection
-	elseif Var8000[2] == 2 and TradeVars[1] == 1 and OtherPlayerHasCancelled == 0 then
+	elseif Globals.Var8000[2] == 2 and TradeVars[1] == 1 and OtherPlayerHasCancelled == 0 then
 		--You just finished. Display waiting
-		TradeVars[3] = Var8000[5]
+		TradeVars[3] = Globals.Var8000[5]
 		TradeVars[5] = ReadBuffers(Buffer2, 4)
 	--	TradeVars[6] = TradeVars[5] .. 5294967295
 	--	WriteBuffers(Buffer1, TradeVars[6], 5)
@@ -574,9 +568,9 @@ function Tradescript()
 		end
 	elseif TradeVars[1] == 2 then
 		--Wait for other player
-		if Var8000[2] ~= 0 then TradeVars[2] = 1 end
+		if Globals.Var8000[2] ~= 0 then TradeVars[2] = 1 end
 		--If they cancel
-		if Var8000[2] ~= 0 and OtherPlayerHasCancelled ~= 0 then
+		if Globals.Var8000[2] ~= 0 and OtherPlayerHasCancelled ~= 0 then
 			OtherPlayerHasCancelled = 0
 			ScriptLoader.Loadscript(19)
 			LockFromScript = 7
@@ -585,7 +579,7 @@ function Tradescript()
 			TradeVars[3] = 0
 			
 		--If other player has finished selecting
-		elseif Var8000[2] ~= 0 and ((EnemyTradeVars[2] == 1 and EnemyTradeVars[1] == 2) or EnemyTradeVars[1] == 3) then
+		elseif Globals.Var8000[2] ~= 0 and ((EnemyTradeVars[2] == 1 and EnemyTradeVars[1] == 2) or EnemyTradeVars[1] == 3) then
 			EnemyTradeVars[6] = EnemyTradeVars[5] .. 5294967295
 			WriteBuffers(Buffer1, EnemyTradeVars[6], 5)
 			TradeVars[1] = 3
@@ -595,7 +589,7 @@ function Tradescript()
 		end
 	elseif TradeVars[1] == 3 then
 		--If you decline
-		if Var8000[2] == 1 then
+		if Globals.Var8000[2] == 1 then
 			SendData("ROFF", MVars.Players[MVars.PlayerTalkingID])
 			ScriptLoader.Loadscript(16)
 			LockFromScript = 7
@@ -604,7 +598,7 @@ function Tradescript()
 			TradeVars[3] = 0
 			
 		--If you accept and they deny
-		elseif Var8000[2] == 2 and OtherPlayerHasCancelled ~= 0 then
+		elseif Globals.Var8000[2] == 2 and OtherPlayerHasCancelled ~= 0 then
 			OtherPlayerHasCancelled = 0
 			ScriptLoader.Loadscript(9)
 			LockFromScript = 7
@@ -613,7 +607,7 @@ function Tradescript()
 			TradeVars[3] = 0
 	
 		--If you accept and there is no denial
-		elseif Var8000[2] == 2 and OtherPlayerHasCancelled == 0 then
+		elseif Globals.Var8000[2] == 2 and OtherPlayerHasCancelled == 0 then
 			--If other player isn't finished selecting, wait. Otherwise, go straight into trade.
 			if EnemyTradeVars[1] == 4 and EnemyTradeVars[2] == 2 then
 				TradeVars[1] = 5
@@ -629,9 +623,9 @@ function Tradescript()
 	end
 	elseif TradeVars[1] == 4 then
 		--Wait for other player
-		if Var8000[2] ~= 0 then TradeVars[2] = 2 end
+		if Globals.Var8000[2] ~= 0 then TradeVars[2] = 2 end
 		--If they cancel
-		if Var8000[2] ~= 0 and OtherPlayerHasCancelled ~= 0 then
+		if Globals.Var8000[2] ~= 0 and OtherPlayerHasCancelled ~= 0 then
 			OtherPlayerHasCancelled = 0
 			ScriptLoader.Loadscript(19)
 			LockFromScript = 7
@@ -640,21 +634,21 @@ function Tradescript()
 			TradeVars[3] = 0
 			
 		--If other player has finished selecting
-		elseif Var8000[2] ~= 0 and (EnemyTradeVars[2] == 2 or EnemyTradeVars[1] == 5) then
+		elseif Globals.Var8000[2] ~= 0 and (EnemyTradeVars[2] == 2 or EnemyTradeVars[1] == 5) then
 			TradeVars[2] = 2
 			TradeVars[1] = 5
 			local TeamPos = EnemyTradeVars[3] + 1
 			PokemonTeamManager.SetEnemyPokemonTeam(TeamPos, 1)
 			ScriptLoader.Loadscript(17)
 		else
-	--		console:log("VARS: " .. Var8000[2] .. " " .. EnemyTradeVars[2] .. " " .. EnemyTradeVars[1])
+	--		console:log("VARS: " .. Globals.Var8000[2] .. " " .. EnemyTradeVars[2] .. " " .. EnemyTradeVars[1])
 		end
 	elseif TradeVars[1] == 5 then
 		--Text for trade
-		if Var8000[2] == 0 then
+		if Globals.Var8000[2] == 0 then
 			ScriptLoader.Loadscript(23)
 		--After trade
-		elseif Var8000[2] ~= 0 then
+		elseif Globals.Var8000[2] ~= 0 then
 			TradeVars[1] = 0
 			TradeVars[2] = 0
 			TradeVars[3] = 0
@@ -670,7 +664,7 @@ function Tradescript()
 	
 	if SendTimer == 0 then CreatePackettSpecial("TRAD", MVars.Players[MVars.PlayerTalkingID]) end
 end
-		--	if Var8000[2] ~= 0 then
+		--	if Globals.Var8000[2] ~= 0 then
 		--		ScriptLoader.Loadscript(16)
 		--		SendData("CTRA", Player2)
 		--		LockFromScript = 7
@@ -713,7 +707,7 @@ function GetPosition()
 	local u32 PlayerYAddress = 0
 	local u32 PlayerFaceAddress = 0
 	local Bike = 0
-	if GameID == "BPR1" or GameID == "BPR2" then
+	if Globals.GameID == "BPR1" or Globals.GameID == "BPR2" then
 		--Addresses for Firered
 		PlayerXAddress = 33779272
 		PlayerYAddress = 33779274
@@ -724,7 +718,7 @@ function GetPosition()
 		ConnectionTypeAddress = 33785351
 		Bike = emu:read16(BikeAddress)
 		if Bike > 3000 then Bike = Bike - 3352 end
-	elseif GameID == "BPG1" or GameID == "BPG2" then
+	elseif Globals.GameID == "BPG1" or Globals.GameID == "BPG2" then
 		--Addresses for Leafgreen
 		PlayerXAddress = 33779272
 		PlayerYAddress = 33779274
@@ -763,12 +757,12 @@ function GetPosition()
 	if ((Bike == 160 or Bike == 272) or (Bike == 128 or Bike == 240)) then
 		MVars.PlayerExtra2[PlayerID] = 0
 		MVars.PlayerExtra3[PlayerID] = 0
-	--	if TempVar2 == 0 then ConsoleForText:print("Male on Foot") end
+	--	if TempVar2 == 0 then Globals.ConsoleForText:print("Male on Foot") end
 	--Male Firered Biking Sprite
 	elseif (Bike == 320 or Bike == 432 or Bike == 288 or Bike == 400) then
 		MVars.PlayerExtra2[PlayerID] = 0
 		MVars.PlayerExtra3[PlayerID] = 1
-	--	if TempVar2 == 0 then ConsoleForText:print("Male on Bike") end
+	--	if TempVar2 == 0 then Globals.ConsoleForText:print("Male on Bike") end
 	--Male Firered Surfing Sprite
 	elseif (Bike == 624 or Bike == 736 or Bike == 592 or Bike == 704) then
 		MVars.PlayerExtra2[PlayerID] = 0
@@ -777,19 +771,19 @@ function GetPosition()
 	elseif ((Bike == 392 or Bike == 504) or (Bike == 360 or Bike == 472)) then
 		MVars.PlayerExtra2[PlayerID] = 1
 		MVars.PlayerExtra3[PlayerID] = 0
-	--	if TempVar2 == 0 then ConsoleForText:print("Female on Foot") end
+	--	if TempVar2 == 0 then Globals.ConsoleForText:print("Female on Foot") end
 	--Female Biking sprite
 	elseif ((Bike == 552 or Bike == 664) or (Bike == 520 or Bike == 632)) then
 		MVars.PlayerExtra2[PlayerID] = 1
 		MVars.PlayerExtra3[PlayerID] = 1
-	--	if TempVar2 == 0 then ConsoleForText:print("Female on Bike") end
+	--	if TempVar2 == 0 then Globals.ConsoleForText:print("Female on Bike") end
 	--Female Firered Surfing Sprite
 	elseif (Bike == 720 or Bike == 832 or Bike == 688 or Bike == 800) then
 		MVars.PlayerExtra2[PlayerID] = 1
 		MVars.PlayerExtra3[PlayerID] = 2
 	else
 	--If in bag when connecting will automatically be firered male
-	--	if TempVar2 == 0 then ConsoleForText:print("Bag/Unknown") end
+	--	if TempVar2 == 0 then Globals.ConsoleForText:print("Bag/Unknown") end
 	end
 	if MVars.PlayerExtra1[PlayerID] ~= 0 then MVars.PlayerExtra1[PlayerID] = MVars.PlayerExtra1[PlayerID] - 100
 	else MVars.PlayerExtra1[PlayerID] = 0
@@ -927,14 +921,14 @@ function NoPlayersIfScreen()
 	local u32 ScreenDataAddress1 = 0
 	local u32 ScreenDataAddress3 = 0
 	local u32 ScreenDataAddress4 = 0
-	if GameID == "BPR1" or GameID == "BPR2" then
+	if Globals.GameID == "BPR1" or Globals.GameID == "BPR2" then
 		--Address for Firered
 		ScreenDataAddress1 = 33691280
 		--For intro
 		ScreenDataAddress3 = 33686716
 		--Check for battle
 		ScreenDataAddress4 = 33685514
-	elseif GameID == "BPG1" or GameID == "BPG2" then
+	elseif Globals.GameID == "BPG1" or Globals.GameID == "BPG2" then
 		--Address for Leafgreen
 		ScreenDataAddress1 = 33691280
 		--For intro
@@ -946,7 +940,7 @@ function NoPlayersIfScreen()
 		ScreenData3 = emu:read8(ScreenDataAddress3)
 		ScreenData4 = emu:read8(ScreenDataAddress4)
 		
-	--	if TempVar2 == 0 then ConsoleForText:print("ScreenData: " .. ScreenData1 .. " " .. ScreenData2 .. " " .. ScreenData3) end
+	--	if TempVar2 == 0 then Globals.ConsoleForText:print("ScreenData: " .. ScreenData1 .. " " .. ScreenData2 .. " " .. ScreenData3) end
 		--If screen data are these then hide players
 		if (ScreenData3 ~= 80 or (ScreenData1 > 0)) and (LockFromScript == 0 or LockFromScript == 8 or LockFromScript == 9) then
 			ScreenData = 0
@@ -1013,7 +1007,7 @@ if AnimationMovementX < 0 then
 	elseif AnimateID == 6 then
 		PlayerAnimationFrameMax[PlayerNo] = 9
 		MVars.AnimationX[PlayerNo] = MVars.AnimationX[PlayerNo] - 4
-	--	ConsoleForText:print("Frame: " .. PlayerAnimationFrame)
+	--	Globals.ConsoleForText:print("Frame: " .. PlayerAnimationFrame)
 		if PlayerAnimationFrame[PlayerNo] > 5 then
 			if PlayerAnimationFrame2[PlayerNo] == 0 then
 				SpriteGenerator.createChars(Charpic,"runSideLCicle1",SpriteNumber, ScreenData)
@@ -1064,7 +1058,7 @@ if AnimationMovementX < 0 then
 		end
 	elseif AnimateID == 14 then
 	--	console:log("RUNNING RIGHT. FRAME: " .. PlayerAnimationFrame .. " FRAME2: " .. PlayerAnimationFrame2)
-	--	ConsoleForText:print("Running")
+	--	Globals.ConsoleForText:print("Running")
 		PlayerAnimationFrameMax[PlayerNo] = 9
 		MVars.AnimationX[PlayerNo] = MVars.AnimationX[PlayerNo] + 4
 		if PlayerAnimationFrame[PlayerNo] > 5 then
@@ -1077,7 +1071,7 @@ if AnimationMovementX < 0 then
 			SpriteGenerator.createChars(Charpic,"runSideLIdle",SpriteNumber, ScreenData)
 		end
 	elseif AnimateID == 15 then
-	--	ConsoleForText:print("Bike")
+	--	Globals.ConsoleForText:print("Bike")
 		PlayerAnimationFrameMax[PlayerNo] = 6
 		MVars.AnimationX[PlayerNo] = MVars.AnimationX[PlayerNo] + ((AnimationMovementX*16)/3)
 		if PlayerAnimationFrame[PlayerNo] >= 1 and PlayerAnimationFrame[PlayerNo] < 5 then
@@ -1493,17 +1487,17 @@ function HandleSprites()
 end
 
 function CalculateCamera()
-	--	ConsoleForText:print("Player X camera: " .. PlayerMapXMove .. "Player Y camera: " .. PlayerMapYMove)
-	--	ConsoleForText:print("PlayerMapXMove: " .. PlayerMapXMove .. "PlayerMapYMove: " .. PlayerMapYMove .. "PlayerMapXMovePREV: " .. PVars.PlayerMapXMovePrev .. "PVars.PlayerMapYMovePrev: " .. PVars.PlayerMapYMovePrev)
+	--	Globals.ConsoleForText:print("Player X camera: " .. PlayerMapXMove .. "Player Y camera: " .. PlayerMapYMove)
+	--	Globals.ConsoleForText:print("PlayerMapXMove: " .. PlayerMapXMove .. "PlayerMapYMove: " .. PlayerMapYMove .. "PlayerMapXMovePREV: " .. PVars.PlayerMapXMovePrev .. "PVars.PlayerMapYMovePrev: " .. PVars.PlayerMapYMovePrev)
 		
 		local PlayerMapXMoveTemp = 0
 		local PlayerMapYMoveTemp = 0
 		
-		if GameID == "BPR1" or GameID == "BPR2" then
+		if Globals.GameID == "BPR1" or Globals.GameID == "BPR2" then
 			--Addresses for Firered
 			PlayerMapXMoveAddress = 33687132
 			PlayerMapYMoveAddress = 33687134
-		elseif GameID == "BPG1" or GameID == "BPG2"  then
+		elseif Globals.GameID == "BPG1" or Globals.GameID == "BPG2"  then
 			--Addresses for Leafgreen
 			PlayerMapXMoveAddress = 33687132
 			PlayerMapYMoveAddress = 33687134
@@ -1593,7 +1587,7 @@ end
 
 
 function DrawChars()
-	if EnableScript == true then
+	if Globals.EnableScript == true then
 		NoPlayersIfScreen()
 				--Make sure the sprites are loaded
 			
@@ -1635,7 +1629,7 @@ function DrawPlayer(PlayerNo)
 		local SpriteNo3 = SpriteNo1 + 8
 		--For extra char if biking
 		local SpriteNo4 = SpriteNo1 + 16
-		if GameID == "BPR1" or GameID == "BPR2" then
+		if Globals.GameID == "BPR1" or Globals.GameID == "BPR2" then
 			--Addresses for Firered
 			Player1Address = 50345200 - ((PlayerNo - 1) * 24)
 			PlayerYAddress = Player1Address
@@ -1646,7 +1640,7 @@ function DrawPlayer(PlayerNo)
 			PlayerExtra2Address = PlayerYAddress + 5
 			PlayerExtra3Address = PlayerYAddress + 6
 			PlayerExtra4Address = PlayerYAddress + 7
-		elseif GameID == "BPG1" or GameID == "BPG2" then
+		elseif Globals.GameID == "BPG1" or Globals.GameID == "BPG2" then
 			--Addresses for Leafgreen
 			Player1Address = 50345200 - ((PlayerNo - 1) * 24)
 			PlayerYAddress = Player1Address
@@ -1976,7 +1970,7 @@ function ErasePlayer(PlayerNo)
 		local u32 PlayerExtra2Address = 0
 		local u32 PlayerExtra3Address = 0
 		local u32 PlayerExtra4Address = 0
-		if GameID == "BPR1" or GameID == "BPR2" then
+		if Globals.GameID == "BPR1" or Globals.GameID == "BPR2" then
 			--Addresses for Firered
 			Player1Address = 50345200 - ((PlayerNo - 1) * 24)
 			PlayerYAddress = Player1Address
@@ -1987,7 +1981,7 @@ function ErasePlayer(PlayerNo)
 			PlayerExtra2Address = PlayerYAddress + 5
 			PlayerExtra3Address = PlayerYAddress + 6
 			PlayerExtra4Address = PlayerYAddress + 7
-		elseif GameID == "BPG1" or GameID == "BPG2" then
+		elseif Globals.GameID == "BPG1" or Globals.GameID == "BPG2" then
 			--Addresses for Leafgreen
 			Player1Address = 50345200 - ((PlayerNo - 1) * 24)
 			PlayerYAddress = Player1Address
@@ -2046,14 +2040,14 @@ function AddPlayerToConsole(PlayerNumber)
 	local MultiplayerPlayerNumber = PlayerNumber + 1
 	local ConsoleLine = PlayerNumber + 8
 	if MVars.MultiplayerConsoleFlags[MultiplayerPlayerNumber] == 0 and MVars.PlayerIDNick[PlayerNumber] ~= "None" then
-		ConsoleForText:moveCursor(0,4)
+		Globals.ConsoleForText:moveCursor(0,4)
 		MVars.MultiplayerConsoleFlags[1] = MVars.MultiplayerConsoleFlags[1] + 1
-		ConsoleForText:print("MVars.Players found!                                                  ")
+		Globals.ConsoleForText:print("MVars.Players found!                                                  ")
 			
 			
 		MVars.MultiplayerConsoleFlags[MultiplayerPlayerNumber] = 1
-		ConsoleForText:moveCursor(0,ConsoleLine)
-		ConsoleForText:print("Player " .. PlayerNumber .. ": " .. MVars.PlayerIDNick[PlayerNumber]  .. "                            ")
+		Globals.ConsoleForText:moveCursor(0,ConsoleLine)
+		Globals.ConsoleForText:print("Player " .. PlayerNumber .. ": " .. MVars.PlayerIDNick[PlayerNumber]  .. "                            ")
 		
 	end
 end
@@ -2065,12 +2059,12 @@ function RemovePlayerFromConsole(PlayerNumber)
 		MVars.MultiplayerConsoleFlags[1] = MVars.MultiplayerConsoleFlags[1] - 1
 		if MVars.MultiplayerConsoleFlags[1] <= 0 then
 			MVars.MultiplayerConsoleFlags[1] = 0
-			ConsoleForText:moveCursor(0,4)
-			ConsoleForText:print("Searching for player...                                                ")
+			Globals.ConsoleForText:moveCursor(0,4)
+			Globals.ConsoleForText:print("Searching for player...                                                ")
 		end
 		MVars.MultiplayerConsoleFlags[MultiplayerPlayerNumber] = 0
-		ConsoleForText:moveCursor(0,ConsoleLine)
-		ConsoleForText:print("                                                                     ")
+		Globals.ConsoleForText:moveCursor(0,ConsoleLine)
+		Globals.ConsoleForText:print("                                                                     ")
 		
 	end
 end
@@ -2079,22 +2073,22 @@ end
 
 function GetNewGame()
     ClearAllVar()
-	if ConsoleForText == nil then
-		ConsoleForText = console:createBuffer("GBA-PK SERVER")
+	if Globals.ConsoleForText == nil then
+		Globals.ConsoleForText = console:createBuffer("GBA-PK SERVER")
 	end
-	ConsoleForText:clear()
-	ConsoleForText:moveCursor(0,0)
-	ConsoleForText:print("A new game has started")
-	ConsoleForText:moveCursor(0,1)
+	Globals.ConsoleForText:clear()
+	Globals.ConsoleForText:moveCursor(0,0)
+	Globals.ConsoleForText:print("A new game has started")
+	Globals.ConsoleForText:moveCursor(0,1)
 	FFTimer2 = os.time()
 	GameChecker.GetGameVersion()
 end
 
 function shutdownGame()
     ClearAllVar()
-	ConsoleForText:clear()
-	ConsoleForText:moveCursor(0,0)
-	ConsoleForText:print("The game was shutdown")
+	Globals.ConsoleForText:clear()
+	Globals.ConsoleForText:moveCursor(0,0)
+	Globals.ConsoleForText:print("The game was shutdown")
 end
 
 --Begin Networking
@@ -2106,10 +2100,10 @@ function CreateNetwork()
 		SocketMain:bind(nil, Port)
 		SocketMain:listen()
 		MasterClient = "h"
-		ConsoleForText:moveCursor(0,3)
-		ConsoleForText:print("Hosting game. Port forwarding may be required.")
-		ConsoleForText:moveCursor(0,4)
-		ConsoleForText:print("Searching for player...                                                ")
+		Globals.ConsoleForText:moveCursor(0,3)
+		Globals.ConsoleForText:print("Hosting game. Port forwarding may be required.")
+		Globals.ConsoleForText:moveCursor(0,4)
+		Globals.ConsoleForText:print("Searching for player...                                                ")
 	end
 end
 function SetPokemonData(PokeData)
@@ -2124,7 +2118,7 @@ end
 function ReceiveData(Clientell)
 			local RECEIVEDID = 0
 			local RECEIVEDID2 = 0
-			if EnableScript == true then
+			if Globals.EnableScript == true then
 			--Check if anybody wants to connect
 				if (Clientell:hasdata()) then
 				local ReadData = Clientell:receive(64)
@@ -2142,8 +2136,8 @@ function ReceiveData(Clientell)
 					RECEIVEDID2 = ReceiveDataSmall[4] - 1000
 					ReceiveDataSmall[5] = string.sub(ReadData,17,20)
 					ReceiveDataSmall[17] = string.sub(ReadData,64,64)
-				--	if ReceiveDataSmall[4] == "BATT" then ConsoleForText:print("Valid package! Contents: " .. ReadData) end
-				--	ConsoleForText:print("Type: " .. ReceiveDataSmall[4])
+				--	if ReceiveDataSmall[4] == "BATT" then Globals.ConsoleForText:print("Valid package! Contents: " .. ReadData) end
+				--	Globals.ConsoleForText:print("Type: " .. ReceiveDataSmall[4])
 				--	if ReceiveDataSmall[5] == "POKE" then console:log("Player " .. ReceiveDataSmall[4] .. " is being sent pokemon by " .. ReceiveDataSmall[3]) end
 					if ReceiveDataSmall[17] == "U" and ReceiveDataSmall[4] > PlayerID2 then
 						if MVars.PlayerIDNick[RECEIVEDID2] ~= "None" then
@@ -2242,8 +2236,8 @@ function ReceiveData(Clientell)
 							ReturnConnectionType = ReceiveDataSmall[5]
 							MVars.timeout[RECEIVEDID] = timeoutmax
 						
-					--	ConsoleForText:print("Valid package! Contents: " .. ReadData)
-				--	if ReceiveDataSmall[5] == "DTRA" then ConsoleForText:print("Locktype: " .. LockFromScript) end
+					--	Globals.ConsoleForText:print("Valid package! Contents: " .. ReadData)
+				--	if ReceiveDataSmall[5] == "DTRA" then Globals.ConsoleForText:print("Locktype: " .. LockFromScript) end
 						
 						if ReceiveDataSmall[5] == "RPOK" and ReceiveDataSmall[3] ~= PlayerID2 then
 							CreatePackettSpecial("POKE",MVars.Players[RECEIVEDID])
@@ -2279,8 +2273,8 @@ function ReceiveData(Clientell)
 						
 						--The player is too busy to battle
 						if ReceiveDataSmall[5] == "TBUS" and ReceiveDataSmall[3] == MVars.PlayerTalkingID2 and LockFromScript == 4 then
-						--	ConsoleForText:print("Other player is too busy to battle.")
-							if Var8000[2] ~= 0 then
+						--	Globals.ConsoleForText:print("Other player is too busy to battle.")
+							if Globals.Var8000[2] ~= 0 then
 								LockFromScript = 7
 								ScriptLoader.Loadscript(20)
 							else
@@ -2288,8 +2282,8 @@ function ReceiveData(Clientell)
 							end
 						--The player is too busy to trade
 						elseif ReceiveDataSmall[5] == "TBUS" and ReceiveDataSmall[3] == MVars.PlayerTalkingID2 and LockFromScript == 5 then
-						--	ConsoleForText:print("Other player is too busy to trade.")
-							if Var8000[2] ~= 0 then
+						--	Globals.ConsoleForText:print("Other player is too busy to trade.")
+							if Globals.Var8000[2] ~= 0 then
 								LockFromScript = 7
 								ScriptLoader.Loadscript(21)
 							else
@@ -2299,19 +2293,19 @@ function ReceiveData(Clientell)
 						
 						--If the other player cancels battle
 						if ReceiveDataSmall[5] == "CBAT" and ReceiveDataSmall[3] == MVars.PlayerTalkingID2 then
-					--		ConsoleForText:print("Other player has canceled battle.")
+					--		Globals.ConsoleForText:print("Other player has canceled battle.")
 							OtherPlayerHasCancelled = 1
 						end
 						--If the other player cancels trade
 						if ReceiveDataSmall[5] == "CTRA" and ReceiveDataSmall[3] == MVars.PlayerTalkingID2 then
-					--		ConsoleForText:print("Other player has canceled trade.")
+					--		Globals.ConsoleForText:print("Other player has canceled trade.")
 							OtherPlayerHasCancelled = 2
 						end
 						
 						--If the other player accepts your battle request
 						if ReceiveDataSmall[5] == "SBAT" and ReceiveDataSmall[3] == MVars.PlayerTalkingID2 and LockFromScript == 4 then
 							SendData("RPOK", MVars.Players[RECEIVEDID])
-							if Var8000[2] ~= 0 then
+							if Globals.Var8000[2] ~= 0 then
 								LockFromScript = 8
 								ScriptLoader.Loadscript(13)
 							else
@@ -2321,7 +2315,7 @@ function ReceiveData(Clientell)
 						--If the other player accepts your trade request
 						if ReceiveDataSmall[5] == "STRA" and ReceiveDataSmall[3] == MVars.PlayerTalkingID2 and LockFromScript == 5 then
 							SendData("RPOK", MVars.Players[RECEIVEDID])
-							if Var8000[2] ~= 0 then
+							if Globals.Var8000[2] ~= 0 then
 								LockFromScript = 9
 							else
 								TextSpeedWait = 2
@@ -2330,7 +2324,7 @@ function ReceiveData(Clientell)
 						
 						--If the other player denies your battle request
 						if ReceiveDataSmall[5] == "DBAT" and ReceiveDataSmall[3] == MVars.PlayerTalkingID2 and LockFromScript == 4 then
-							if Var8000[2] ~= 0 then
+							if Globals.Var8000[2] ~= 0 then
 								LockFromScript = 7
 								ScriptLoader.Loadscript(11)
 							else
@@ -2340,7 +2334,7 @@ function ReceiveData(Clientell)
 						--If the other player denies your trade request
 						if ReceiveDataSmall[5] == "DTRA" then console:log("RD: " .. ReceiveDataSmall[3] .. " PTID: " .. MVars.PlayerTalkingID .. " LFS: " .. LockFromScript) end
 						if ReceiveDataSmall[5] == "DTRA" and ReceiveDataSmall[3] == MVars.PlayerTalkingID2 and LockFromScript == 5 then
-							if Var8000[2] ~= 0 then
+							if Globals.Var8000[2] ~= 0 then
 								LockFromScript = 7
 								ScriptLoader.Loadscript(7)
 							else
@@ -2401,8 +2395,8 @@ function ReceiveData(Clientell)
 										if PlayerID ~= i and MVars.PlayerIDNick[i] == "None" then
 											for i = 1, MaxPlayers do
 												if (ReceiveDataSmall[2] == MVars.PlayerIDNick[i]) then
-													ConsoleForText:moveCursor(0,4)
-													ConsoleForText:print("A player that is already in the game is trying to join!                ")
+													Globals.ConsoleForText:moveCursor(0,4)
+													Globals.ConsoleForText:print("A player that is already in the game is trying to join!                ")
 													n = 0
 												end
 											end
@@ -2433,8 +2427,8 @@ function ReceiveData(Clientell)
 											end
 										end
 										if n >= 1 and i == MaxPlayers then	
-											ConsoleForText:moveCursor(0,4)
-											ConsoleForText:print("A player is unable to join due to capacity limit.                ")
+											Globals.ConsoleForText:moveCursor(0,4)
+											Globals.ConsoleForText:print("A player is unable to join due to capacity limit.                ")
 										--	console:log("Player " .. ReceiveDataSmall[2] .. " was unable to connect")
 										end
 									end
@@ -2460,20 +2454,20 @@ function CreatePackettSpecial(RequestTemp, Socket2, OptionalData)
 			StartNum = ((i - 1) * 25) + 1
 			StartNum2 = StartNum + 24
 			PokeTemp = string.sub(Pokemon[j],StartNum,StartNum2)
-			Packett = GameID .. Nickname .. PlayerID2 .. MVars.PlayerReceiveID .. RequestTemp .. PokeTemp .. Filler .. "U"
+			Packett = Globals.GameID .. Nickname .. PlayerID2 .. MVars.PlayerReceiveID .. RequestTemp .. PokeTemp .. Filler .. "U"
 			Socket2:send(Packett)
 			end
 		end
 	elseif RequestTemp == "TRAD" then
 		MVars.PlayerReceiveID = MVars.PlayerTalkingID2
-		Packett = GameID .. Nickname .. PlayerID2 .. MVars.PlayerReceiveID .. RequestTemp .. TradeVars[1] .. TradeVars[2] .. TradeVars[3] .. TradeVars[5] .. "U"
+		Packett = Globals.GameID .. Nickname .. PlayerID2 .. MVars.PlayerReceiveID .. RequestTemp .. TradeVars[1] .. TradeVars[2] .. TradeVars[3] .. TradeVars[5] .. "U"
 		--4 + 4 + 4 + 4 + 4 + 3 + 40 + 1
 		Socket2:send(Packett)
 	elseif RequestTemp == "BATT" then
 		MVars.PlayerReceiveID = MVars.PlayerTalkingID2
 		local FillerSend = "100000000000000000000000000000000"
-		Packett = GameID .. Nickname .. PlayerID2 .. MVars.PlayerReceiveID .. RequestTemp .. BattleVars[1] .. BattleVars[2] .. BattleVars[3] .. BattleVars[4] .. BattleVars[5] .. BattleVars[6] .. BattleVars[7] .. BattleVars[8] .. BattleVars[9] .. BattleVars[10] .. FillerSend .. "U"
-	--	ConsoleForText:print("Packett: " .. Packett)
+		Packett = Globals.GameID .. Nickname .. PlayerID2 .. MVars.PlayerReceiveID .. RequestTemp .. BattleVars[1] .. BattleVars[2] .. BattleVars[3] .. BattleVars[4] .. BattleVars[5] .. BattleVars[6] .. BattleVars[7] .. BattleVars[8] .. BattleVars[9] .. BattleVars[10] .. FillerSend .. "U"
+	--	Globals.ConsoleForText:print("Packett: " .. Packett)
 		Socket2:send(Packett)
 	elseif RequestTemp == "SLNK" then
 		MVars.PlayerReceiveID = MVars.PlayerTalkingID2
@@ -2482,22 +2476,22 @@ function CreatePackettSpecial(RequestTemp, Socket2, OptionalData)
 		local SizeAct = OptionalData + 1000000000
  --		SizeAct = tostring(SizeAct)
 --		SizeAct = string.format("%.0f",SizeAct)
-		Packett = GameID .. Nickname .. PlayerID2 .. MVars.PlayerReceiveID .. RequestTemp .. SizeAct .. Filler .. "U"
---		ConsoleForText:print("Packett: " .. Packett)
+		Packett = Globals.GameID .. Nickname .. PlayerID2 .. MVars.PlayerReceiveID .. RequestTemp .. SizeAct .. Filler .. "U"
+--		Globals.ConsoleForText:print("Packett: " .. Packett)
 		Socket2:send(Packett)
 	end
 end
 --Send Data to clients
 function CreatePackett(RequestTemp, PackettTemp)
 	local FillerStuff = "F"
-	Packett = GameID .. Nickname .. PlayerID2 .. MVars.PlayerReceiveID .. RequestTemp .. PackettTemp .. MVars.CurrentX[PlayerID] .. MVars.CurrentY[PlayerID] .. MVars.Facing2[PlayerID] .. MVars.PlayerExtra1[PlayerID] .. MVars.PlayerExtra2[PlayerID] .. MVars.PlayerExtra3[PlayerID] .. MVars.PlayerExtra4[PlayerID] .. PVars.PlayerMapID .. PVars.PlayerMapIDPrev .. PVars.PlayerMapEntranceType .. MVars.StartX[PlayerID] .. MVars.StartY[PlayerID] .. FillerStuff .. "U"
+	Packett = Globals.GameID .. Nickname .. PlayerID2 .. MVars.PlayerReceiveID .. RequestTemp .. PackettTemp .. MVars.CurrentX[PlayerID] .. MVars.CurrentY[PlayerID] .. MVars.Facing2[PlayerID] .. MVars.PlayerExtra1[PlayerID] .. MVars.PlayerExtra2[PlayerID] .. MVars.PlayerExtra3[PlayerID] .. MVars.PlayerExtra4[PlayerID] .. PVars.PlayerMapID .. PVars.PlayerMapIDPrev .. PVars.PlayerMapEntranceType .. MVars.StartX[PlayerID] .. MVars.StartY[PlayerID] .. FillerStuff .. "U"
 end
 
 function SendData(DataType, Socket, ExtraData)
 	--If you have made a server
 	if (DataType == "NewPlayer") then
 		MVars.PlayerReceiveID = 1000
-	--	ConsoleForText:print("Request accepted!")
+	--	Globals.ConsoleForText:print("Request accepted!")
 		CreatePackett("STRT", ExtraData)
 		Socket:send(Packett)
 	elseif (DataType == "DENY") then
@@ -2659,15 +2653,15 @@ function Interact()
 		
 		--Hide n seek
 		if LockFromScript == 1 then
-			if Var8000[5] == 2 then
-		--		ConsoleForText:print("Hide n' Seek selected")
+			if Globals.Var8000[5] == 2 then
+		--		Globals.ConsoleForText:print("Hide n' Seek selected")
 				LockFromScript = 0
 				ScriptLoader.Loadscript(3)
 				Keypressholding = 1
 				Keypress = 1
 			
-			elseif Var8000[5] == 1 then
-		--		ConsoleForText:print("Hide n' Seek not selected")
+			elseif Globals.Var8000[5] == 1 then
+		--		Globals.ConsoleForText:print("Hide n' Seek not selected")
 				LockFromScript = 0
 				ScriptLoader.Loadscript(3)
 				Keypressholding = 1
@@ -2675,9 +2669,9 @@ function Interact()
 			end
 		--Interaction Multi-choice
 		elseif LockFromScript == 2 then
-			if Var8000[1] ~= Var8000[14] then
-				if Var8000[1] == 1 then
-		--			ConsoleForText:print("Battle selected")
+			if Globals.Var8000[1] ~= Globals.Var8000[14] then
+				if Globals.Var8000[1] == 1 then
+		--			Globals.ConsoleForText:print("Battle selected")
 					FixAddress()
 		--			LockFromScript = 4
 		--			ScriptLoader.Loadscript(4)
@@ -2687,8 +2681,8 @@ function Interact()
 					Keypress = 1
 		--			SendData("RBAT", Player2)
 				
-				elseif Var8000[1] == 2 then
-		--			ConsoleForText:print("Trade selected")
+				elseif Globals.Var8000[1] == 2 then
+		--			Globals.ConsoleForText:print("Trade selected")
 					FixAddress()
 					LockFromScript = 5
 					ScriptLoader.Loadscript(4)
@@ -2696,16 +2690,16 @@ function Interact()
 					Keypress = 1
 					SendData("RTRA", MVars.Players[MVars.PlayerTalkingID])
 				
-				elseif Var8000[1] == 3 then
-		--			ConsoleForText:print("Card selected")
+				elseif Globals.Var8000[1] == 3 then
+		--			Globals.ConsoleForText:print("Card selected")
 					FixAddress()
 					LockFromScript = 6
 					ScriptLoader.Loadscript(3)
 					Keypressholding = 1
 					Keypress = 1
 				
-				elseif Var8000[1] ~= 0 then
-		--			ConsoleForText:print("Exit selected")
+				elseif Globals.Var8000[1] ~= 0 then
+		--			Globals.ConsoleForText:print("Exit selected")
 					FixAddress()
 					LockFromScript = 0
 					Keypressholding = 1
@@ -2715,7 +2709,7 @@ function Interact()
 		end
 	if Keypress ~= 0 then
 		if Keypress == 1 or Keypress == 65 or Keypress == 129 or Keypress == 33 or Keypress == 17 then
-	--		ConsoleForText:print("Pressed A")
+	--		Globals.ConsoleForText:print("Pressed A")
 	
 			--SCRIPTS. LOCK AND PREVENT SPAM PRESS. 
 			if LockFromScript == 0 and Keypressholding == 0 and TooBusyByte == 0 then
@@ -2733,21 +2727,21 @@ function Interact()
 						TalkingDirX = PlayerMapX - MVars.CurrentX[i]
 						TalkingDirY = PlayerMapY - MVars.CurrentY[i]
 						if PVars.PlayerDirection == 1 and TalkingDirX == 1 and TalkingDirY == 0 then
-					--		ConsoleForText:print("Player Left")
+					--		Globals.ConsoleForText:print("Player Left")
 							
 						elseif PVars.PlayerDirection == 2 and TalkingDirX == -1 and TalkingDirY == 0 then
-					--		ConsoleForText:print("Player Right")
+					--		Globals.ConsoleForText:print("Player Right")
 						elseif PVars.PlayerDirection == 3 and TalkingDirY == 1 and TalkingDirX == 0 then
-					--		ConsoleForText:print("Player Up")
+					--		Globals.ConsoleForText:print("Player Up")
 						elseif PVars.PlayerDirection == 4 and TalkingDirY == -1 and TalkingDirX == 0 then
-					--		ConsoleForText:print("Player Down")
+					--		Globals.ConsoleForText:print("Player Down")
 						end
 						if (PVars.PlayerDirection == 1 and TalkingDirX == 1 and TalkingDirY == 0) or (PVars.PlayerDirection == 2 and TalkingDirX == -1 and TalkingDirY == 0) or (PVars.PlayerDirection == 3 and TalkingDirX == 0 and TalkingDirY == 1) or (PVars.PlayerDirection == 4 and TalkingDirX == 0 and TalkingDirY == -1) then
 						
-					--		ConsoleForText:print("Player Any direction")
-							emu:write16(Var8000Adr[1], 0) 
-							emu:write16(Var8000Adr[2], 0) 
-							emu:write16(Var8000Adr[14], 0)
+					--		Globals.ConsoleForText:print("Player Any direction")
+							emu:write16(Globals.Var8000Adr[1], 0) 
+							emu:write16(Globals.Var8000Adr[2], 0) 
+							emu:write16(Globals.Var8000Adr[14], 0)
 							MVars.PlayerTalkingID = i
 							MVars.PlayerTalkingID2 = i + 1000
 							LockFromScript = 2
@@ -2758,12 +2752,12 @@ function Interact()
 			end
 			Keypressholding = 1
 		elseif Keypress == 2 then
-			if LockFromScript == 4 and Keypressholding == 0 and Var8000[2] ~= 0 then
+			if LockFromScript == 4 and Keypressholding == 0 and Globals.Var8000[2] ~= 0 then
 				--Cancel battle request
 				ScriptLoader.Loadscript(15)
 				SendData("CBAT",MVars.Players[MVars.PlayerTalkingID])
 				LockFromScript = 0
-			elseif LockFromScript == 5 and Keypressholding == 0 and Var8000[2] ~= 0 then
+			elseif LockFromScript == 5 and Keypressholding == 0 and Globals.Var8000[2] ~= 0 then
 				--Cancel trade request
 				ScriptLoader.Loadscript(16)
 					SendData("CTRA",MVars.Players[MVars.PlayerTalkingID])
@@ -2772,7 +2766,7 @@ function Interact()
 				TradeVars[2] = 0
 				TradeVars[3] = 0
 				OtherPlayerHasCancelled = 0
-			elseif LockFromScript == 9 and (TradeVars[1] == 2 or TradeVars[1] == 4) and Keypressholding == 0 and Var8000[2] ~= 0 then
+			elseif LockFromScript == 9 and (TradeVars[1] == 2 or TradeVars[1] == 4) and Keypressholding == 0 and Globals.Var8000[2] ~= 0 then
 				--Cancel trade request
 				ScriptLoader.Loadscript(16)
 				SendData("CTRA",MVars.Players[MVars.PlayerTalkingID])
@@ -2786,20 +2780,20 @@ function Interact()
 		elseif Keypress == 4 then
 	--		GetPokemonTeam()
 	--		SetEnemyPokemonTeam()
-	--		ConsoleForText:print("Pressed Select")
+	--		Globals.ConsoleForText:print("Pressed Select")
 		elseif Keypress == 8 then
-	--		ConsoleForText:print("Pressed Start")
+	--		Globals.ConsoleForText:print("Pressed Start")
 		elseif Keypress == 16 then
-	--		ConsoleForText:print("Pressed Right")
+	--		Globals.ConsoleForText:print("Pressed Right")
 		elseif Keypress == 32 then
-	--		ConsoleForText:print("Pressed Left")
+	--		Globals.ConsoleForText:print("Pressed Left")
 		elseif Keypress == 64 then
-	--		ConsoleForText:print("Pressed Up")
+	--		Globals.ConsoleForText:print("Pressed Up")
 		elseif Keypress == 128 then
-	--		ConsoleForText:print("Pressed Down")
+	--		Globals.ConsoleForText:print("Pressed Down")
 		elseif Keypress == 256 then
 		--	if LockFromScript == 0 and Keypressholding == 0 then
-		--	ConsoleForText:print("Pressed R-Trigger")
+		--	Globals.ConsoleForText:print("Pressed R-Trigger")
 			--	ApplyMovement(0)
 		--		emu:write16(Var8001Adr, 0) 
 			--	BufferString = MVars.PlayerIDNick[2]
@@ -2807,7 +2801,7 @@ function Interact()
 		--		LockFromScript = 5
 		--		local TestString = ReadBuffers(33692880, 4)
 		--		WriteBuffers(33692912, TestString, 4)
-			--	ConsoleForText:print("String: " .. TestString)
+			--	Globals.ConsoleForText:print("String: " .. TestString)
 			
 		--		SendData("RPOK",Player2)
 		--		if EnemyPokemon[6] ~= 0 then
@@ -2820,7 +2814,7 @@ function Interact()
 		--	end
 			Keypressholding = 1
 		elseif Keypress == 512 then
-	--		ConsoleForText:print("Pressed L-Trigger")
+	--		Globals.ConsoleForText:print("Pressed L-Trigger")
 	--		ScriptLoader.Loadscript(22)
 		end
 	else
@@ -2866,20 +2860,20 @@ function mainLoop()
 	end
 	
 	FramesPS = FFTimer
-	if initialized == 0 and EnableScript == true then
-		ROMCARD = emu.memory.cart0
+	if initialized == 0 and Globals.EnableScript == true then
+		Globals.ROMCARD = emu.memory.cart0
 		initialized = 1
 		GetPosition()
 	--	ScriptLoader.Loadscript(0)
 		if Nickname == "" then
 			Nickname = RandomizeNickname()
 		end
-		ConsoleForText:moveCursor(0,2)
-		ConsoleForText:print("Nickname is now " .. Nickname)
+		Globals.ConsoleForText:moveCursor(0,2)
+		Globals.ConsoleForText:print("Nickname is now " .. Nickname)
 			
 		CreateNetwork()
-		ConsoleForText:moveCursor(0,4)
-	elseif EnableScript == true then
+		Globals.ConsoleForText:moveCursor(0,4)
+	elseif Globals.EnableScript == true then
 			--Debugging
 			TempVar2 = ScriptTime % DebugTime2
 			local TempVarTimer = ScriptTime % DebugTime
@@ -2895,9 +2889,9 @@ function mainLoop()
 			TempVarTimer = ScriptTime % DebugTime2
 			if TempVarTimer == 0 then
 				if MasterClient == "a" then
-					ConsoleForText:moveCursor(0,3)
+					Globals.ConsoleForText:moveCursor(0,3)
 					CreateNetwork()
-					ConsoleForText:moveCursor(0,4)
+					Globals.ConsoleForText:moveCursor(0,4)
 				elseif MasterClient == "h" then
 					for i = 1, MaxPlayers do
 						if MVars.PlayerIDNick[i] ~= "None" then AddPlayerToConsole(i) end
@@ -2905,36 +2899,36 @@ function mainLoop()
 				end
 			end
 							--VARS--
-		if GameID == "BPR1" or GameID == "BPR2" then
+		if Globals.GameID == "BPR1" or Globals.GameID == "BPR2" then
 			Startvaraddress = 33779896
-		elseif GameID == "BPG1" or GameID == "BPG2" then
+		elseif Globals.GameID == "BPG1" or Globals.GameID == "BPG2" then
 			Startvaraddress = 33779896
 		end
-		Var8000Adr[1] = Startvaraddress
-		Var8000Adr[2] = Startvaraddress + 2
-		Var8000Adr[3] = Startvaraddress + 4
-		Var8000Adr[4] = Startvaraddress + 6
-		Var8000Adr[5] = Startvaraddress + 8
-		Var8000Adr[6] = Startvaraddress + 10
-		Var8000Adr[14] = Startvaraddress + 26
-		Var8000[1] = emu:read16(Var8000Adr[1])
-		Var8000[2] = emu:read16(Var8000Adr[2])
-		Var8000[3] = emu:read16(Var8000Adr[3])
-		Var8000[4] = emu:read16(Var8000Adr[4])
-		Var8000[5] = emu:read16(Var8000Adr[5])
-		Var8000[6] = emu:read16(Var8000Adr[6])
-		Var8000[14] = emu:read16(Var8000Adr[14])
-		Var8000[1] = tonumber(Var8000[1])
-		Var8000[2] = tonumber(Var8000[2])
-		Var8000[3] = tonumber(Var8000[3])
-		Var8000[4] = tonumber(Var8000[4])
-		Var8000[5] = tonumber(Var8000[5])
-		Var8000[6] = tonumber(Var8000[6])
-		Var8000[14] = tonumber(Var8000[14])
+		Globals.Var8000Adr[1] = Startvaraddress
+		Globals.Var8000Adr[2] = Startvaraddress + 2
+		Globals.Var8000Adr[3] = Startvaraddress + 4
+		Globals.Var8000Adr[4] = Startvaraddress + 6
+		Globals.Var8000Adr[5] = Startvaraddress + 8
+		Globals.Var8000Adr[6] = Startvaraddress + 10
+		Globals.Var8000Adr[14] = Startvaraddress + 26
+		Globals.Var8000[1] = emu:read16(Globals.Var8000Adr[1])
+		Globals.Var8000[2] = emu:read16(Globals.Var8000Adr[2])
+		Globals.Var8000[3] = emu:read16(Globals.Var8000Adr[3])
+		Globals.Var8000[4] = emu:read16(Globals.Var8000Adr[4])
+		Globals.Var8000[5] = emu:read16(Globals.Var8000Adr[5])
+		Globals.Var8000[6] = emu:read16(Globals.Var8000Adr[6])
+		Globals.Var8000[14] = emu:read16(Globals.Var8000Adr[14])
+		Globals.Var8000[1] = tonumber(Globals.Var8000[1])
+		Globals.Var8000[2] = tonumber(Globals.Var8000[2])
+		Globals.Var8000[3] = tonumber(Globals.Var8000[3])
+		Globals.Var8000[4] = tonumber(Globals.Var8000[4])
+		Globals.Var8000[5] = tonumber(Globals.Var8000[5])
+		Globals.Var8000[6] = tonumber(Globals.Var8000[6])
+		Globals.Var8000[14] = tonumber(Globals.Var8000[14])
 			
 						--BATTLE/TRADE--
 			
-		--	if TempVar2 == 0 then ConsoleForText:print("OtherPlayerCanceled: " .. OtherPlayerHasCancelled) end
+		--	if TempVar2 == 0 then Globals.ConsoleForText:print("OtherPlayerCanceled: " .. OtherPlayerHasCancelled) end
 			
 			--If you cancel/stop
 			if LockFromScript == 0 then
@@ -2943,7 +2937,7 @@ function mainLoop()
 			
 			--Wait until other player accepts battle
 			if LockFromScript == 4 then
-				if Var8000[2] ~= 0 then
+				if Globals.Var8000[2] ~= 0 then
 					if TextSpeedWait == 1 then
 						TextSpeedWait = 0
 						LockFromScript = 8
@@ -2962,7 +2956,7 @@ function mainLoop()
 				
 			--Wait until other player accepts trade
 			elseif LockFromScript == 5 then
-				if Var8000[2] ~= 0 then
+				if Globals.Var8000[2] ~= 0 then
 					if TextSpeedWait == 2 then
 						TextSpeedWait = 0
 						LockFromScript = 9
@@ -2979,15 +2973,15 @@ function mainLoop()
 				
 			--Show card. Placeholder for now
 			elseif LockFromScript == 6 then
-				if Var8000[2] ~= 0 then
-		--			ConsoleForText:print("Var 8001: " .. Var8000[2])
+				if Globals.Var8000[2] ~= 0 then
+		--			Globals.ConsoleForText:print("Var 8001: " .. Globals.Var8000[2])
 					LockFromScript = 0
 				--	if SendTimer == 0 then SendData("RTRA") end
 				end
 				
 			--Exit message
 			elseif LockFromScript == 7 then
-				if Var8000[2] ~= 0 then LockFromScript = 0 Keypressholding = 1 end
+				if Globals.Var8000[2] ~= 0 then LockFromScript = 0 Keypressholding = 1 end
 			
 			--Battle script
 			elseif LockFromScript == 8 then
@@ -3002,8 +2996,8 @@ function mainLoop()
 			
 			--Player 2 has requested to battle
 			elseif LockFromScript == 12 then
-		--	if Var8000[2] ~= 0 then ConsoleForText:print("Var8001: " .. Var8000[2]) end
-				if Var8000[2] == 2 then
+		--	if Globals.Var8000[2] ~= 0 then Globals.ConsoleForText:print("Var8001: " .. Globals.Var8000[2]) end
+				if Globals.Var8000[2] == 2 then
 					if OtherPlayerHasCancelled == 0 then
 						SendData("RPOK", MVars.Players[MVars.PlayerTalkingID])
 						SendData("SBAT", MVars.Players[MVars.PlayerTalkingID])
@@ -3014,13 +3008,13 @@ function mainLoop()
 						LockFromScript = 7
 						ScriptLoader.Loadscript(18)
 					end
-				elseif Var8000[2] == 1 then LockFromScript = 0 SendData("DBAT", MVars.Players[MVars.PlayerTalkingID]) Keypressholding = 1 end
+				elseif Globals.Var8000[2] == 1 then LockFromScript = 0 SendData("DBAT", MVars.Players[MVars.PlayerTalkingID]) Keypressholding = 1 end
 				
 			--Player 2 has requested to trade
 			elseif LockFromScript == 13 then
-		--	if Var8000[2] ~= 0 then ConsoleForText:print("Var8001: " .. Var8000[2]) end
+		--	if Globals.Var8000[2] ~= 0 then Globals.ConsoleForText:print("Var8001: " .. Globals.Var8000[2]) end
 				--If accept, then send that you accept
-				if Var8000[2] == 2 then
+				if Globals.Var8000[2] == 2 then
 					if OtherPlayerHasCancelled == 0 then
 						SendData("RPOK", MVars.Players[MVars.PlayerTalkingID])
 						SendData("STRA", MVars.Players[MVars.PlayerTalkingID])
@@ -3030,16 +3024,16 @@ function mainLoop()
 						LockFromScript = 7
 						ScriptLoader.Loadscript(19)
 					end
-				elseif Var8000[2] == 1 then LockFromScript = 0 SendData("DTRA", MVars.Players[MVars.PlayerTalkingID]) Keypressholding = 1 end
+				elseif Globals.Var8000[2] == 1 then LockFromScript = 0 SendData("DTRA", MVars.Players[MVars.PlayerTalkingID]) Keypressholding = 1 end
 			end
 	end
 end
 
 console:log("Started GBA-PK_Server.lua")
 if not (emu == nil) then
-	if ConsoleForText == nil then ConsoleForText = console:createBuffer("GBA-PK SERVER") end
-	ConsoleForText:clear()
-	ConsoleForText:moveCursor(0,1)
+	if Globals.ConsoleForText == nil then Globals.ConsoleForText = console:createBuffer("GBA-PK SERVER") end
+	Globals.ConsoleForText:clear()
+	Globals.ConsoleForText:moveCursor(0,1)
 	FFTimer2 = os.time()
 	GameChecker.GetGameVersion()
 end

@@ -1,3 +1,5 @@
+local Globals = require "globalVars"
+
 local tableGameCodes = {
     ["AGB-BPRE"] = {["gameID"] = "BPR1", ["name"] = "FireRed"},
     ["AGB-ZBDM"] = {["gameID"] = "BPR1", ["name"] = "FireRed"},
@@ -16,8 +18,8 @@ local mod = {}
 function mod.GetGameVersion()
     local gameCode = emu:getGameCode()
 	if not (tableGameCodes[gameCode]) then
-		ConsoleForText:print("Unknown game. Script disabled.\n\n")
-		EnableScript = false
+		Globals.ConsoleForText:print("Unknown game. Script disabled.\n\n")
+		Globals.EnableScript = false
     end
     if gameVersions[gameCode] then
         local gameVersion = emu:read16(134217916)
@@ -26,9 +28,9 @@ function mod.GetGameVersion()
         end
     end
 
-    EnableScript = true
-    GameID = tableGameCodes[gameCode].gameID
-    ConsoleForText:print(tableGameCodes[gameCode]["name"] .. "[".. GameID  .."] detected. Script Enabled.\n\n")
+    Globals.EnableScript = true
+    Globals.GameID = tableGameCodes[gameCode].gameID
+    Globals.ConsoleForText:print(tableGameCodes[gameCode]["name"] .. "[".. Globals.GameID  .."] detected. Script Enabled.\n\n")
 end
 
 return mod
